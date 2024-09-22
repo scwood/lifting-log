@@ -1,4 +1,4 @@
-import { Exercise } from "./Exercise";
+import { ExerciseName } from "./ExerciseName";
 
 export interface Workout {
   id: string;
@@ -7,9 +7,9 @@ export interface Workout {
   completedTimestamp: number | null;
   notes: string | null;
   workingWeight: {
-    [key in Exercise]: number;
+    [key in ExerciseName]: number;
   };
   lastSetReps: {
-    [key in Exercise]: number | null;
+    [key in ExerciseName]: number | null;
   };
 }

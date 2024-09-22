@@ -13,19 +13,19 @@ import {
   calculateWarmupPlates,
   calculateWarmupWeight,
 } from "../utils/weightUtils";
-import { Exercise, exerciseDisplayNames } from "../types/Exercise";
+import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
 import { useState } from "react";
 import { Workout } from "../types/Workout";
 import { RepRecords } from "../hooks/useRepRecords";
 
 export interface ExerciseCardProps {
-  exercise: Exercise;
+  exercise: ExerciseName;
   workout: Workout;
   repRecords: RepRecords;
-  onComplete: (exercise: Exercise, lastSetReps: number) => void;
+  onComplete: (exercise: ExerciseName, lastSetReps: number) => void;
 }
 
-export function ExerciseCard(props: ExerciseCardProps) {
+export function LegacyExerciseCard(props: ExerciseCardProps) {
   const { exercise, workout, repRecords, onComplete } = props;
   const [isLastSetModalOpen, setIsLastSetModalOpen] = useState(false);
 

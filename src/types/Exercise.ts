@@ -1,15 +1,12 @@
-export const allExercises = [
-  "benchPress",
-  "deadLift",
-  "overheadPress",
-  "squat",
-] as const;
+import { ExerciseType } from "./ExerciseType";
+import { WarmupSet } from "./WarmupSet";
 
-export const exerciseDisplayNames: { [key in Exercise]: string } = {
-  benchPress: "Bench press",
-  deadLift: "Dead lift",
-  overheadPress: "Overhead press",
-  squat: "Squat",
-};
-
-export type Exercise = (typeof allExercises)[number];
+export interface Exercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  type: ExerciseType;
+  warmupSets: WarmupSet[];
+}

@@ -1,7 +1,7 @@
 import { Box, Card, Flex, Text, useMantineTheme } from "@mantine/core";
 
 import { Workout } from "../types/Workout";
-import { allExercises, exerciseDisplayNames } from "../types/Exercise";
+import { allExercises, exerciseDisplayNames } from "../types/ExerciseName";
 import { IconCheck, IconX } from "@tabler/icons-react";
 
 export interface PastWorkoutCardProps {

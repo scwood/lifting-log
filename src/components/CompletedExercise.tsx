@@ -1,12 +1,12 @@
 import { Button, Card, Title } from "@mantine/core";
 
-import { Exercise, exerciseDisplayNames } from "../types/Exercise";
+import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
 import { Workout } from "../types/Workout";
 
 export interface CompletedExerciseProps {
   workout: Workout;
-  exercise: Exercise;
-  onUndo: (exercise: Exercise) => void;
+  exercise: ExerciseName;
+  onUndo: (exercise: ExerciseName) => void;
 }
 
 export function CompletedExercise(props: CompletedExerciseProps) {

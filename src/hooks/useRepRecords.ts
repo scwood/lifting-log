@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 
-import { Exercise, allExercises } from "../types/Exercise";
+import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { Workout } from "../types/Workout";
 import { useWorkoutsQuery } from "./useWorkoutsQuery";
 
 export type RepRecords = {
-  [key in Exercise]: Record<number, number>;
+  [key in ExerciseName]: Record<number, number>;
 };
 
 export function useRepRecords() {

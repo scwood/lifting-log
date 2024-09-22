@@ -12,10 +12,10 @@ import {
 import { useState } from "react";
 import { IconPencil } from "@tabler/icons-react";
 
-import { ExerciseCard } from "./ExerciseCard";
+import { LegacyExerciseCard } from "./LegacyExerciseCard";
 import { WorkingWeightForm } from "./WorkingWeightForm";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
-import { Exercise, allExercises } from "../types/Exercise";
+import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { CompletedExercise } from "./CompletedExercise";
@@ -107,7 +107,7 @@ export function CurrentWorkout() {
           {allExercises.map((exercise) => {
             return (
               currentWorkout.lastSetReps[exercise] === null && (
-                <ExerciseCard
+                <LegacyExerciseCard
                   key={exercise}
                   exercise={exercise}
                   workout={currentWorkout}
@@ -178,13 +178,13 @@ export function CurrentWorkout() {
   }
 
   function handleSaveInitialWorkingWeight(workingWeight: {
-    [keys in Exercise]: number;
+    [keys in ExerciseName]: number;
   }) {
     createWorkout({ workingWeight });
   }
 
   function handleUpdateWorkingWeight(workingWeight: {
-    [keys in Exercise]: number;
+    [keys in ExerciseName]: number;
   }) {
     if (!currentWorkout) {
       return;
@@ -193,7 +193,7 @@ export function CurrentWorkout() {
     setIsEditWorkoutModalOpen(false);
   }
 
-  function handleCompleteExercise(exercise: Exercise, lastSetReps: number) {
+  function handleCompleteExercise(exercise: ExerciseName, lastSetReps: number) {
     if (!currentWorkout) {
       return;
     }
@@ -219,7 +219,7 @@ export function CurrentWorkout() {
     updateWorkout({ workout: { ...currentWorkout, notes: notesUpdate } });
   }
 
-  function handleUndo(exercise: Exercise) {
+  function handleUndo(exercise: ExerciseName) {
     if (!currentWorkout) {
       return;
     }
