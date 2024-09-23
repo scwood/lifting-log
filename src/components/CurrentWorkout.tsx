@@ -19,7 +19,7 @@ import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { CompletedExercise } from "./CompletedExercise";
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import { calculateDeload } from "../utils/weightUtils";
 import { useRepRecords } from "../hooks/useRepRecords";
 
@@ -197,7 +197,7 @@ export function CurrentWorkout() {
     if (!currentWorkout) {
       return;
     }
-    const updates: Workout = {
+    const updates: LegacyWorkout = {
       ...currentWorkout,
       lastSetReps: { ...currentWorkout.lastSetReps, [exercise]: lastSetReps },
     };

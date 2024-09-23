@@ -26,39 +26,37 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
 
   return (
     <Card withBorder>
-      <Text size="sm">
-        <Flex justify="space-between" align="center">
-          <Text fw={600}>{exercise.name}</Text>
-          <Menu>
-            <Menu.Target>
-              <ActionIcon variant="subtle" color="gray">
-                <IconDots />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                disabled={moveUpDisabled}
-                onClick={() => onMoveUp(exercise)}
-              >
-                Move up
-              </Menu.Item>
-              <Menu.Item
-                disabled={moveDownDisabled}
-                onClick={() => onMoveDown(exercise)}
-              >
-                Move down
-              </Menu.Item>
-              <Menu.Item onClick={() => onEdit(exercise)}>Edit</Menu.Item>
-              <Menu.Item color="red" onClick={() => onDelete(exercise)}>
-                Delete
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Flex>
-        <Text c="dimmed" size="xs">
-          {exercise.sets} sets of {exercise.reps} reps at {exercise.weight} lbs.{" "}
-          {exercise.warmupSets && `${exercise.warmupSets.length} warmup sets.`}
-        </Text>
+      <Flex justify="space-between" align="center">
+        <Text fw={600}>{exercise.name}</Text>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray">
+              <IconDots />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              disabled={moveUpDisabled}
+              onClick={() => onMoveUp(exercise)}
+            >
+              Move up
+            </Menu.Item>
+            <Menu.Item
+              disabled={moveDownDisabled}
+              onClick={() => onMoveDown(exercise)}
+            >
+              Move down
+            </Menu.Item>
+            <Menu.Item onClick={() => onEdit(exercise)}>Edit</Menu.Item>
+            <Menu.Item color="red" onClick={() => onDelete(exercise)}>
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Flex>
+      <Text c="dimmed" size="xs">
+        {exercise.sets} sets of {exercise.reps} reps at {exercise.weight} lbs.{" "}
+        {exercise.warmupSets.length} warmup sets.
       </Text>
     </Card>
   );

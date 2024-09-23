@@ -1,11 +1,11 @@
 import { Box, Card, Flex, Text, useMantineTheme } from "@mantine/core";
 
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import { allExercises, exerciseDisplayNames } from "../types/ExerciseName";
 import { IconCheck, IconX } from "@tabler/icons-react";
 
 export interface PastWorkoutCardProps {
-  workout: Workout;
+  workout: LegacyWorkout;
 }
 
 export function PastWorkoutCard(props: PastWorkoutCardProps) {

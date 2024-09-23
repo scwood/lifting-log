@@ -10,7 +10,7 @@ import {
 } from "@visx/xychart";
 import { LegendOrdinal } from "@visx/legend";
 
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import {
   ExerciseName,
   allExercises,
@@ -18,7 +18,7 @@ import {
 } from "../types/ExerciseName";
 
 export interface WorkingWeightChartProps {
-  workouts: Workout[];
+  workouts: LegacyWorkout[];
 }
 
 export function WorkingWeightChart(props: WorkingWeightChartProps) {

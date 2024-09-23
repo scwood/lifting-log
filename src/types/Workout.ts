@@ -1,4 +1,4 @@
-import { ExerciseName } from "./ExerciseName";
+import { Day } from "./Day";
 
 export interface Workout {
   id: string;
@@ -6,10 +6,5 @@ export interface Workout {
   createdTimestamp: number;
   completedTimestamp: number | null;
   notes: string | null;
-  workingWeight: {
-    [key in ExerciseName]: number;
-  };
-  lastSetReps: {
-    [key in ExerciseName]: number | null;
-  };
+  days: Day[];
 }

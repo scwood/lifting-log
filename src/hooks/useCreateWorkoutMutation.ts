@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { createWorkout } from "../api/workoutsApi";
 import { currentWorkoutQueryKey } from "./useCurrentWorkoutQuery";
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 
 export function useCreateWorkoutMutation() {
   const { userId } = useCurrentUser();
@@ -14,8 +14,8 @@ export function useCreateWorkoutMutation() {
       workingWeight,
       ...optionalFields
     }: {
-      workingWeight: Workout["workingWeight"];
-    } & Partial<Workout>) => {
+      workingWeight: LegacyWorkout["workingWeight"];
+    } & Partial<LegacyWorkout>) => {
       return createWorkout({ userId, workingWeight, ...optionalFields });
     },
     onSettled: () => {

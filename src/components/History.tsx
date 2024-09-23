@@ -6,7 +6,7 @@ import { useWorkoutsQuery } from "../hooks/useWorkoutsQuery";
 import { WorkingWeightChart } from "./WorkingWeightChart";
 import { CreateWorkoutModal } from "./CreateWorkoutModal";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import { PastWorkoutCard } from "./PastWorkoutCard";
 
 export function History() {
@@ -62,8 +62,8 @@ export function History() {
   }
 
   async function handleCreateWorkout(values: {
-    workingWeight: Workout["workingWeight"];
-    lastSetReps: Workout["lastSetReps"];
+    workingWeight: LegacyWorkout["workingWeight"];
+    lastSetReps: LegacyWorkout["lastSetReps"];
     completedTimestamp: number;
   }) {
     await createWorkout({

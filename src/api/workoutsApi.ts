@@ -17,11 +17,9 @@ import { Workout } from "../types/Workout";
 
 export async function createWorkout({
   userId,
-  workingWeight,
   ...optionalFields
 }: {
   userId: Workout["userId"];
-  workingWeight: Workout["workingWeight"];
 } & Partial<Workout>) {
   const workoutRef = doc(getWorkOutCollection());
   const workout: Workout = {
@@ -30,13 +28,7 @@ export async function createWorkout({
     createdTimestamp: Date.now(),
     completedTimestamp: null,
     notes: null,
-    workingWeight,
-    lastSetReps: {
-      benchPress: null,
-      deadLift: null,
-      overheadPress: null,
-      squat: null,
-    },
+    days: [],
     ...optionalFields,
   };
   await setDoc(workoutRef, workout);
@@ -52,13 +44,17 @@ export async function getCurrentWorkout(userId: string) {
     )
   );
   if (snapshot.empty) {
-    return null;
+    await createWorkout({ userId });
+    return getCurrentWorkout(userId);
   }
   return snapshot.docs[0].data();
 }
 
-export async function updateWorkout(workout: Workout) {
-  await updateDoc(doc(getWorkOutCollection(), workout.id), { ...workout });
+export async function updateWorkout(
+  workoutId: string,
+  updates: Partial<Workout>
+) {
+  await updateDoc(doc(getWorkOutCollection(), workoutId), { ...updates });
 }
 
 export async function getWorkouts(userId: string) {

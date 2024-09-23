@@ -1,6 +1,6 @@
 {
-  "name": "workout-log",
-  "homepage": "https://scwood.github.io/workout-log",
+  "name": "lifting-log",
+  "homepage": "https://scwood.github.io/lifting-log",
   "private": true,
   "version": "0.0.0",
   "type": "module",

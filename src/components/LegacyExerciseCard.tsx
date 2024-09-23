@@ -15,12 +15,12 @@ import {
 } from "../utils/weightUtils";
 import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
 import { useState } from "react";
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import { RepRecords } from "../hooks/useRepRecords";
 
 export interface ExerciseCardProps {
   exercise: ExerciseName;
-  workout: Workout;
+  workout: LegacyWorkout;
   repRecords: RepRecords;
   onComplete: (exercise: ExerciseName, lastSetReps: number) => void;
 }

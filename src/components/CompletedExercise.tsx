@@ -1,10 +1,10 @@
 import { Button, Card, Title } from "@mantine/core";
 
 import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 
 export interface CompletedExerciseProps {
-  workout: Workout;
+  workout: LegacyWorkout;
   exercise: ExerciseName;
   onUndo: (exercise: ExerciseName) => void;
 }
