@@ -27,42 +27,38 @@ export function WarmupSetCard(props: WarmupSetCardProps) {
 
   return (
     <Card>
-      <Text size="sm">
-        <Flex justify="space-between" align="center">
-          <span>
-            {warmupSet.reps} rep{warmupSet.reps !== 1 && "s"} for{" "}
-            {warmupSet.value}
-            {warmupSet.type === WarmupType.Weight
-              ? "lbs"
-              : "% of working weight"}
-          </span>
-          <Menu>
-            <Menu.Target>
-              <ActionIcon variant="subtle" color="gray">
-                <IconDots style={{ width: rem(16), height: rem(16) }} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                disabled={moveUpDisabled}
-                onClick={() => onMoveUp(warmupSet)}
-              >
-                Move up
-              </Menu.Item>
-              <Menu.Item
-                disabled={moveDownDisabled}
-                onClick={() => onMoveDown(warmupSet)}
-              >
-                Move down
-              </Menu.Item>
-              <Menu.Item onClick={() => onEdit(warmupSet)}>Edit</Menu.Item>
-              <Menu.Item color="red" onClick={() => onDelete(warmupSet)}>
-                Delete
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Flex>
-      </Text>
+      <Flex justify="space-between" align="center">
+        <Text size="sm">
+          {warmupSet.reps} rep{warmupSet.reps !== 1 && "s"} for{" "}
+          {warmupSet.value}
+          {warmupSet.type === WarmupType.Weight ? "lbs" : "% of working weight"}
+        </Text>
+        <Menu>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray">
+              <IconDots style={{ width: rem(16), height: rem(16) }} />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              disabled={moveUpDisabled}
+              onClick={() => onMoveUp(warmupSet)}
+            >
+              Move up
+            </Menu.Item>
+            <Menu.Item
+              disabled={moveDownDisabled}
+              onClick={() => onMoveDown(warmupSet)}
+            >
+              Move down
+            </Menu.Item>
+            <Menu.Item onClick={() => onEdit(warmupSet)}>Edit</Menu.Item>
+            <Menu.Item color="red" onClick={() => onDelete(warmupSet)}>
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Flex>
     </Card>
   );
 }

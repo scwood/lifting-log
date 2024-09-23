@@ -7,9 +7,12 @@ import { ExerciseModal } from "./ExerciseModal";
 import { Exercise } from "../types/Exercise";
 import { PlanExerciseCard } from "./PlanExerciseCard";
 import { arraySwap } from "../utils/arraySwap";
+import { Workout } from "../types/Workout";
+import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 
 export interface DayCardProps {
   day: Day;
+  workout: Workout;
   moveUpDisabled: boolean;
   moveDownDisabled: boolean;
   onEdit: (day: Day) => void;
@@ -21,6 +24,7 @@ export interface DayCardProps {
 export function DayCard(props: DayCardProps) {
   const {
     day,
+    workout,
     moveDownDisabled,
     moveUpDisabled,
     onEdit,
@@ -29,8 +33,8 @@ export function DayCard(props: DayCardProps) {
     onMoveUp,
   } = props;
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
-  const [exercises, setExercises] = useState<Exercise[]>(day.exercises);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
+  const { mutate: updateWorkout } = useUpdateWorkoutMutation();
 
   return (
     <>
@@ -67,17 +71,19 @@ export function DayCard(props: DayCardProps) {
         </Card.Section>
         <Card.Section withBorder inheritPadding py="md">
           <Flex direction="column" gap="sm">
-            {exercises.map((exercise, index) => {
+            {day.exercises.map((exercise, index) => {
               return (
                 <PlanExerciseCard
                   key={exercise.id}
                   exercise={exercise}
                   moveUpDisabled={index === 0}
-                  moveDownDisabled={index === exercises.length - 1}
+                  moveDownDisabled={index === day.exercises.length - 1}
                   onEdit={handleEditExercise}
                   onDelete={handleDeleteExercise}
-                  onMoveUp={handleMoveUpExercise}
-                  onMoveDown={handleMoveDownExercise}
+                  onMoveUp={(exercise) => handleMoveExercise(exercise, "up")}
+                  onMoveDown={(exercise) => {
+                    handleMoveExercise(exercise, "down");
+                  }}
                 />
               );
             })}
@@ -96,20 +102,6 @@ export function DayCard(props: DayCardProps) {
     </>
   );
 
-  function handleSaveExercise(exercise: Exercise) {
-    if (exerciseToEdit) {
-      setExercises((prev) => {
-        return prev.map((e) => {
-          return e.id === exerciseToEdit.id ? exercise : e;
-        });
-      });
-    } else {
-      setExercises((prev) => {
-        return [...prev, exercise];
-      });
-    }
-  }
-
   function handleEditExercise(exercise: Exercise) {
     setExerciseToEdit(exercise);
     setIsExerciseModalOpen(true);
@@ -120,29 +112,48 @@ export function DayCard(props: DayCardProps) {
     setIsExerciseModalOpen(true);
   }
 
-  function handleDeleteExercise(exercise: Exercise) {
-    setExercises((prev) => {
-      return prev.filter((e) => e.id !== exercise.id);
-    });
+  async function handleSaveExercise(exercise: Exercise) {
+    let exercises: Exercise[];
+    if (exerciseToEdit) {
+      exercises = day.exercises.map((e) => {
+        return e.id === exerciseToEdit.id ? exercise : e;
+      });
+    } else {
+      exercises = [...day.exercises, exercise];
+    }
+    await updateExercises(exercises);
   }
 
-  function handleMoveUpExercise(exercise: Exercise) {
-    setExercises((prev) => {
-      const index = prev.findIndex((e) => e.id === exercise.id);
-      if (index === 0 || index === -1) {
-        return prev;
-      }
-      return arraySwap(prev, index, index - 1);
-    });
+  async function handleDeleteExercise(exercise: Exercise) {
+    const exercises = day.exercises.filter((e) => e.id !== exercise.id);
+    await updateExercises(exercises);
   }
 
-  function handleMoveDownExercise(exercise: Exercise) {
-    setExercises((prev) => {
-      const index = prev.findIndex((e) => e.id === exercise.id);
-      if (index === prev.length - 1 || index === -1) {
-        return prev;
-      }
-      return arraySwap(prev, index, index + 1);
+  async function handleMoveExercise(
+    exercise: Exercise,
+    direction: "up" | "down"
+  ) {
+    const index = day.exercises.findIndex((e) => e.id === exercise.id);
+    const directionLimit = direction === "up" ? 0 : day.exercises.length - 1;
+    if (index === -1 || index === directionLimit) {
+      return;
+    }
+    const exercises = arraySwap(
+      day.exercises,
+      index,
+      direction === "up" ? index - 1 : index + 1
+    );
+    await updateExercises(exercises);
+  }
+
+  async function updateExercises(exercises: Exercise[]) {
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: {
+        days: workout.days.map((d) =>
+          d.id === day.id ? { ...d, exercises } : d
+        ),
+      },
     });
   }
 }

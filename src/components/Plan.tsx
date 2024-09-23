@@ -22,42 +22,45 @@ export function Plan() {
         <Loader />
       </Center>
     );
-  } else if (isError || !workout) {
-    return <Center>Failed to load workout plan</Center>;
-  } else {
-    return (
-      <>
-        <Title mb="sm" order={3}>
-          Workout plan
-        </Title>
-        <Flex direction="column" gap="sm">
-          {workout.days.map((day, index) => {
-            return (
-              <DayCard
-                key={day.id}
-                day={day}
-                moveUpDisabled={index === 0}
-                moveDownDisabled={index === workout.days.length - 1}
-                onEdit={handleEditDay}
-                onDelete={handleDeleteDay}
-                onMoveUp={(day) => handleMoveDay(day, "up")}
-                onMoveDown={(day) => handleMoveDay(day, "down")}
-              />
-            );
-          })}
-        </Flex>
-        <Button mt="md" onClick={handleCreateDay}>
-          Create day
-        </Button>
-        <DayModal
-          opened={isDayModalOpen}
-          day={dayToEdit ?? undefined}
-          onClose={handleDayModalClose}
-          onSave={handleSaveDay}
-        />
-      </>
-    );
   }
+
+  if (isError || !workout) {
+    return <Center>Failed to load workout plan</Center>;
+  }
+
+  return (
+    <>
+      <Title mb="sm" order={3}>
+        Workout plan
+      </Title>
+      <Flex direction="column" gap="sm">
+        {workout.days.map((day, index) => {
+          return (
+            <DayCard
+              key={day.id}
+              day={day}
+              workout={workout}
+              moveUpDisabled={index === 0}
+              moveDownDisabled={index === workout.days.length - 1}
+              onEdit={handleEditDay}
+              onDelete={handleDeleteDay}
+              onMoveUp={(day) => handleMoveDay(day, "up")}
+              onMoveDown={(day) => handleMoveDay(day, "down")}
+            />
+          );
+        })}
+      </Flex>
+      <Button mt="md" onClick={handleCreateDay}>
+        Create day
+      </Button>
+      <DayModal
+        opened={isDayModalOpen}
+        day={dayToEdit ?? undefined}
+        onClose={handleDayModalClose}
+        onSave={handleSaveDay}
+      />
+    </>
+  );
 
   async function handleSaveDay(name: string) {
     if (!workout) {
