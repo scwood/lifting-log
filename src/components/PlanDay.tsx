@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ActionIcon,
-  Button,
-  Flex,
-  Menu,
-  Title,
-  useMantineTheme,
-} from "@mantine/core";
+import { ActionIcon, Button, Divider, Flex, Menu, Title } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { Day } from "../types/Day";
@@ -42,18 +35,10 @@ export function PlanDay(props: PlanDayProps) {
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
-  const theme = useMantineTheme();
 
   return (
     <div>
-      <Title
-        order={3}
-        style={{
-          borderBottom: `1px solid ${theme.colors.dark[4]}`,
-        }}
-        pb={6}
-        mb="md"
-      >
+      <Title order={3}>
         <Flex justify="space-between" align="center">
           <span>Day: {day.name}</span>
           <Menu>
@@ -83,6 +68,7 @@ export function PlanDay(props: PlanDayProps) {
           </Menu>
         </Flex>
       </Title>
+      <Divider mt={4} mb="md" />
       <Flex direction="column" gap="md">
         {day.exercises.map((exercise, index) => {
           return (

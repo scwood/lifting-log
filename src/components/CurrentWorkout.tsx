@@ -25,8 +25,6 @@ export function CurrentWorkout() {
   const [isEditWorkoutModalOpen, setIsEditWorkoutModalOpen] = useState(false);
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
 
-  console.log(currentWorkout);
-
   // Sync notes from currentWorkout to input
   const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
   if (currentWorkout !== prevCurrentWorkout) {
@@ -88,7 +86,13 @@ export function CurrentWorkout() {
         }}
       >
         {currentWorkout.days.map((day) => {
-          return <CurrentWorkoutDay key={day.id} day={day} />;
+          return (
+            <CurrentWorkoutDay
+              key={day.id}
+              day={day}
+              workout={currentWorkout}
+            />
+          );
         })}
       </Accordion>
       {renderNotes()}

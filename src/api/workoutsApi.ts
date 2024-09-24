@@ -47,6 +47,17 @@ export async function getCurrentWorkout(userId: string) {
     await createWorkout({ userId });
     return getCurrentWorkout(userId);
   }
+  // const data = snapshot.docs[0].data();
+  // await updateWorkout(data.id, {
+  //   days: data.days.map((day) => {
+  //     return {
+  //       ...day,
+  //       exercises: day.exercises.map((exercise) => {
+  //         return { ...exercise, workingSets: {} };
+  //       }),
+  //     };
+  //   }),
+  // });
   return snapshot.docs[0].data();
 }
 

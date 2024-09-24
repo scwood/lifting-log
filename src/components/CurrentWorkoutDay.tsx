@@ -1,38 +1,26 @@
-import {
-  Checkbox,
-  NumberInput,
-  Table,
-  Title,
-  useMantineTheme,
-} from "@mantine/core";
+import { Divider, Table, Title } from "@mantine/core";
 
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
-import { Workout } from "../types/Workout";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { calculatePlates } from "../utils/weightUtils";
+import { WorkingSetTableRow } from "./WorkingSetTableRow";
+import { Workout } from "../types/Workout";
+import { WorkingSet } from "../types/WorkingSet";
+import { cloneDeep } from "lodash";
 
 export interface CurrentWorkoutDayProps {
+  workout: Workout;
   day: Day;
 }
 
 export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
-  const { day } = props;
+  const { workout, day } = props;
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
-  const theme = useMantineTheme();
 
   return (
     <>
-      <Title
-        order={3}
-        style={{
-          borderBottom: `1px solid ${theme.colors.dark[4]}`,
-        }}
-        pb={6}
-        mb="md"
-      >
-        Day: {day.name}
-      </Title>
+      <Title order={3}>Day: {day.name}</Title>
+      <Divider mt={4} mb="md" />
       {day.exercises.map((exercise) => {
         return (
           <div key={exercise.id}>
@@ -59,23 +47,20 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
                     </Table.Tr>
                   );
                 })}
-                {Array.from({ length: exercise.sets }).map((_, index) => {
+                {Array.from({ length: exercise.sets }).map((_, setNumber) => {
+                  const workingSet = exercise.workingSets[setNumber] ?? {
+                    isLogged: false,
+                    reps: null,
+                  };
                   return (
-                    <Table.Tr key={index}>
-                      <Table.Td>{exercise.weight}</Table.Td>
-                      <Table.Td>{calculatePlates(exercise.weight)}</Table.Td>
-                      <Table.Td>
-                        <NumberInput
-                          styles={{ input: { width: 42, height: 10 } }}
-                          size="sm"
-                          placeholder={String(exercise.reps)}
-                          hideControls
-                        />
-                      </Table.Td>
-                      <Table.Td>
-                        <Checkbox size="md" variant="" color="green" />
-                      </Table.Td>
-                    </Table.Tr>
+                    <WorkingSetTableRow
+                      key={setNumber}
+                      exercise={exercise}
+                      workingSet={workingSet}
+                      onChange={(workingSet) => {
+                        updateWorkingSet(exercise, setNumber, workingSet);
+                      }}
+                    />
                   );
                 })}
               </Table.Tbody>
@@ -85,6 +70,20 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       })}
     </>
   );
+
+  function updateWorkingSet(
+    exercise: Exercise,
+    setNumber: number,
+    workingSet: WorkingSet
+  ) {
+    const exercises = cloneDeep(day.exercises);
+    exercises.forEach((e) => {
+      if (e.id === exercise.id) {
+        e.workingSets[setNumber] = workingSet;
+      }
+    });
+    updateExercises(exercises);
+  }
 
   async function updateExercises(exercises: Exercise[]) {
     await updateWorkout({

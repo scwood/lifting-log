@@ -1,10 +1,6 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
-import {
-  createTheme,
-  MantineProvider,
-  TypographyStylesProvider,
-} from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";

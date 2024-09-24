@@ -1,5 +1,6 @@
 import { ExerciseType } from "./ExerciseType";
 import { WarmUpSet } from "./WarmUpSet";
+import { WorkingSet } from "./WorkingSet";
 
 export interface Exercise {
   id: string;
@@ -9,4 +10,5 @@ export interface Exercise {
   weight: number;
   type: ExerciseType;
   warmUpSets: WarmUpSet[];
+  workingSets: Record<number, WorkingSet>;
 }

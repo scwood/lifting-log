@@ -264,6 +264,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
         reps: parsedNumbers.reps,
         type: exerciseType,
         warmUpSets,
+        workingSets: [],
       });
     }
   }
