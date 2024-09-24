@@ -49,10 +49,8 @@ export function Plan() {
             />
           );
         })}
+        <Button onClick={handleCreateDay}>Create day</Button>
       </Flex>
-      <Button mt="md" onClick={handleCreateDay}>
-        Create day
-      </Button>
       <DayModal
         opened={isDayModalOpen}
         day={dayToEdit ?? undefined}

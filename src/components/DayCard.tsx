@@ -87,9 +87,7 @@ export function DayCard(props: DayCardProps) {
                 />
               );
             })}
-            <div>
-              <Button onClick={handleCreateExercise}>Create exercise</Button>
-            </div>
+            <Button onClick={handleCreateExercise}>Create exercise</Button>
           </Flex>
         </Card.Section>
       </Card>

@@ -111,12 +111,20 @@ export function ExerciseModal(props: ExerciseModalProps) {
             description="This is used to calculate warm up sets"
           >
             <Flex direction="column" gap="xs" mt="xs">
-              <Radio value={ExerciseType.Barbell} label="Barbell"></Radio>
-              <Radio value={ExerciseType.Dumbbell} label="Dumbbell"></Radio>
               <Radio
-                value={ExerciseType.WeightedWithPlates}
-                description="Use for bodyweight exercises, weighted dips, pull-ups, etc."
-                label="Weighted with plates"
+                value={ExerciseType.Barbell}
+                label="Barbell"
+                description="Uses 2.5lb, 5lb, 10lb, 25lb, and 45lb plates"
+              ></Radio>
+              <Radio
+                value={ExerciseType.Dumbbell}
+                label="Dumbbell"
+                description="Uses 5lb increments"
+              ></Radio>
+              <Radio
+                value={ExerciseType.Weighted}
+                description="Uses 2.5lb increments. Machines, bodyweight exercises, etc."
+                label="Generic weighted"
               />
             </Flex>
           </Radio.Group>
@@ -140,9 +148,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
               />
             );
           })}
-          <div>
-            <Button onClick={handleCreateWarmupSet}>Create warmup set</Button>
-          </div>
+          <Button onClick={handleCreateWarmupSet}>Create warmup set</Button>
           <Divider />
           <div>
             <Button
@@ -167,7 +173,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
   function isFormValid() {
     return (
       name.trim().length > 0 &&
-      parsedNumbers.weight > 0 &&
+      parsedNumbers.weight >= 0 &&
       parsedNumbers.sets > 0 &&
       parsedNumbers.reps > 0 &&
       exerciseType !== undefined
