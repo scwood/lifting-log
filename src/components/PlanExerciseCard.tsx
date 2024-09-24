@@ -56,7 +56,7 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
       </Flex>
       <Text c="dimmed" size="xs">
         {exercise.sets} sets of {exercise.reps} reps at {exercise.weight} lbs.{" "}
-        {exercise.warmupSets.length} warmup sets.
+        {exercise.warmUpSets.length} warm-up sets.
       </Text>
     </Card>
   );

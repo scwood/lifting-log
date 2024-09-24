@@ -9,27 +9,27 @@ import {
   Button,
 } from "@mantine/core";
 
-import { WarmupType } from "../types/WarmupType";
-import { WarmupSet } from "../types/WarmupSet";
+import { WarmUpType } from "../types/WarmUpType";
+import { WarmUpSet } from "../types/WarmUpSet";
 
-export interface WarmupSetModalProps {
+export interface WarmUpSetModalProps {
   opened: boolean;
-  warmupSet?: WarmupSet;
+  warmUpSet?: WarmUpSet;
   onClose: () => void;
-  onSave: (warmupSet: WarmupSet) => void;
+  onSave: (warmUpSet: WarmUpSet) => void;
 }
 
-const warmupTypeSelect: { [warmupType in WarmupType]: string } = {
-  [WarmupType.Weight]: "Fixed weight",
-  [WarmupType.Percentage]: "Percentage of working weight",
+const warmUpTypeSelect: { [warmUpType in WarmUpType]: string } = {
+  [WarmUpType.Weight]: "Fixed weight",
+  [WarmUpType.Percentage]: "Percentage of working weight",
 };
 
-export function WarmupSetModal(props: WarmupSetModalProps) {
-  const { opened, warmupSet, onClose, onSave } = props;
-  const [reps, setReps] = useState<number | string>(warmupSet?.reps ?? "");
-  const [value, setValue] = useState<number | string>(warmupSet?.value ?? "");
-  const [warmupType, setWarmupType] = useState<WarmupType>(
-    warmupSet?.type ?? WarmupType.Percentage
+export function WarmUpSetModal(props: WarmUpSetModalProps) {
+  const { opened, warmUpSet, onClose, onSave } = props;
+  const [reps, setReps] = useState<number | string>(warmUpSet?.reps ?? "");
+  const [value, setValue] = useState<number | string>(warmUpSet?.value ?? "");
+  const [warmUpType, setWarmUpType] = useState<WarmUpType>(
+    warmUpSet?.type ?? WarmUpType.Percentage
   );
 
   const [prevOpened, setPrevOpened] = useState(opened);
@@ -48,19 +48,19 @@ export function WarmupSetModal(props: WarmupSetModalProps) {
       opened={opened}
       onClose={onClose}
       centered
-      title={`${warmupSet ? "Edit" : "Create"} warmup set`}
+      title={`${warmUpSet ? "Edit" : "Create"} warm-up set`}
     >
       <Flex direction="column" gap="sm">
         <Select
-          value={warmupTypeSelect[warmupType]}
+          value={warmUpTypeSelect[warmUpType]}
           allowDeselect={false}
-          onChange={handleWarmupTypeChange}
+          onChange={handleWarmUpTypeChange}
           label="Type"
           required
-          description="Warmup sets can be a fixed weight (e.g. 45 lbs) or a percentage of the working weight (e.g. 60%)."
+          description="Warm-up sets can be a fixed weight (e.g. 45 lbs) or a percentage of the working weight (e.g. 60%)."
           data={[
-            warmupTypeSelect[WarmupType.Percentage],
-            warmupTypeSelect[WarmupType.Weight],
+            warmUpTypeSelect[WarmUpType.Percentage],
+            warmUpTypeSelect[WarmUpType.Weight],
           ]}
         />
         <NumberInput
@@ -77,14 +77,14 @@ export function WarmupSetModal(props: WarmupSetModalProps) {
           allowDecimal={false}
           allowNegative={false}
           required
-          max={warmupType === WarmupType.Percentage ? 100 : undefined}
-          placeholder={warmupType === WarmupType.Percentage ? "60" : "45"}
+          max={warmUpType === WarmUpType.Percentage ? 100 : undefined}
+          placeholder={warmUpType === WarmUpType.Percentage ? "60" : "45"}
           description={
-            warmupType === WarmupType.Percentage
+            warmUpType === WarmUpType.Percentage
               ? "Percentage of working weight (1-100)"
               : "Weight in pounds"
           }
-          label={warmupType === WarmupType.Percentage ? "Percentage" : "Weight"}
+          label={warmUpType === WarmUpType.Percentage ? "Percentage" : "Weight"}
           value={value}
           onChange={setValue}
         />
@@ -99,9 +99,9 @@ export function WarmupSetModal(props: WarmupSetModalProps) {
   );
 
   function resetInputs() {
-    setReps(warmupSet?.reps ?? "");
-    setValue(warmupSet?.value ?? "");
-    setWarmupType(warmupSet?.type ?? WarmupType.Percentage);
+    setReps(warmUpSet?.reps ?? "");
+    setValue(warmUpSet?.value ?? "");
+    setWarmUpType(warmUpSet?.type ?? WarmUpType.Percentage);
   }
 
   function isFormValid() {
@@ -110,28 +110,28 @@ export function WarmupSetModal(props: WarmupSetModalProps) {
 
   function handleSave() {
     onClose();
-    if (warmupSet) {
+    if (warmUpSet) {
       onSave({
-        ...warmupSet,
-        type: warmupType,
+        ...warmUpSet,
+        type: warmUpType,
         reps: parsedNumbers.reps,
         value: parsedNumbers.value,
       });
     } else {
       onSave({
         id: uuidv4(),
-        type: warmupType,
+        type: warmUpType,
         reps: parsedNumbers.reps,
         value: parsedNumbers.value,
       });
     }
   }
 
-  function handleWarmupTypeChange(value: string | null) {
-    if (value === warmupTypeSelect[WarmupType.Weight]) {
-      setWarmupType(WarmupType.Weight);
+  function handleWarmUpTypeChange(value: string | null) {
+    if (value === warmUpTypeSelect[WarmUpType.Weight]) {
+      setWarmUpType(WarmUpType.Weight);
     } else {
-      setWarmupType(WarmupType.Percentage);
+      setWarmUpType(WarmUpType.Percentage);
     }
   }
 }

@@ -4,7 +4,7 @@ import { v4 as uuidV4 } from "uuid";
 
 import { DayModal } from "./DayModal";
 import { Day } from "../types/Day";
-import { DayCard } from "./DayCard";
+import { PlanDayCard } from "./PlanDayCard";
 import { arraySwap } from "../utils/arraySwap";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
@@ -33,10 +33,10 @@ export function Plan() {
       <Title mb="sm" order={3}>
         Workout plan
       </Title>
-      <Flex direction="column" gap="sm">
+      <Flex direction="column" gap="md">
         {workout.days.map((day, index) => {
           return (
-            <DayCard
+            <PlanDayCard
               key={day.id}
               day={day}
               workout={workout}
@@ -49,7 +49,7 @@ export function Plan() {
             />
           );
         })}
-        <Button onClick={handleCreateDay}>Create day</Button>
+        <Button onClick={handleAddDay}>Add day</Button>
       </Flex>
       <DayModal
         opened={isDayModalOpen}
@@ -109,7 +109,7 @@ export function Plan() {
     setIsDayModalOpen(true);
   }
 
-  function handleCreateDay() {
+  function handleAddDay() {
     setDayToEdit(null);
     setIsDayModalOpen(true);
   }

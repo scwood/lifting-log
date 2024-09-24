@@ -14,9 +14,9 @@ import { v4 as uuidV4 } from "uuid";
 import { Exercise } from "../types/Exercise";
 import { useState } from "react";
 import { ExerciseType } from "../types/ExerciseType";
-import { WarmupSetModal } from "./WarmupSetModal";
-import { WarmupSet } from "../types/WarmupSet";
-import { WarmupSetCard } from "./WarmupSetCard";
+import { WarmUpSetModal } from "./WarmUpSetModal";
+import { WarmUpSet } from "../types/WarmUpSet";
+import { WarmUpSetCard } from "./WarmUpSetCard";
 import { arraySwap } from "../utils/arraySwap";
 
 export interface ExerciseModalProps {
@@ -37,9 +37,9 @@ export function ExerciseModal(props: ExerciseModalProps) {
     exercise?.type ?? ExerciseType.Barbell
   );
 
-  const [warmupSets, setWarmupSets] = useState(exercise?.warmupSets ?? []);
-  const [isWarmupSetModalOpen, setIsWarmupSetModalOpen] = useState(false);
-  const [warmupSetToEdit, setWarmupSetToEdit] = useState<WarmupSet | null>(
+  const [warmUpSets, setWarmUpSets] = useState(exercise?.warmUpSets ?? []);
+  const [isWarmUpSetModalOpen, setIsWarmUpSetModalOpen] = useState(false);
+  const [warmUpSetToEdit, setWarmUpSetToEdit] = useState<WarmUpSet | null>(
     null
   );
 
@@ -129,26 +129,26 @@ export function ExerciseModal(props: ExerciseModalProps) {
             </Flex>
           </Radio.Group>
           <div>
-            <InputLabel>Warmup sets</InputLabel>
+            <InputLabel>Warm-up sets</InputLabel>
             <InputDescription>
-              Optional warmup sets for the exercise.
+              Optional warm-up sets for the exercise.
             </InputDescription>
           </div>
-          {warmupSets.map((warmupSet, index) => {
+          {warmUpSets.map((warmUpSet, index) => {
             return (
-              <WarmupSetCard
-                key={warmupSet.id}
-                warmupSet={warmupSet}
+              <WarmUpSetCard
+                key={warmUpSet.id}
+                warmUpSet={warmUpSet}
                 moveUpDisabled={index === 0}
-                moveDownDisabled={index === warmupSets.length - 1}
-                onMoveUp={handleMoveUpWarmupSet}
-                onMoveDown={handleMoveDownWarmupSet}
-                onEdit={handleEditWarmupSet}
-                onDelete={handleDeleteWarmupSet}
+                moveDownDisabled={index === warmUpSets.length - 1}
+                onMoveUp={handleMoveUpWarmUpSet}
+                onMoveDown={handleMoveDownWarmUpSet}
+                onEdit={handleEditWarmUpSet}
+                onDelete={handleDeleteWarmUpSet}
               />
             );
           })}
-          <Button onClick={handleCreateWarmupSet}>Create warmup set</Button>
+          <Button onClick={handleCreateWarmUpSet}>Add warm-up set</Button>
           <Divider />
           <div>
             <Button
@@ -161,11 +161,11 @@ export function ExerciseModal(props: ExerciseModalProps) {
           </div>
         </Flex>
       </Modal>
-      <WarmupSetModal
-        warmupSet={warmupSetToEdit ?? undefined}
-        opened={isWarmupSetModalOpen}
-        onClose={() => setIsWarmupSetModalOpen(false)}
-        onSave={handleSaveWarmupSet}
+      <WarmUpSetModal
+        warmUpSet={warmUpSetToEdit ?? undefined}
+        opened={isWarmUpSetModalOpen}
+        onClose={() => setIsWarmUpSetModalOpen(false)}
+        onSave={handleSaveWarmUpSet}
       />
     </>
   );
@@ -186,28 +186,28 @@ export function ExerciseModal(props: ExerciseModalProps) {
     setSets(exercise?.sets ?? "");
     setReps(exercise?.reps ?? "");
     setExerciseType(exercise?.type ?? ExerciseType.Barbell);
-    setWarmupSets(exercise?.warmupSets ?? []);
+    setWarmUpSets(exercise?.warmUpSets ?? []);
   }
 
-  function handleCreateWarmupSet() {
-    setWarmupSetToEdit(null);
-    setIsWarmupSetModalOpen(true);
+  function handleCreateWarmUpSet() {
+    setWarmUpSetToEdit(null);
+    setIsWarmUpSetModalOpen(true);
   }
 
-  function handleEditWarmupSet(warmupSet: WarmupSet) {
-    setWarmupSetToEdit(warmupSet);
-    setIsWarmupSetModalOpen(true);
+  function handleEditWarmUpSet(WarmUpSet: WarmUpSet) {
+    setWarmUpSetToEdit(WarmUpSet);
+    setIsWarmUpSetModalOpen(true);
   }
 
-  function handleDeleteWarmupSet(warmupSet: WarmupSet) {
-    setWarmupSets((prev) => {
-      return prev.filter((w) => w.id !== warmupSet.id);
+  function handleDeleteWarmUpSet(warmUpSet: WarmUpSet) {
+    setWarmUpSets((prev) => {
+      return prev.filter((w) => w.id !== warmUpSet.id);
     });
   }
 
-  function handleMoveUpWarmupSet(warmupSet: WarmupSet) {
-    setWarmupSets((prev) => {
-      const index = prev.findIndex((w) => w.id === warmupSet.id);
+  function handleMoveUpWarmUpSet(warmUpSet: WarmUpSet) {
+    setWarmUpSets((prev) => {
+      const index = prev.findIndex((w) => w.id === warmUpSet.id);
       if (index === 0 || index === -1) {
         return prev;
       }
@@ -215,30 +215,30 @@ export function ExerciseModal(props: ExerciseModalProps) {
     });
   }
 
-  function handleMoveDownWarmupSet(warmupSet: WarmupSet) {
-    setWarmupSets((prev) => {
-      const index = prev.findIndex((w) => w.id === warmupSet.id);
-      if (index === warmupSets.length - 1 || index === -1) {
+  function handleMoveDownWarmUpSet(warmUpSet: WarmUpSet) {
+    setWarmUpSets((prev) => {
+      const index = prev.findIndex((w) => w.id === warmUpSet.id);
+      if (index === warmUpSets.length - 1 || index === -1) {
         return prev;
       }
-      return arraySwap(warmupSets, index, index + 1);
+      return arraySwap(warmUpSets, index, index + 1);
     });
   }
 
-  function handleSaveWarmupSet(warmupSet: WarmupSet) {
-    if (warmupSetToEdit) {
-      setWarmupSets((prev) => {
+  function handleSaveWarmUpSet(warmUpSet: WarmUpSet) {
+    if (warmUpSetToEdit) {
+      setWarmUpSets((prev) => {
         return prev.map((set) => {
-          if (set.id === warmupSetToEdit.id) {
-            return warmupSet;
+          if (set.id === warmUpSetToEdit.id) {
+            return warmUpSet;
           } else {
             return set;
           }
         });
       });
     } else {
-      setWarmupSets((prev) => {
-        return [...prev, warmupSet];
+      setWarmUpSets((prev) => {
+        return [...prev, warmUpSet];
       });
     }
   }
@@ -253,7 +253,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
         sets: parsedNumbers.sets,
         reps: parsedNumbers.reps,
         type: exerciseType,
-        warmupSets,
+        warmUpSets,
       });
     } else {
       onSave({
@@ -263,7 +263,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
         sets: parsedNumbers.sets,
         reps: parsedNumbers.reps,
         type: exerciseType,
-        warmupSets,
+        warmUpSets,
       });
     }
   }

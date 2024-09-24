@@ -1,5 +1,5 @@
 import { ExerciseType } from "./ExerciseType";
-import { WarmupSet } from "./WarmupSet";
+import { WarmUpSet } from "./WarmUpSet";
 
 export interface Exercise {
   id: string;
@@ -8,5 +8,5 @@ export interface Exercise {
   reps: number;
   weight: number;
   type: ExerciseType;
-  warmupSets: WarmupSet[];
+  warmUpSets: WarmUpSet[];
 }

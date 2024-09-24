@@ -19,30 +19,15 @@ import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { CompletedExercise } from "./CompletedExercise";
-import { LegacyWorkout } from "../types/LegacyWorkout";
 import { calculateDeload } from "../utils/weightUtils";
-import { useRepRecords } from "../hooks/useRepRecords";
 
 export function CurrentWorkout() {
-  const {
-    isLoading: isLoadingWorkout,
-    isError: failedToLoadWorkout,
-    data: currentWorkout,
-  } = useCurrentWorkoutQuery();
-
-  const {
-    isLoading: isLoadingRepRecords,
-    isError: failedToLoadRepRecords,
-    repRecords,
-  } = useRepRecords();
-
+  const { isLoading, isError, data: currentWorkout } = useCurrentWorkoutQuery();
   const { mutate: createWorkout } = useCreateWorkoutMutation();
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
 
   const [isEditWorkoutModalOpen, setIsEditWorkoutModalOpen] = useState(false);
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
-  const isLoading = isLoadingWorkout || isLoadingRepRecords;
-  const isError = failedToLoadWorkout || failedToLoadRepRecords;
 
   // Sync notes from currentWorkout to input
   const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
@@ -57,16 +42,13 @@ export function CurrentWorkout() {
         <Loader />
       </Center>
     );
-  } else if (isError || !repRecords) {
-    return <Center>Failed to get workout</Center>;
-  } else if (!currentWorkout) {
-    return (
-      <>
-        <p>Add your current working weight for each exercise:</p>
-        <WorkingWeightForm onSave={handleSaveInitialWorkingWeight} />
-      </>
-    );
-  } else if (currentWorkout.completedTimestamp) {
+  }
+
+  if (isError || !currentWorkout) {
+    return <Center>Failed to get current workout</Center>;
+  }
+
+  if (currentWorkout.completedTimestamp) {
     return (
       <>
         <Title order={3} mb="md">
@@ -83,63 +65,52 @@ export function CurrentWorkout() {
         {renderCompletedWorkouts()}
       </>
     );
-  } else {
-    return (
-      <>
-        <Flex align="center" justify="space-between">
-          <Title order={3}>Current workout</Title>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            onClick={() => setIsEditWorkoutModalOpen(true)}
-          >
-            <IconPencil />
-          </ActionIcon>
-        </Flex>
-        <Text fz="sm" c="dimmed" mb="sm">
-          Created on{" "}
-          {new Date(currentWorkout.createdTimestamp).toLocaleString(undefined, {
-            dateStyle: "long",
-            timeStyle: "short",
-          })}
-        </Text>
-        <Flex direction="column" gap="md" mb="sm">
-          {allExercises.map((exercise) => {
-            return (
-              currentWorkout.lastSetReps[exercise] === null && (
-                <LegacyExerciseCard
-                  key={exercise}
-                  exercise={exercise}
-                  workout={currentWorkout}
-                  repRecords={repRecords}
-                  onComplete={handleCompleteExercise}
-                />
-              )
-            );
-          })}
-        </Flex>
-        {renderNotes()}
-        {renderCompletedWorkouts()}
-        <Modal
-          centered
-          title="Edit current workout"
-          opened={isEditWorkoutModalOpen}
-          onClose={() => setIsEditWorkoutModalOpen(false)}
-        >
-          <WorkingWeightForm
-            initialValues={currentWorkout?.workingWeight}
-            onSave={handleUpdateWorkingWeight}
-          />
-        </Modal>
-      </>
-    );
   }
+
+  return (
+    <>
+      <Flex align="center" justify="space-between">
+        <Title order={3}>Current workout</Title>
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          onClick={() => setIsEditWorkoutModalOpen(true)}
+        >
+          <IconPencil />
+        </ActionIcon>
+      </Flex>
+      <Text fz="sm" c="dimmed" mb="sm">
+        Created on{" "}
+        {new Date(currentWorkout.createdTimestamp).toLocaleString(undefined, {
+          dateStyle: "long",
+          timeStyle: "short",
+        })}
+      </Text>
+      <Flex direction="column" gap="md" mb="sm">
+        {allExercises.map((exercise) => {
+          return (
+            currentWorkout.lastSetReps[exercise] === null && (
+              <LegacyExerciseCard
+                key={exercise}
+                exercise={exercise}
+                workout={currentWorkout}
+                repRecords={repRecords}
+                onComplete={handleCompleteExercise}
+              />
+            )
+          );
+        })}
+      </Flex>
+      {renderNotes()}
+      {renderCompletedWorkouts()}
+    </>
+  );
 
   function renderNotes() {
     return (
       <Textarea
         label="Notes"
-        placeholder="Accessory lifts, feelings, etc."
+        placeholder="Feelings, unsupported features etc."
         mb="lg"
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
@@ -149,48 +120,32 @@ export function CurrentWorkout() {
   }
 
   function renderCompletedWorkouts() {
-    if (!currentWorkout) {
-      return null;
-    }
-    return (
-      <>
-        {isAnyExerciseComplete() && (
-          <Title order={3} mb="md">
-            Completed exercises
-          </Title>
-        )}
-        <Flex direction="column" gap="lg">
-          {allExercises.map((exercise) => {
-            return (
-              currentWorkout.lastSetReps[exercise] !== null && (
-                <CompletedExercise
-                  key={exercise}
-                  exercise={exercise}
-                  workout={currentWorkout}
-                  onUndo={handleUndo}
-                />
-              )
-            );
-          })}
-        </Flex>
-      </>
-    );
-  }
-
-  function handleSaveInitialWorkingWeight(workingWeight: {
-    [keys in ExerciseName]: number;
-  }) {
-    createWorkout({ workingWeight });
-  }
-
-  function handleUpdateWorkingWeight(workingWeight: {
-    [keys in ExerciseName]: number;
-  }) {
-    if (!currentWorkout) {
-      return;
-    }
-    updateWorkout({ workout: { ...currentWorkout, workingWeight } });
-    setIsEditWorkoutModalOpen(false);
+    // if (!currentWorkout) {
+    //   return null;
+    // }
+    // return (
+    //   <>
+    //     {isAnyExerciseComplete() && (
+    //       <Title order={3} mb="md">
+    //         Completed exercises
+    //       </Title>
+    //     )}
+    //     <Flex direction="column" gap="lg">
+    //       {allExercises.map((exercise) => {
+    //         return (
+    //           currentWorkout.lastSetReps[exercise] !== null && (
+    //             <CompletedExercise
+    //               key={exercise}
+    //               exercise={exercise}
+    //               workout={currentWorkout}
+    //               onUndo={handleUndo}
+    //             />
+    //           )
+    //         );
+    //       })}
+    //     </Flex>
+    //   </>
+    // );
   }
 
   function handleCompleteExercise(exercise: ExerciseName, lastSetReps: number) {
@@ -260,10 +215,10 @@ export function CurrentWorkout() {
     createWorkout({ workingWeight: newWorkingWeight });
   }
 
-  function isAnyExerciseComplete() {
-    return (
-      !!currentWorkout &&
-      Object.values(currentWorkout.lastSetReps).some((reps) => !!reps)
-    );
-  }
+  // function isAnyExerciseComplete() {
+  //   return (
+  //     !!currentWorkout &&
+  //     Object.values(currentWorkout.lastSetReps).some((reps) => !!reps)
+  //   );
+  // }
 }

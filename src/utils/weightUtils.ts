@@ -22,18 +22,18 @@ export function calculatePlates(weight: number): string {
   return result.join(", ");
 }
 
-export function calculateWarmupWeight(
+export function calculateWarmUpWeight(
   workingWeight: number,
   percentage: number
 ): number {
   return Math.max(weightOfBar, round5(workingWeight * percentage));
 }
 
-export function calculateWarmupPlates(
+export function calculateWarmUpPlates(
   workingWeight: number,
   percentage: number
 ): string {
-  const weight = calculateWarmupWeight(workingWeight, percentage);
+  const weight = calculateWarmUpWeight(workingWeight, percentage);
   return calculatePlates(weight);
 }
 

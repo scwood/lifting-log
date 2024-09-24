@@ -21,7 +21,7 @@ export interface DayCardProps {
   onMoveDown: (day: Day) => void;
 }
 
-export function DayCard(props: DayCardProps) {
+export function PlanDayCard(props: DayCardProps) {
   const {
     day,
     workout,
@@ -41,7 +41,7 @@ export function DayCard(props: DayCardProps) {
       <Card withBorder shadow="sm">
         <Card.Section inheritPadding withBorder py="xs" mb={6}>
           <Flex justify="space-between" align="center">
-            <Title order={4}>{day.name}</Title>
+            <Title order={4}>Day: {day.name}</Title>
             <Menu>
               <Menu.Target>
                 <ActionIcon variant="subtle" color="gray">
@@ -70,7 +70,7 @@ export function DayCard(props: DayCardProps) {
           </Flex>
         </Card.Section>
         <Card.Section withBorder inheritPadding py="md">
-          <Flex direction="column" gap="sm">
+          <Flex direction="column" gap="md">
             {day.exercises.map((exercise, index) => {
               return (
                 <PlanExerciseCard
@@ -87,7 +87,7 @@ export function DayCard(props: DayCardProps) {
                 />
               );
             })}
-            <Button onClick={handleCreateExercise}>Create exercise</Button>
+            <Button onClick={handleAddExercise}>Add exercise</Button>
           </Flex>
         </Card.Section>
       </Card>
@@ -105,7 +105,7 @@ export function DayCard(props: DayCardProps) {
     setIsExerciseModalOpen(true);
   }
 
-  function handleCreateExercise() {
+  function handleAddExercise() {
     setExerciseToEdit(null);
     setIsExerciseModalOpen(true);
   }

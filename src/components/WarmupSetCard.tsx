@@ -1,22 +1,22 @@
 import { Text, Card, Flex, ActionIcon, rem, Menu } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
-import { WarmupSet } from "../types/WarmupSet";
-import { WarmupType } from "../types/WarmupType";
+import { WarmUpSet } from "../types/WarmUpSet";
+import { WarmUpType } from "../types/WarmUpType";
 
-export interface WarmupSetCardProps {
-  warmupSet: WarmupSet;
+export interface WarmUpSetCardProps {
+  warmUpSet: WarmUpSet;
   moveUpDisabled: boolean;
   moveDownDisabled: boolean;
-  onEdit: (warmupSet: WarmupSet) => void;
-  onDelete: (warmupSet: WarmupSet) => void;
-  onMoveUp: (warmupSet: WarmupSet) => void;
-  onMoveDown: (warmupSet: WarmupSet) => void;
+  onEdit: (warmUpSet: WarmUpSet) => void;
+  onDelete: (warmUpSet: WarmUpSet) => void;
+  onMoveUp: (warmUpSet: WarmUpSet) => void;
+  onMoveDown: (warmUpSet: WarmUpSet) => void;
 }
 
-export function WarmupSetCard(props: WarmupSetCardProps) {
+export function WarmUpSetCard(props: WarmUpSetCardProps) {
   const {
-    warmupSet,
+    warmUpSet,
     moveUpDisabled,
     moveDownDisabled,
     onEdit,
@@ -29,9 +29,9 @@ export function WarmupSetCard(props: WarmupSetCardProps) {
     <Card>
       <Flex justify="space-between" align="center">
         <Text size="sm">
-          {warmupSet.reps} rep{warmupSet.reps !== 1 && "s"} for{" "}
-          {warmupSet.value}
-          {warmupSet.type === WarmupType.Weight ? "lbs" : "% of working weight"}
+          {warmUpSet.reps} rep{warmUpSet.reps !== 1 && "s"} for{" "}
+          {warmUpSet.value}
+          {warmUpSet.type === WarmUpType.Weight ? "lbs" : "% of working weight"}
         </Text>
         <Menu>
           <Menu.Target>
@@ -42,18 +42,18 @@ export function WarmupSetCard(props: WarmupSetCardProps) {
           <Menu.Dropdown>
             <Menu.Item
               disabled={moveUpDisabled}
-              onClick={() => onMoveUp(warmupSet)}
+              onClick={() => onMoveUp(warmUpSet)}
             >
               Move up
             </Menu.Item>
             <Menu.Item
               disabled={moveDownDisabled}
-              onClick={() => onMoveDown(warmupSet)}
+              onClick={() => onMoveDown(warmUpSet)}
             >
               Move down
             </Menu.Item>
-            <Menu.Item onClick={() => onEdit(warmupSet)}>Edit</Menu.Item>
-            <Menu.Item color="red" onClick={() => onDelete(warmupSet)}>
+            <Menu.Item onClick={() => onEdit(warmUpSet)}>Edit</Menu.Item>
+            <Menu.Item color="red" onClick={() => onDelete(warmUpSet)}>
               Delete
             </Menu.Item>
           </Menu.Dropdown>

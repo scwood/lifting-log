@@ -1,8 +1,8 @@
-import { WarmupType } from "./WarmupType";
+import { WarmUpType } from "./WarmUpType";
 
-export interface WarmupSet {
+export interface WarmUpSet {
   id: string;
-  type: WarmupType;
+  type: WarmUpType;
   reps: number;
   value: number;
 }

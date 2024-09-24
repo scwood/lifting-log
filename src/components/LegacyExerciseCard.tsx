@@ -10,8 +10,8 @@ import {
 
 import {
   calculatePlates,
-  calculateWarmupPlates,
-  calculateWarmupWeight,
+  calculateWarmUpPlates,
+  calculateWarmUpWeight,
 } from "../utils/weightUtils";
 import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
 import { useState } from "react";
@@ -53,18 +53,18 @@ export function LegacyExerciseCard(props: ExerciseCardProps) {
           <Table.Tbody>
             <Table.Tr>
               <Table.Td>4</Table.Td>
-              <Table.Td>{calculateWarmupWeight(workingWeight, 0.55)}</Table.Td>
-              <Table.Td>{calculateWarmupPlates(workingWeight, 0.55)}</Table.Td>
+              <Table.Td>{calculateWarmUpWeight(workingWeight, 0.55)}</Table.Td>
+              <Table.Td>{calculateWarmUpPlates(workingWeight, 0.55)}</Table.Td>
             </Table.Tr>
             <Table.Tr>
               <Table.Td>3</Table.Td>
-              <Table.Td>{calculateWarmupWeight(workingWeight, 0.7)}</Table.Td>
-              <Table.Td>{calculateWarmupPlates(workingWeight, 0.7)}</Table.Td>
+              <Table.Td>{calculateWarmUpWeight(workingWeight, 0.7)}</Table.Td>
+              <Table.Td>{calculateWarmUpPlates(workingWeight, 0.7)}</Table.Td>
             </Table.Tr>
             <Table.Tr>
               <Table.Td>2</Table.Td>
-              <Table.Td>{calculateWarmupWeight(workingWeight, 0.85)}</Table.Td>
-              <Table.Td>{calculateWarmupPlates(workingWeight, 0.85)}</Table.Td>
+              <Table.Td>{calculateWarmUpWeight(workingWeight, 0.85)}</Table.Td>
+              <Table.Td>{calculateWarmUpPlates(workingWeight, 0.85)}</Table.Td>
             </Table.Tr>
             <Table.Tr>
               <Table.Td>
