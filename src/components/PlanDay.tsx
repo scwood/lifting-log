@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { ActionIcon, Button, Card, Flex, Menu, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Flex,
+  Menu,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { Day } from "../types/Day";
@@ -10,7 +17,7 @@ import { arraySwap } from "../utils/arraySwap";
 import { Workout } from "../types/Workout";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 
-export interface DayCardProps {
+export interface PlanDayProps {
   day: Day;
   workout: Workout;
   moveUpDisabled: boolean;
@@ -21,7 +28,7 @@ export interface DayCardProps {
   onMoveDown: (day: Day) => void;
 }
 
-export function PlanDayCard(props: DayCardProps) {
+export function PlanDay(props: PlanDayProps) {
   const {
     day,
     workout,
@@ -35,69 +42,73 @@ export function PlanDayCard(props: DayCardProps) {
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
+  const theme = useMantineTheme();
 
   return (
-    <>
-      <Card withBorder shadow="sm">
-        <Card.Section inheritPadding withBorder py="xs" mb={6}>
-          <Flex justify="space-between" align="center">
-            <Title order={4}>Day: {day.name}</Title>
-            <Menu>
-              <Menu.Target>
-                <ActionIcon variant="subtle" color="gray">
-                  <IconDots />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  disabled={moveUpDisabled}
-                  onClick={() => onMoveUp(day)}
-                >
-                  Move up
-                </Menu.Item>
-                <Menu.Item
-                  disabled={moveDownDisabled}
-                  onClick={() => onMoveDown(day)}
-                >
-                  Move down
-                </Menu.Item>
-                <Menu.Item onClick={() => onEdit(day)}>Edit</Menu.Item>
-                <Menu.Item color="red" onClick={() => onDelete(day)}>
-                  Delete
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Flex>
-        </Card.Section>
-        <Card.Section withBorder inheritPadding py="md">
-          <Flex direction="column" gap="md">
-            {day.exercises.map((exercise, index) => {
-              return (
-                <PlanExerciseCard
-                  key={exercise.id}
-                  exercise={exercise}
-                  moveUpDisabled={index === 0}
-                  moveDownDisabled={index === day.exercises.length - 1}
-                  onEdit={handleEditExercise}
-                  onDelete={handleDeleteExercise}
-                  onMoveUp={(exercise) => handleMoveExercise(exercise, "up")}
-                  onMoveDown={(exercise) => {
-                    handleMoveExercise(exercise, "down");
-                  }}
-                />
-              );
-            })}
-            <Button onClick={handleAddExercise}>Add exercise</Button>
-          </Flex>
-        </Card.Section>
-      </Card>
+    <div>
+      <Title
+        order={3}
+        style={{
+          borderBottom: `1px solid ${theme.colors.dark[4]}`,
+        }}
+        pb={6}
+        mb="md"
+      >
+        <Flex justify="space-between" align="center">
+          <span>Day: {day.name}</span>
+          <Menu>
+            <Menu.Target>
+              <ActionIcon variant="subtle" color="gray">
+                <IconDots />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                disabled={moveUpDisabled}
+                onClick={() => onMoveUp(day)}
+              >
+                Move up
+              </Menu.Item>
+              <Menu.Item
+                disabled={moveDownDisabled}
+                onClick={() => onMoveDown(day)}
+              >
+                Move down
+              </Menu.Item>
+              <Menu.Item onClick={() => onEdit(day)}>Edit</Menu.Item>
+              <Menu.Item color="red" onClick={() => onDelete(day)}>
+                Delete
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Flex>
+      </Title>
+      <Flex direction="column" gap="md">
+        {day.exercises.map((exercise, index) => {
+          return (
+            <PlanExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              moveUpDisabled={index === 0}
+              moveDownDisabled={index === day.exercises.length - 1}
+              onEdit={handleEditExercise}
+              onDelete={handleDeleteExercise}
+              onMoveUp={(exercise) => handleMoveExercise(exercise, "up")}
+              onMoveDown={(exercise) => {
+                handleMoveExercise(exercise, "down");
+              }}
+            />
+          );
+        })}
+        <Button onClick={handleAddExercise}>Add exercise</Button>
+      </Flex>
       <ExerciseModal
         exercise={exerciseToEdit ?? undefined}
         onSave={handleSaveExercise}
         opened={isExerciseModalOpen}
         onClose={() => setIsExerciseModalOpen(false)}
       />
-    </>
+    </div>
   );
 
   function handleEditExercise(exercise: Exercise) {

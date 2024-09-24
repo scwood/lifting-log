@@ -68,7 +68,7 @@ export function WarmUpSetModal(props: WarmUpSetModalProps) {
           allowNegative={false}
           label="Reps"
           description="Number of reps for the set"
-          placeholder="5"
+          placeholder={warmUpType === WarmUpType.Percentage ? "5" : "10"}
           required
           value={reps}
           onChange={setReps}

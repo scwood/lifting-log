@@ -4,22 +4,18 @@ import {
   Center,
   Loader,
   Button,
-  Modal,
-  ActionIcon,
   Text,
   Textarea,
+  Accordion,
 } from "@mantine/core";
 import { useState } from "react";
-import { IconPencil } from "@tabler/icons-react";
 
-import { LegacyExerciseCard } from "./LegacyExerciseCard";
-import { WorkingWeightForm } from "./WorkingWeightForm";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { CompletedExercise } from "./CompletedExercise";
 import { calculateDeload } from "../utils/weightUtils";
+import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 
 export function CurrentWorkout() {
   const { isLoading, isError, data: currentWorkout } = useCurrentWorkoutQuery();
@@ -28,6 +24,8 @@ export function CurrentWorkout() {
 
   const [isEditWorkoutModalOpen, setIsEditWorkoutModalOpen] = useState(false);
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
+
+  console.log(currentWorkout);
 
   // Sync notes from currentWorkout to input
   const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
@@ -47,6 +45,8 @@ export function CurrentWorkout() {
   if (isError || !currentWorkout) {
     return <Center>Failed to get current workout</Center>;
   }
+
+  // TODO: handle no days or exercises created
 
   if (currentWorkout.completedTimestamp) {
     return (
@@ -71,13 +71,6 @@ export function CurrentWorkout() {
     <>
       <Flex align="center" justify="space-between">
         <Title order={3}>Current workout</Title>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          onClick={() => setIsEditWorkoutModalOpen(true)}
-        >
-          <IconPencil />
-        </ActionIcon>
       </Flex>
       <Text fz="sm" c="dimmed" mb="sm">
         Created on{" "}
@@ -85,22 +78,19 @@ export function CurrentWorkout() {
           dateStyle: "long",
           timeStyle: "short",
         })}
+        .<br />
       </Text>
-      <Flex direction="column" gap="md" mb="sm">
-        {allExercises.map((exercise) => {
-          return (
-            currentWorkout.lastSetReps[exercise] === null && (
-              <LegacyExerciseCard
-                key={exercise}
-                exercise={exercise}
-                workout={currentWorkout}
-                repRecords={repRecords}
-                onComplete={handleCompleteExercise}
-              />
-            )
-          );
+      <Accordion
+        multiple
+        styles={{
+          control: { padding: 0 },
+          content: { padding: 0 },
+        }}
+      >
+        {currentWorkout.days.map((day) => {
+          return <CurrentWorkoutDay key={day.id} day={day} />;
         })}
-      </Flex>
+      </Accordion>
       {renderNotes()}
       {renderCompletedWorkouts()}
     </>
@@ -110,7 +100,7 @@ export function CurrentWorkout() {
     return (
       <Textarea
         label="Notes"
-        placeholder="Feelings, unsupported features etc."
+        placeholder="Feelings, etc."
         mb="lg"
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
