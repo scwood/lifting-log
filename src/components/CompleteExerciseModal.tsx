@@ -20,8 +20,9 @@ enum NextSessionAction {
 
 export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
   const { opened, exercise, onClose, onSave } = props;
-  const [nextSessionAction, setNextSessionAction] =
-    useState<NextSessionAction | null>(null);
+  const [nextSessionAction, setNextSessionAction] = useState<NextSessionAction>(
+    NextSessionAction.DoNothing
+  );
   const [weight, setWeight] = useState<number | string>(exercise?.weight ?? "");
   const [sets, setSets] = useState<number | string>(exercise?.sets ?? "");
   const [reps, setReps] = useState<number | string>(exercise?.reps ?? "");
@@ -49,6 +50,11 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
         <Flex gap="xs" direction="column">
           <Radio
             mt="md"
+            label="Do nothing"
+            description="Keep things the same for next session"
+            value={NextSessionAction.DoNothing}
+          />
+          <Radio
             label="Add weight"
             description="Increases weight by the minimum amount for next session"
             value={NextSessionAction.AddWeight}
@@ -57,11 +63,6 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
             label="Add a rep"
             description="Add a single rep for next session"
             value={NextSessionAction.AddRep}
-          />
-          <Radio
-            label="Do nothing"
-            description="Keep weight and reps the same for next session"
-            value={NextSessionAction.DoNothing}
           />
           <Radio
             label="Custom"
@@ -138,11 +139,11 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
         parsedNumbers.reps >= 0
       );
     }
-    return nextSessionAction !== null;
+    return true;
   }
 
   function resetInputs() {
-    setNextSessionAction(null);
+    setNextSessionAction(NextSessionAction.DoNothing);
     setWeight(exercise?.weight ?? "");
     setSets(exercise?.sets ?? "");
     setReps(exercise?.reps ?? "");

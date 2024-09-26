@@ -1,5 +1,5 @@
 export enum ExerciseType {
-  Barbell = "barbell",
-  Dumbbell = "dumbbell",
-  Weighted = "weighted",
+  DoublePlate = "doublePlate",
+  SinglePlate = "singlePlate",
+  Other = "other",
 }

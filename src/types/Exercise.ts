@@ -10,6 +10,7 @@ export interface Exercise {
   reps: number;
   weight: number;
   type: ExerciseType;
+  minimumWeightIncrement: number;
   warmUpSets: WarmUpSet[];
   workingSets: Record<number, WorkingSet>;
   nextSession: NextSessionPlan;

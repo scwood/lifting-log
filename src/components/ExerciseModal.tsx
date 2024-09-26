@@ -33,9 +33,11 @@ export function ExerciseModal(props: ExerciseModalProps) {
   const [sets, setSets] = useState<string | number>(exercise?.sets ?? "");
   const [reps, setReps] = useState<string | number>(exercise?.reps ?? "");
   const [exerciseType, setExerciseType] = useState(
-    exercise?.type ?? ExerciseType.Barbell
+    exercise?.type ?? ExerciseType.DoublePlate
   );
-
+  const [minimumWeightIncrement, setMinimumWeightIncrement] = useState<
+    string | number
+  >(exercise?.minimumWeightIncrement ?? "");
   const [warmUpSets, setWarmUpSets] = useState(exercise?.warmUpSets ?? []);
   const [isWarmUpSetModalOpen, setIsWarmUpSetModalOpen] = useState(false);
   const [warmUpSetToEdit, setWarmUpSetToEdit] = useState<WarmUpSet | null>(
@@ -49,9 +51,10 @@ export function ExerciseModal(props: ExerciseModalProps) {
   }
 
   const parsedNumbers = {
-    weight: parseInt(String(weight)),
+    weight: parseFloat(String(weight)),
     sets: parseInt(String(sets)),
     reps: parseInt(String(reps)),
+    minimumWeightIncrement: parseFloat(String(minimumWeightIncrement)),
   };
 
   return (
@@ -78,7 +81,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
             value={weight}
             placeholder="150"
             allowNegative={false}
-            allowDecimal={false}
+            allowDecimal
             onChange={setWeight}
           />
           <NumberInput
@@ -106,27 +109,39 @@ export function ExerciseModal(props: ExerciseModalProps) {
             onChange={(value) => setExerciseType(value as ExerciseType)}
             required
             name="exerciseType"
-            label="Type"
-            description="This is used to calculate warm up sets"
+            label="Exercise type"
+            description="This field tells the app how to calculate warm-up sets. If your exercise uses plates, the app will tell you which plates to load."
           >
             <Flex direction="column" gap="xs" mt="xs">
               <Radio
-                value={ExerciseType.Barbell}
-                label="Barbell"
-                description="Uses 2.5lb, 5lb, 10lb, 25lb, and 45lb plates"
+                value={ExerciseType.DoublePlate}
+                label="Two sets of plates"
+                description="Use this for barbell exercises or machines that are weighted with plates on two sides (leg press, etc.)"
               ></Radio>
               <Radio
-                value={ExerciseType.Dumbbell}
-                label="Dumbbell"
-                description="Uses 5lb increments"
+                value={ExerciseType.SinglePlate}
+                label="One set of plates"
+                description="Use this for exercises that are weighted with a single set of plates (weighted pull-ups, dips, etc.)"
               ></Radio>
               <Radio
-                value={ExerciseType.Weighted}
-                description="Uses 2.5lb increments. Machines, bodyweight exercises, etc."
-                label="Generic weighted"
+                value={ExerciseType.Other}
+                description="Use this for exercises that are not weighted with plates (dumbbell, cable machines, bodyweight etc.)"
+                label="Other"
               />
             </Flex>
           </Radio.Group>
+          {exerciseType === ExerciseType.Other && (
+            <NumberInput
+              required
+              allowDecimal
+              allowNegative={false}
+              value={minimumWeightIncrement}
+              onChange={setMinimumWeightIncrement}
+              placeholder="5"
+              label="Minimum weight increment"
+              description="The smallest weight increment for the exercise (might be 5 for a dumbbell exercise, 2.5 for a certain machine, etc.)"
+            />
+          )}
           <div>
             <InputLabel>Warm-up sets</InputLabel>
             <InputDescription>
@@ -174,7 +189,9 @@ export function ExerciseModal(props: ExerciseModalProps) {
       parsedNumbers.weight >= 0 &&
       parsedNumbers.sets > 0 &&
       parsedNumbers.reps > 0 &&
-      exerciseType !== undefined
+      (exerciseType !== ExerciseType.Other ||
+        (exerciseType === ExerciseType.Other &&
+          parsedNumbers.minimumWeightIncrement >= 0))
     );
   }
 
@@ -183,7 +200,8 @@ export function ExerciseModal(props: ExerciseModalProps) {
     setWeight(exercise?.weight ?? "");
     setSets(exercise?.sets ?? "");
     setReps(exercise?.reps ?? "");
-    setExerciseType(exercise?.type ?? ExerciseType.Barbell);
+    setExerciseType(exercise?.type ?? ExerciseType.DoublePlate);
+    setMinimumWeightIncrement(exercise?.minimumWeightIncrement ?? "");
     setWarmUpSets(exercise?.warmUpSets ?? []);
   }
 
@@ -251,6 +269,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
         sets: parsedNumbers.sets,
         reps: parsedNumbers.reps,
         type: exerciseType,
+        minimumWeightIncrement: getMinimumWeightIncrement(),
         warmUpSets,
       });
     } else {
@@ -261,9 +280,21 @@ export function ExerciseModal(props: ExerciseModalProps) {
         sets: parsedNumbers.sets,
         reps: parsedNumbers.reps,
         type: exerciseType,
+        minimumWeightIncrement: getMinimumWeightIncrement(),
         warmUpSets,
-        workingSets: [],
+        workingSets: {},
+        nextSession: {},
       });
+    }
+  }
+
+  function getMinimumWeightIncrement() {
+    if (exerciseType === ExerciseType.DoublePlate) {
+      return 5;
+    } else if (exerciseType === ExerciseType.SinglePlate) {
+      return 2.5;
+    } else {
+      return parsedNumbers.minimumWeightIncrement;
     }
   }
 }
