@@ -14,7 +14,7 @@ import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { ExerciseName, allExercises } from "../types/ExerciseName";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { calculateDeload } from "../utils/weightUtils";
+import { calculateDeload } from "../utils/workoutUtils";
 import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 
 export function CurrentWorkout() {

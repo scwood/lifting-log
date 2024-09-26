@@ -1,4 +1,4 @@
-import { TextInput, Modal, Button, Divider, Flex } from "@mantine/core";
+import { TextInput, Modal, Button, Flex } from "@mantine/core";
 import { useState } from "react";
 
 import { Day } from "../types/Day";
@@ -29,21 +29,18 @@ export function DayModal(props: DayModalProps) {
       title={`${day ? "Edit" : "Create"} day`}
       centered
     >
-      <Flex direction="column" gap="sm">
-        <TextInput
-          required
-          label="Label"
-          placeholder="Monday"
-          description="Label for the day. For example: A, B, Monday, Tuesday, etc."
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
-        <Divider />
-        <div>
-          <Button color="green" onClick={handleSave} disabled={!saveEnabled}>
-            Save
-          </Button>
-        </div>
+      <TextInput
+        required
+        label="Label"
+        placeholder="Monday"
+        description="Label for the day. For example: A, B, Monday, Tuesday, etc."
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+      />
+      <Flex justify="flex-end" mt="lg">
+        <Button color="green" onClick={handleSave} disabled={!saveEnabled}>
+          Save
+        </Button>
       </Flex>
     </Modal>
   );

@@ -1,6 +1,5 @@
 import {
   Button,
-  Divider,
   Flex,
   InputDescription,
   InputLabel,
@@ -149,16 +148,15 @@ export function ExerciseModal(props: ExerciseModalProps) {
             );
           })}
           <Button onClick={handleCreateWarmUpSet}>Add warm-up set</Button>
-          <Divider />
-          <div>
-            <Button
-              color="green"
-              disabled={!isFormValid()}
-              onClick={handleSaveExercise}
-            >
-              Save
-            </Button>
-          </div>
+        </Flex>
+        <Flex justify="flex-end" mt="lg">
+          <Button
+            color="green"
+            disabled={!isFormValid()}
+            onClick={handleSaveExercise}
+          >
+            Save
+          </Button>
         </Flex>
       </Modal>
       <WarmUpSetModal

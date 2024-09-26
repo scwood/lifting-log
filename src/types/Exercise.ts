@@ -1,4 +1,5 @@
 import { ExerciseType } from "./ExerciseType";
+import { NextSessionPlan } from "./NextSessionPlan";
 import { WarmUpSet } from "./WarmUpSet";
 import { WorkingSet } from "./WorkingSet";
 
@@ -11,4 +12,5 @@ export interface Exercise {
   type: ExerciseType;
   warmUpSets: WarmUpSet[];
   workingSets: Record<number, WorkingSet>;
+  nextSession: NextSessionPlan;
 }

@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import {
-  Flex,
-  NumberInput,
-  Select,
-  Modal,
-  Divider,
-  Button,
-} from "@mantine/core";
+import { Flex, NumberInput, Select, Modal, Button } from "@mantine/core";
 
 import { WarmUpType } from "../types/WarmUpType";
 import { WarmUpSet } from "../types/WarmUpSet";
@@ -88,12 +81,11 @@ export function WarmUpSetModal(props: WarmUpSetModalProps) {
           value={value}
           onChange={setValue}
         />
-        <Divider />
-        <div>
-          <Button color="green" onClick={handleSave} disabled={!isFormValid()}>
-            Save
-          </Button>
-        </div>
+      </Flex>
+      <Flex justify="flex-end" mt="lg">
+        <Button color="green" onClick={handleSave} disabled={!isFormValid()}>
+          Save
+        </Button>
       </Flex>
     </Modal>
   );

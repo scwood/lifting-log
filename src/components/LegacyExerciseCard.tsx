@@ -12,7 +12,7 @@ import {
   calculatePlates,
   calculateWarmUpPlates,
   calculateWarmUpWeight,
-} from "../utils/weightUtils";
+} from "../utils/workoutUtils";
 import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
 import { useState } from "react";
 import { LegacyWorkout } from "../types/LegacyWorkout";

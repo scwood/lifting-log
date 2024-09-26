@@ -1,4 +1,5 @@
 import { Divider, Table, Title } from "@mantine/core";
+import { useState } from "react";
 
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
@@ -6,7 +7,9 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { WorkingSetTableRow } from "./WorkingSetTableRow";
 import { Workout } from "../types/Workout";
 import { WorkingSet } from "../types/WorkingSet";
-import { cloneDeep } from "lodash";
+import { CompleteExerciseModal } from "./CompleteExerciseModal";
+import { NextSessionPlan } from "../types/NextSessionPlan";
+import { isExerciseComplete } from "../utils/workoutUtils";
 
 export interface CurrentWorkoutDayProps {
   workout: Workout;
@@ -16,6 +19,15 @@ export interface CurrentWorkoutDayProps {
 export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const { workout, day } = props;
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
+  const [isCompleteExerciseModalOpen, setIsCompleteExerciseModalOpen] =
+    useState(false);
+  const [completedExercise, setCompletedExercise] = useState<Exercise | null>(
+    null
+  );
+  const [lastWorkingSet, setLastWorkingSet] = useState<WorkingSet | null>(null);
+  const [lastWorkingSetIndex, setLastWorkingSetIndex] = useState<number | null>(
+    null
+  );
 
   return (
     <>
@@ -68,30 +80,70 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
           </div>
         );
       })}
+      <CompleteExerciseModal
+        exercise={completedExercise}
+        opened={isCompleteExerciseModalOpen}
+        onSave={handleSaveWorkoutCompletion}
+        onClose={() => setIsCompleteExerciseModalOpen(false)}
+      />
     </>
   );
 
-  function updateWorkingSet(
+  async function updateWorkingSet(
     exercise: Exercise,
     setNumber: number,
     workingSet: WorkingSet
   ) {
-    const exercises = cloneDeep(day.exercises);
-    exercises.forEach((e) => {
-      if (e.id === exercise.id) {
-        e.workingSets[setNumber] = workingSet;
-      }
-    });
-    updateExercises(exercises);
+    const exerciseCopy = {
+      ...exercise,
+      workingSets: {
+        ...exercise.workingSets,
+        [setNumber]: workingSet,
+      },
+    };
+    if (isExerciseComplete(exerciseCopy)) {
+      setCompletedExercise(exercise);
+      setLastWorkingSet(workingSet);
+      setLastWorkingSetIndex(setNumber);
+      setIsCompleteExerciseModalOpen(true);
+    } else {
+      await updateExercise(exerciseCopy);
+    }
   }
 
-  async function updateExercises(exercises: Exercise[]) {
+  function handleSaveWorkoutCompletion(nextSession: NextSessionPlan) {
+    if (
+      completedExercise === null ||
+      lastWorkingSet === null ||
+      lastWorkingSetIndex === null
+    ) {
+      return;
+    }
+    const exerciseCopy = {
+      ...completedExercise,
+      workingSets: {
+        ...completedExercise.workingSets,
+        [lastWorkingSetIndex]: lastWorkingSet,
+      },
+      nextSession,
+    };
+    updateExercise(exerciseCopy);
+  }
+
+  async function updateExercise(exercise: Exercise) {
     await updateWorkout({
       workoutId: workout.id,
       updates: {
-        days: workout.days.map((d) =>
-          d.id === day.id ? { ...d, exercises } : d
-        ),
+        days: workout.days.map((d) => {
+          return d.id === day.id
+            ? {
+                ...day,
+                exercises: day.exercises.map((e) => {
+                  return e.id === exercise.id ? exercise : e;
+                }),
+              }
+            : d;
+        }),
       },
     });
   }

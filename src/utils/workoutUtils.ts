@@ -1,3 +1,5 @@
+import { Exercise } from "../types/Exercise";
+
 const weightOfBar = 45;
 const plates = [45, 25, 10, 5, 2.5, 1.25];
 
@@ -40,6 +42,16 @@ export function calculateWarmUpPlates(
 export function calculateDeload(weight: number): number {
   const unrounded = weight * 0.9;
   return unrounded - (unrounded % 5);
+}
+
+export function isExerciseComplete(exercise: Exercise): boolean {
+  const workingSets = Object.values(exercise.workingSets);
+  return (
+    workingSets.length === exercise.sets &&
+    workingSets.every((workingSet) => {
+      return workingSet.isLogged;
+    })
+  );
 }
 
 function round5(n: number): number {

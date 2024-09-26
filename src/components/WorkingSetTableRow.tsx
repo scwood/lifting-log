@@ -1,6 +1,6 @@
-import { Checkbox, NumberInput, Table } from "@mantine/core";
+import { Checkbox, NumberInput, Table, Tooltip } from "@mantine/core";
 
-import { calculatePlates } from "../utils/weightUtils";
+import { calculatePlates } from "../utils/workoutUtils";
 import { WorkingSet } from "../types/WorkingSet";
 import { Exercise } from "../types/Exercise";
 
@@ -30,13 +30,20 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
         />
       </Table.Td>
       <Table.Td>
-        <Checkbox
-          size="md"
-          color="green"
-          onChange={handleOnChangeIsLogged}
-          disabled={workingSet.reps === null}
-          checked={workingSet.isLogged}
-        />
+        <Tooltip
+          label="Enter reps to log"
+          withArrow
+          disabled={workingSet.reps !== null}
+          events={{ hover: true, touch: true, focus: false }}
+        >
+          <Checkbox
+            size="md"
+            color="green"
+            onChange={handleOnChangeIsLogged}
+            disabled={workingSet.reps === null}
+            checked={workingSet.isLogged}
+          />
+        </Tooltip>
       </Table.Td>
     </Table.Tr>
   );
