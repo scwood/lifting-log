@@ -1,14 +1,22 @@
 import { Exercise } from "../types/Exercise";
+import { ExerciseType } from "../types/ExerciseType";
+import { WarmUpSet } from "../types/WarmUpSet";
+import { WarmUpType } from "../types/WarmUpType";
 
 const weightOfBar = 45;
 const plates = [45, 25, 10, 5, 2.5, 1.25];
 
-export function calculatePlates(weight: number): string {
+export function calculatePlates(
+  weight: number,
+  exerciseType: ExerciseType
+): string {
+  let remainingWeight = weight;
+  if (exerciseType === ExerciseType.DoublePlate) {
+    const weightMinusBar = weight - weightOfBar;
+    const weightOfOneSide = weightMinusBar / 2;
+    remainingWeight = weightOfOneSide;
+  }
   const result = [];
-  const weightMinusBar = weight - weightOfBar;
-  const weightOfOneSide = weightMinusBar / 2;
-  let remainingWeight = weightOfOneSide;
-
   for (let i = 0; i < plates.length; i++) {
     const plate = plates[i];
     const remainder = remainingWeight % plate;
@@ -20,23 +28,7 @@ export function calculatePlates(weight: number): string {
       remainingWeight = remainder;
     }
   }
-
   return result.join(", ");
-}
-
-export function calculateWarmUpWeight(
-  workingWeight: number,
-  percentage: number
-): number {
-  return Math.max(weightOfBar, round5(workingWeight * percentage));
-}
-
-export function calculateWarmUpPlates(
-  workingWeight: number,
-  percentage: number
-): string {
-  const weight = calculateWarmUpWeight(workingWeight, percentage);
-  return calculatePlates(weight);
 }
 
 export function calculateDeload(weight: number): number {
@@ -54,6 +46,28 @@ export function isExerciseComplete(exercise: Exercise): boolean {
   );
 }
 
-function round5(n: number): number {
-  return Math.ceil(n / 5) * 5;
+export function isPlateExercise(exercise: Exercise): boolean {
+  return (
+    exercise.type === ExerciseType.DoublePlate ||
+    exercise.type === ExerciseType.SinglePlate
+  );
+}
+
+export function getWarmUpWeight(exercise: Exercise, warmUpSet: WarmUpSet) {
+  if (warmUpSet.type === WarmUpType.Weight) {
+    return warmUpSet.value;
+  }
+  let minimumWeight = exercise.minimumWeightIncrement;
+  if (exercise.type === ExerciseType.DoublePlate) {
+    minimumWeight = weightOfBar;
+  }
+  const percentage = warmUpSet.value / 100;
+  return Math.max(
+    minimumWeight,
+    round(exercise.weight * percentage, exercise.minimumWeightIncrement)
+  );
+}
+
+function round(n: number, increment: number): number {
+  return Math.round(n / increment) * increment;
 }

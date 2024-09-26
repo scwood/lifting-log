@@ -9,7 +9,13 @@ import { Workout } from "../types/Workout";
 import { WorkingSet } from "../types/WorkingSet";
 import { CompleteExerciseModal } from "./CompleteExerciseModal";
 import { NextSessionPlan } from "../types/NextSessionPlan";
-import { isExerciseComplete } from "../utils/workoutUtils";
+import {
+  calculatePlates,
+  getWarmUpWeight,
+  isExerciseComplete,
+  isPlateExercise,
+} from "../utils/workoutUtils";
+import { WarmUpType } from "../types/WarmUpType";
 
 export interface CurrentWorkoutDayProps {
   workout: Workout;
@@ -43,17 +49,23 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Weight</Table.Th>
-                  <Table.Th>Plates</Table.Th>
+                  {isPlateExercise(exercise) && <Table.Th>Plates</Table.Th>}
                   <Table.Th>Reps</Table.Th>
                   <Table.Th>Log</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {exercise.warmUpSets.map((warmUpSet) => {
+                  const warmUpWeight = getWarmUpWeight(exercise, warmUpSet);
                   return (
                     <Table.Tr key={warmUpSet.id}>
-                      <Table.Td>TODO</Table.Td>
-                      <Table.Td>TODO</Table.Td>
+                      <Table.Td>{warmUpWeight}</Table.Td>
+                      {isPlateExercise(exercise) && (
+                        <Table.Td>
+                          {}
+                          {calculatePlates(warmUpWeight, exercise.type)}
+                        </Table.Td>
+                      )}
                       <Table.Td>{warmUpSet.reps}</Table.Td>
                       <Table.Td></Table.Td>
                     </Table.Tr>

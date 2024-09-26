@@ -97,7 +97,7 @@ export function WarmUpSetModal(props: WarmUpSetModalProps) {
   }
 
   function isFormValid() {
-    return parsedNumbers.reps > 0 && parsedNumbers.value > 0;
+    return parsedNumbers.reps > 0 && parsedNumbers.value >= 0;
   }
 
   function handleSave() {

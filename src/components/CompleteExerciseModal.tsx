@@ -114,7 +114,8 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
     const nextSessionPlan: NextSessionPlan = {};
     switch (nextSessionAction) {
       case NextSessionAction.AddWeight:
-        nextSessionPlan.weight = exercise.weight + 2.5; // TODO actual logic
+        nextSessionPlan.weight =
+          exercise.weight + exercise.minimumWeightIncrement;
         break;
       case NextSessionAction.AddRep:
         nextSessionPlan.reps = exercise.reps + 1;

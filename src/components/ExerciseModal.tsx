@@ -116,7 +116,7 @@ export function ExerciseModal(props: ExerciseModalProps) {
               <Radio
                 value={ExerciseType.DoublePlate}
                 label="Two sets of plates"
-                description="Use this for barbell exercises or machines that are weighted with plates on two sides (leg press, etc.)"
+                description="Use this for barbell exercises or machines that are weighted with plates on two sides (leg press, etc.)."
               ></Radio>
               <Radio
                 value={ExerciseType.SinglePlate}

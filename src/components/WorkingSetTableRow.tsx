@@ -1,6 +1,6 @@
 import { Checkbox, NumberInput, Table, Tooltip } from "@mantine/core";
 
-import { calculatePlates } from "../utils/workoutUtils";
+import { calculatePlates, isPlateExercise } from "../utils/workoutUtils";
 import { WorkingSet } from "../types/WorkingSet";
 import { Exercise } from "../types/Exercise";
 
@@ -16,7 +16,9 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   return (
     <Table.Tr>
       <Table.Td>{exercise.weight}</Table.Td>
-      <Table.Td>{calculatePlates(exercise.weight)}</Table.Td>
+      {isPlateExercise(exercise) && (
+        <Table.Td>{calculatePlates(exercise.weight, exercise.type)}</Table.Td>
+      )}
       <Table.Td>
         <NumberInput
           styles={{ input: { width: 42 } }}
