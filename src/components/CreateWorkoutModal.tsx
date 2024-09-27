@@ -2,15 +2,15 @@ import { useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
 import { Button, Flex, Modal, NumberInput } from "@mantine/core";
 
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 
 export interface CreateWorkoutModalProps {
   opened: boolean;
   isLoadingCreate: boolean;
   onClose: () => void;
   onCreate: (values: {
-    workingWeight: Workout["workingWeight"];
-    lastSetReps: Workout["lastSetReps"];
+    workingWeight: LegacyWorkout["workingWeight"];
+    lastSetReps: LegacyWorkout["lastSetReps"];
     completedTimestamp: number;
   }) => void;
 }

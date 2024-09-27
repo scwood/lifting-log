@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 
-import { Exercise, allExercises } from "../types/Exercise";
-import { Workout } from "../types/Workout";
+import { ExerciseName, allExercises } from "../types/ExerciseName";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import { useWorkoutsQuery } from "./useWorkoutsQuery";
 
 export type RepRecords = {
-  [key in Exercise]: Record<number, number>;
+  [key in ExerciseName]: Record<number, number>;
 };
 
 export function useRepRecords() {
@@ -15,7 +15,7 @@ export function useRepRecords() {
   return { isLoading, isError, repRecords };
 }
 
-function parseRepRecords(workouts: Workout[]): RepRecords {
+function parseRepRecords(workouts: LegacyWorkout[]): RepRecords {
   return workouts.reduce<RepRecords>(
     (result, workout) => {
       for (const exercise of allExercises) {

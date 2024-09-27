@@ -10,15 +10,15 @@ import {
 } from "@visx/xychart";
 import { LegendOrdinal } from "@visx/legend";
 
-import { Workout } from "../types/Workout";
+import { LegacyWorkout } from "../types/LegacyWorkout";
 import {
-  Exercise,
+  ExerciseName,
   allExercises,
   exerciseDisplayNames,
-} from "../types/Exercise";
+} from "../types/ExerciseName";
 
 export interface WorkingWeightChartProps {
-  workouts: Workout[];
+  workouts: LegacyWorkout[];
 }
 
 export function WorkingWeightChart(props: WorkingWeightChartProps) {
@@ -118,7 +118,7 @@ function ChartLegend() {
         itemMargin="0px 12px 0px 0px"
         legendLabelProps={{ style: { fontSize: 11 } }}
         labelFormat={(item) => {
-          return exerciseDisplayNames[item as Exercise];
+          return exerciseDisplayNames[item as ExerciseName];
         }}
       />
     </div>

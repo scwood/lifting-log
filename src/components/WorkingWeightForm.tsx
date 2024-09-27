@@ -1,11 +1,11 @@
 import { Button, NumberInput, Flex } from "@mantine/core";
 import { useState } from "react";
 
-import { Exercise } from "../types/Exercise";
+import { ExerciseName } from "../types/ExerciseName";
 
 export interface WorkingWeightFormProps {
-  initialValues?: { [key in Exercise]: number };
-  onSave: (workingWeight: { [key in Exercise]: number }) => void;
+  initialValues?: { [key in ExerciseName]: number };
+  onSave: (workingWeight: { [key in ExerciseName]: number }) => void;
 }
 
 export function WorkingWeightForm(props: WorkingWeightFormProps) {

@@ -1,10 +1,8 @@
 import { Day } from "./Day";
 
-export interface Workout {
+interface WorkoutPlan {
   id: string;
-  userId: string;
   createdTimestamp: number;
   completedTimestamp: number | null;
-  notes: string | null;
   days: Day[];
 }

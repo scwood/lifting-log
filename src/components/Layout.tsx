@@ -21,7 +21,7 @@ export function Layout() {
     <Container p="lg" size="xs">
       <Flex justify="space-between" align="center" mb="md">
         <UnstyledButton component={Link} to="/" fz={22} fw="600">
-          🏋️‍♂️ Workout log
+          🏋️‍♂️ Lifting log
         </UnstyledButton>
         <Flex gap="xs">
           <ActionIcon
@@ -58,6 +58,7 @@ export function Layout() {
         <Tabs mb="md" value={location.pathname} onChange={handleTabChange}>
           <Tabs.List>
             <Tabs.Tab value="/">Current workout</Tabs.Tab>
+            <Tabs.Tab value="/plan">Workout plan</Tabs.Tab>
             <Tabs.Tab value="/history">History</Tabs.Tab>
           </Tabs.List>
         </Tabs>

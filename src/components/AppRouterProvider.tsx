@@ -5,6 +5,7 @@ import { Layout } from "./Layout";
 import { SignInPage } from "./SignInPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { CurrentWorkout } from "./CurrentWorkout";
+import { Plan } from "./Plan";
 
 const hashRouter = createHashRouter([
   {
@@ -17,6 +18,10 @@ const hashRouter = createHashRouter([
           {
             index: true,
             element: <CurrentWorkout />,
+          },
+          {
+            path: "plan",
+            element: <Plan />,
           },
           {
             path: "history",

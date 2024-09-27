@@ -10,13 +10,13 @@ import { AuthProvider } from "./AuthProvider";
 import { AppRouterProvider } from "./AppRouterProvider";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyBYwaTqcUzMbf2X13Q2y0KhQKi2gSXP4bk",
-  authDomain: "workout-log-9e0e6.firebaseapp.com",
-  projectId: "workout-log-9e0e6",
-  storageBucket: "workout-log-9e0e6.appspot.com",
-  messagingSenderId: "922535398142",
-  appId: "1:922535398142:web:9cc99956ea03fdedbf33af",
-  measurementId: "G-H8MH0K1235",
+  apiKey: "AIzaSyBQpLMpVWLjHU7xenqPbsEWzGQ1b2eIdcw",
+  authDomain: "lifting-log-948d2.firebaseapp.com",
+  projectId: "lifting-log-948d2",
+  storageBucket: "lifting-log-948d2.appspot.com",
+  messagingSenderId: "651878724833",
+  appId: "1:651878724833:web:a2b6eccf72b49530bcf3a0",
+  measurementId: "G-WE0QE376H5",
 });
 
 getAuth(firebaseApp);
