@@ -15,7 +15,6 @@ import {
   isExerciseComplete,
   isPlateExercise,
 } from "../utils/workoutUtils";
-import { WarmUpType } from "../types/WarmUpType";
 
 export interface CurrentWorkoutDayProps {
   workout: Workout;

@@ -44,8 +44,7 @@ export async function getCurrentWorkout(userId: string) {
     )
   );
   if (snapshot.empty) {
-    await createWorkout({ userId });
-    return getCurrentWorkout(userId);
+    return null;
   }
   // TODO Remove
   // const data = snapshot.docs[0].data();
