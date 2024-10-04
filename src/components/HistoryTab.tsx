@@ -23,6 +23,7 @@ export default function HistoryTab() {
         <Title order={3} mb="xs">
           History
         </Title>
+        {completedWorkouts.length === 0 && <>No completed workouts yet</>}
         <Flex gap="sm" direction="column">
           {completedWorkouts.map((workout) => {
             return <PastWorkoutCard key={workout.id} workout={workout} />;
