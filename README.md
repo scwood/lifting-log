@@ -1,27 +1,36 @@
-# React + TypeScript + Vite
+# Lifting log 🏋️‍♂️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lifting log is a web app to track resistance training workouts.
 
-Currently, two official plugins are available:
+https://scwood.github.io/lifting-log
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Define your weekly workout plan once, get weekly workouts auto generated as you progress
+- Create per-exercise warm-up schemes
+- If your exercise uses plates (bench press, weighted pull-ups etc.) the app will tell you what plates to put on the bar, even for warmup sets
+- Easy progressive overload: once you've completed an exercise during a session, the app will ask you if you want to add a rep, weight, or keep things the same for next session
+- Add, remove, or change specific exercises in your plan as your workouts evolve
+- Supports symetrical and asymetrical weekly plans 
+- Google and GitHub login supported currently, would like to add Apple in the future
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-- Configure the top-level `parserOptions` property like this:
+## Screenshots
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+### Structuring your workout plan
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+<img src="https://github.com/user-attachments/assets/447771b5-4bd7-4b49-82a3-c54ca6a8d3a0" width="300">
+<img src="https://github.com/user-attachments/assets/ebb77fbb-8d3f-44a6-8ffc-ec8cba9397ec" width="300">
+
+
+
+### Exercise creation 
+
+<img src="https://github.com/user-attachments/assets/bd0f2da7-784d-4a7c-b34e-f6fe68328488" width="300">
+<img src="https://github.com/user-attachments/assets/95becfa0-da25-4805-a12e-d280b9479935" width="300">
+
+### Logging your lifts during a session
+
+<img src="https://github.com/user-attachments/assets/24b42ec8-3267-4dab-85da-1e7fcc4e902d" width="300">
+<img src="https://github.com/user-attachments/assets/84e31623-146d-4d50-bc14-d2eba0127304" width="300">
+<img src="https://github.com/user-attachments/assets/1a3409a7-116d-4daa-8404-cf9bffcfa58a" width="300">
