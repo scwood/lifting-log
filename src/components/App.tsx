@@ -4,7 +4,7 @@ import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
 
 import { AuthProvider } from "./AuthProvider";
 import { AppRouterProvider } from "./AppRouterProvider";
@@ -20,7 +20,7 @@ const firebaseApp = initializeApp({
 });
 
 getAuth(firebaseApp);
-getFirestore(firebaseApp);
+initializeFirestore(firebaseApp, { localCache: persistentLocalCache() });
 
 const theme = createTheme({ headings: { fontWeight: "600" } });
 const queryClient = new QueryClient();

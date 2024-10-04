@@ -29,7 +29,7 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
               <Flex direction="column">
                 {day.exercises.map((exercise) => {
                   return (
-                    <span>
+                    <span key={exercise.id}>
                       {exercise.name}: {getVolumeLoad(exercise)} (
                       {Object.values(exercise.workingSets)
                         .map((workingSet) => {

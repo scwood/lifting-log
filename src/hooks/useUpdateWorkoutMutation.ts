@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { updateWorkout } from "../api/workoutsApi";
 import { currentWorkoutQueryKey } from "./useCurrentWorkoutQuery";
-import { LegacyWorkout } from "../types/LegacyWorkout";
 import { workoutsQueryKey } from "./useWorkoutsQuery";
 import { Workout } from "../types/Workout";
 
@@ -22,7 +21,7 @@ export function useUpdateWorkoutMutation() {
       return updateWorkout(workoutId, updates);
     },
     onMutate: ({ workoutId, updates }) => {
-      const currentWorkout = queryClient.getQueryData<LegacyWorkout>(
+      const currentWorkout = queryClient.getQueryData<Workout>(
         currentWorkoutQueryKey(userId)
       );
       if (currentWorkout && currentWorkout.id === workoutId) {
