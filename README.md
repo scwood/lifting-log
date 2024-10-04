@@ -11,7 +11,7 @@ https://scwood.github.io/lifting-log
 - If your exercise uses plates (bench press, weighted pull-ups etc.) the app will tell you what plates to put on the bar, even for warmup sets
 - Easy progressive overload: once you've completed an exercise during a session, the app will ask you if you want to add a rep, weight, or keep things the same for next session
 - Add, remove, or change specific exercises in your plan as your workouts evolve
-- Supports symetrical and asymetrical weekly plans 
+- Supports symmetrical and asymmetrical weekly plans 
 - Google and GitHub login supported currently, would like to add Apple in the future
 
 
