@@ -4,7 +4,7 @@ import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 
 import { useAuth } from "../hooks/useAuth";
 
-export function SignInPage() {
+export default function SignInPage() {
   const { signIn, error } = useAuth();
   const navigate = useNavigate();
 

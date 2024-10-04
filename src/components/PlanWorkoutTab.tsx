@@ -10,7 +10,7 @@ import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 
-export function PlanWorkoutTab() {
+export default function PlanWorkoutTab() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [dayToEdit, setDayToEdit] = useState<Day | null>(null);
 

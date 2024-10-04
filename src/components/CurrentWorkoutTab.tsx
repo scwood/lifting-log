@@ -25,7 +25,7 @@ import { CompletedExercise } from "./CompletedExercise";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 
-export function CurrentWorkoutTab() {
+export default function CurrentWorkoutTab() {
   const { isLoading, isError, data: currentWorkout } = useCurrentWorkoutQuery();
   const { mutate: createWorkout } = useCreateWorkoutMutation();
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();

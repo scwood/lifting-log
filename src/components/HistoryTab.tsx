@@ -10,7 +10,7 @@ import { Center } from "@mantine/core";
 // import { LegacyWorkout } from "../types/LegacyWorkout";
 // import { PastWorkoutCard } from "./PastWorkoutCard";
 
-export function HistoryTab() {
+export default function HistoryTab() {
   return <Center>Need to redo this tab</Center>;
   // const { data: workouts, isLoading, isError } = useWorkoutsQuery();
   // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

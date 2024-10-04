@@ -46,18 +46,6 @@ export async function getCurrentWorkout(userId: string) {
   if (snapshot.empty) {
     return null;
   }
-  // TODO Remove
-  // const data = snapshot.docs[0].data();
-  // await updateWorkout(data.id, {
-  //   days: data.days.map((day) => {
-  //     return {
-  //       ...day,
-  //       exercises: day.exercises.map((exercise) => {
-  //         return { ...exercise, nextSession: {} };
-  //       }),
-  //     };
-  //   }),
-  // });
   return snapshot.docs[0].data();
 }
 

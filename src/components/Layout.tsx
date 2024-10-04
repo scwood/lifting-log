@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
@@ -7,6 +8,8 @@ import {
   ActionIcon,
   Menu,
   Tabs,
+  Center,
+  Loader,
 } from "@mantine/core";
 import { IconBrandGithub, IconLogout, IconUser } from "@tabler/icons-react";
 
@@ -63,7 +66,15 @@ export function Layout() {
           </Tabs.List>
         </Tabs>
       )}
-      <Outlet />
+      <Suspense
+        fallback={
+          <Center>
+            <Loader />
+          </Center>
+        }
+      >
+        <Outlet />
+      </Suspense>
     </Container>
   );
 

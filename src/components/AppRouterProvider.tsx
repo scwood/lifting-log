@@ -1,11 +1,13 @@
+import { lazy } from "react";
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
-import { HistoryTab } from "./HistoryTab";
 import { Layout } from "./Layout";
-import { SignInPage } from "./SignInPage";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { CurrentWorkoutTab } from "./CurrentWorkoutTab";
-import { PlanWorkoutTab } from "./PlanWorkoutTab";
+
+const CurrentWorkoutTab = lazy(() => import("./CurrentWorkoutTab"));
+const PlanWorkoutTab = lazy(() => import("./PlanWorkoutTab"));
+const HistoryTab = lazy(() => import("./HistoryTab"));
+const SignInPage = lazy(() => import("./SignInPage"));
 
 const hashRouter = createHashRouter([
   {
