@@ -1,29 +1,42 @@
-import { Button, Card, Title } from "@mantine/core";
+import { Text, Button, Card, Title } from "@mantine/core";
 
-import { ExerciseName, exerciseDisplayNames } from "../types/ExerciseName";
-import { LegacyWorkout } from "../types/LegacyWorkout";
+import { Exercise } from "../types/Exercise";
+import { getVolumeLoad } from "../utils/workoutUtils";
 
 export interface CompletedExerciseProps {
-  workout: LegacyWorkout;
-  exercise: ExerciseName;
-  onUndo: (exercise: ExerciseName) => void;
+  exercise: Exercise;
+  onUndo: (exercise: Exercise) => void;
 }
 
 export function CompletedExercise(props: CompletedExerciseProps) {
-  const { onUndo, workout, exercise } = props;
+  const { onUndo, exercise } = props;
 
   return (
     <Card withBorder shadow="sm">
       <Card.Section withBorder inheritPadding py="xs">
-        <Title order={4}>{exerciseDisplayNames[exercise]}</Title>
+        <Title order={4} mb={2}>
+          {exercise.name}
+        </Title>
+        <Text size="sm" c="dimmed">
+          This session: {getVolumeLoad(exercise)} (
+          {Object.values(exercise.workingSets)
+            .map((workingSet) => workingSet.reps)
+            .join(",")}
+          )
+          <br />
+          Next session:{" "}
+          {getVolumeLoad({ ...exercise, ...exercise.nextSession })}
+        </Text>
+        <Button
+          fullWidth
+          size="xs"
+          mt="sm"
+          mb={6}
+          onClick={() => onUndo(exercise)}
+        >
+          Undo
+        </Button>
       </Card.Section>
-      <Card.Section withBorder inheritPadding py="xs" mb={6} fz={14}>
-        <div>Working weight: {workout.workingWeight[exercise]} lbs </div>
-        <div>Last set reps: {workout.lastSetReps[exercise]}</div>
-      </Card.Section>
-      <Button mt="xs" size="xs" onClick={() => onUndo(exercise)}>
-        Undo
-      </Button>
     </Card>
   );
 }

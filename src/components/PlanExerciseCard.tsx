@@ -1,7 +1,8 @@
-import { ActionIcon, Card, Flex, Menu, Text } from "@mantine/core";
+import { ActionIcon, Card, Flex, Menu, Text, Title } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { Exercise } from "../types/Exercise";
+import { getVolumeLoad } from "../utils/workoutUtils";
 
 export interface PlanExerciseCardProps {
   exercise: Exercise;
@@ -27,7 +28,8 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
   return (
     <Card withBorder>
       <Flex justify="space-between" align="center">
-        <Text fw={600}>{exercise.name}</Text>
+        <Title order={4}>{exercise.name}</Title>
+        {/* <Text fw={600}>{exercise.name}</Text> */}
         <Menu>
           <Menu.Target>
             <ActionIcon variant="subtle" color="gray">
@@ -54,9 +56,9 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
           </Menu.Dropdown>
         </Menu>
       </Flex>
-      <Text c="dimmed" size="xs">
-        {exercise.sets} sets of {exercise.reps} reps at {exercise.weight} lbs.{" "}
-        {exercise.warmUpSets.length} warm-up sets.
+      <Text c="dimmed" size="sm">
+        {getVolumeLoad(exercise)} with {exercise.warmUpSets.length} warm-up
+        sets.
       </Text>
     </Card>
   );

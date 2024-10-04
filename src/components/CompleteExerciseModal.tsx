@@ -55,50 +55,70 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
             value={NextSessionAction.DoNothing}
           />
           <Radio
-            label="Add weight"
-            description="Increases weight by the minimum amount for next session"
-            value={NextSessionAction.AddWeight}
-          />
-          <Radio
             label="Add a rep"
             description="Add a single rep for next session"
             value={NextSessionAction.AddRep}
           />
-          <Radio
-            label="Custom"
-            description="Change the weight, reps, and/or sets for next session"
-            value={NextSessionAction.Custom}
-          />
+          <div>
+            <Radio
+              label="Add weight"
+              description="Increases weight by the minimum amount for next session"
+              value={NextSessionAction.AddWeight}
+            />
+            {nextSessionAction === NextSessionAction.AddWeight && (
+              <NumberInput
+                allowDecimal={false}
+                allowNegative={false}
+                value={reps}
+                onChange={setReps}
+                label="Rep goal at new weight"
+                required
+                mb="xs"
+                ml="xl"
+              />
+            )}
+          </div>
+          <div>
+            <Radio
+              label="Custom"
+              description="Change the weight, reps, and/or sets for next session"
+              value={NextSessionAction.Custom}
+            />
+
+            {nextSessionAction === NextSessionAction.Custom && (
+              <Flex direction="column" gap={4} mt={4}>
+                <NumberInput
+                  allowDecimal={false}
+                  allowNegative={false}
+                  value={weight}
+                  onChange={setWeight}
+                  label="Weight"
+                  ml="xl"
+                  required
+                />
+                <NumberInput
+                  allowDecimal={false}
+                  allowNegative={false}
+                  value={sets}
+                  onChange={setSets}
+                  label="Sets"
+                  ml="xl"
+                  required
+                />
+                <NumberInput
+                  allowDecimal={false}
+                  allowNegative={false}
+                  value={reps}
+                  onChange={setReps}
+                  label="Reps"
+                  ml="xl"
+                  required
+                />
+              </Flex>
+            )}
+          </div>
         </Flex>
       </Radio.Group>
-      {nextSessionAction === NextSessionAction.Custom && (
-        <Flex direction="column" mt="md" gap="xs">
-          <NumberInput
-            allowDecimal={false}
-            allowNegative={false}
-            value={weight}
-            onChange={setWeight}
-            label="Weight"
-            required
-          />
-          <NumberInput
-            allowDecimal={false}
-            allowNegative={false}
-            value={sets}
-            onChange={setSets}
-            label="Sets"
-            required
-          />
-          <NumberInput
-            allowDecimal={false}
-            allowNegative={false}
-            value={reps}
-            onChange={setReps}
-            label="Reps"
-            required
-          />
-        </Flex>
-      )}
       <Flex justify="flex-end" mt="lg">
         <Button color="green" disabled={!isSaveEnabled()} onClick={handleSave}>
           Save
@@ -113,12 +133,13 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
     }
     const nextSessionPlan: NextSessionPlan = {};
     switch (nextSessionAction) {
+      case NextSessionAction.AddRep:
+        nextSessionPlan.reps = exercise.reps + 1;
+        break;
       case NextSessionAction.AddWeight:
         nextSessionPlan.weight =
           exercise.weight + exercise.minimumWeightIncrement;
-        break;
-      case NextSessionAction.AddRep:
-        nextSessionPlan.reps = exercise.reps + 1;
+        nextSessionPlan.reps = parsedNumbers.reps;
         break;
       case NextSessionAction.Custom:
         nextSessionPlan.weight = parsedNumbers.weight;
@@ -139,6 +160,9 @@ export function CompleteExerciseModal(props: CompleteExerciseModalProps) {
         parsedNumbers.sets >= 0 &&
         parsedNumbers.reps >= 0
       );
+    }
+    if (nextSessionAction === NextSessionAction.AddWeight) {
+      return parsedNumbers.reps >= 0;
     }
     return true;
   }

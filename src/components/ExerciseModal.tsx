@@ -16,7 +16,7 @@ import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpSetModal } from "./WarmUpSetModal";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpSetCard } from "./WarmUpSetCard";
-import { arraySwap } from "../utils/arraySwap";
+import { moveItem } from "../utils/arrayUtils";
 
 export interface ExerciseModalProps {
   opened: boolean;
@@ -155,8 +155,10 @@ export function ExerciseModal(props: ExerciseModalProps) {
                 warmUpSet={warmUpSet}
                 moveUpDisabled={index === 0}
                 moveDownDisabled={index === warmUpSets.length - 1}
-                onMoveUp={handleMoveUpWarmUpSet}
-                onMoveDown={handleMoveDownWarmUpSet}
+                onMoveUp={(warmUpSet) => handleMoveWarmUpSet(warmUpSet, "up")}
+                onMoveDown={(warmUpSet) =>
+                  handleMoveWarmUpSet(warmUpSet, "down")
+                }
                 onEdit={handleEditWarmUpSet}
                 onDelete={handleDeleteWarmUpSet}
               />
@@ -221,23 +223,9 @@ export function ExerciseModal(props: ExerciseModalProps) {
     });
   }
 
-  function handleMoveUpWarmUpSet(warmUpSet: WarmUpSet) {
+  function handleMoveWarmUpSet(warmUpSet: WarmUpSet, direction: "up" | "down") {
     setWarmUpSets((prev) => {
-      const index = prev.findIndex((w) => w.id === warmUpSet.id);
-      if (index === 0 || index === -1) {
-        return prev;
-      }
-      return arraySwap(prev, index, index - 1);
-    });
-  }
-
-  function handleMoveDownWarmUpSet(warmUpSet: WarmUpSet) {
-    setWarmUpSets((prev) => {
-      const index = prev.findIndex((w) => w.id === warmUpSet.id);
-      if (index === warmUpSets.length - 1 || index === -1) {
-        return prev;
-      }
-      return arraySwap(warmUpSets, index, index + 1);
+      return moveItem(prev, (w) => w.id === warmUpSet.id, direction);
     });
   }
 

@@ -6,7 +6,7 @@ import { Day } from "../types/Day";
 import { ExerciseModal } from "./ExerciseModal";
 import { Exercise } from "../types/Exercise";
 import { PlanExerciseCard } from "./PlanExerciseCard";
-import { arraySwap } from "../utils/arraySwap";
+import { moveItem } from "../utils/arrayUtils";
 import { Workout } from "../types/Workout";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 
@@ -128,15 +128,10 @@ export function PlanDay(props: PlanDayProps) {
     exercise: Exercise,
     direction: "up" | "down"
   ) {
-    const index = day.exercises.findIndex((e) => e.id === exercise.id);
-    const directionLimit = direction === "up" ? 0 : day.exercises.length - 1;
-    if (index === -1 || index === directionLimit) {
-      return;
-    }
-    const exercises = arraySwap(
+    const exercises = moveItem(
       day.exercises,
-      index,
-      direction === "up" ? index - 1 : index + 1
+      (e) => e.id === exercise.id,
+      direction
     );
     await updateExercises(exercises);
   }

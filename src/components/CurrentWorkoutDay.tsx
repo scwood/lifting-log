@@ -33,12 +33,15 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const [lastWorkingSetIndex, setLastWorkingSetIndex] = useState<number | null>(
     null
   );
+  const incompleteExercises = day.exercises.filter((exercise) => {
+    return !isExerciseComplete(exercise);
+  });
 
   return (
     <>
       <Title order={3}>Day: {day.name}</Title>
       <Divider mt={4} mb="md" />
-      {day.exercises.map((exercise) => {
+      {incompleteExercises.map((exercise) => {
         return (
           <div key={exercise.id}>
             <Title order={4} mb="xs">

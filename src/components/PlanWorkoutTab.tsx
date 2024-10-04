@@ -5,16 +5,19 @@ import { v4 as uuidV4 } from "uuid";
 import { DayModal } from "./DayModal";
 import { Day } from "../types/Day";
 import { PlanDay } from "./PlanDay";
-import { arraySwap } from "../utils/arraySwap";
+import { moveItem } from "../utils/arrayUtils";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
+import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 
-export function Plan() {
+export function PlanWorkoutTab() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [dayToEdit, setDayToEdit] = useState<Day | null>(null);
 
   const { data: workout, isLoading, isError } = useCurrentWorkoutQuery();
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
+  const { mutate: createWorkout, isPending: isPendingCreate } =
+    useCreateWorkoutMutation();
 
   if (isLoading) {
     return (
@@ -24,8 +27,23 @@ export function Plan() {
     );
   }
 
-  if (isError || !workout) {
+  if (isError) {
     return <Center>Failed to load workout plan</Center>;
+  }
+
+  if (!workout) {
+    return (
+      <Flex direction="column" align="center" gap="sm">
+        <div>Press the button below to create a workout plan</div>
+        <Button
+          color="green"
+          loading={isPendingCreate}
+          onClick={() => createWorkout({})}
+        >
+          Create workout plan
+        </Button>
+      </Flex>
+    );
   }
 
   return (
@@ -88,16 +106,7 @@ export function Plan() {
     if (!workout) {
       return;
     }
-    const index = workout.days.findIndex((d) => d.id === day.id);
-    const directionLimit = direction === "up" ? 0 : workout.days.length - 1;
-    if (index === -1 || index === directionLimit) {
-      return;
-    }
-    const days = arraySwap(
-      workout.days,
-      index,
-      direction === "up" ? index - 1 : index + 1
-    );
+    const days = moveItem(workout.days, (d) => d.id === day.id, direction);
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
 

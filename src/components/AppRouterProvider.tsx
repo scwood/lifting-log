@@ -1,11 +1,11 @@
 import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 
-import { History } from "./History";
+import { HistoryTab } from "./HistoryTab";
 import { Layout } from "./Layout";
 import { SignInPage } from "./SignInPage";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { CurrentWorkout } from "./CurrentWorkout";
-import { Plan } from "./Plan";
+import { CurrentWorkoutTab } from "./CurrentWorkoutTab";
+import { PlanWorkoutTab } from "./PlanWorkoutTab";
 
 const hashRouter = createHashRouter([
   {
@@ -17,15 +17,15 @@ const hashRouter = createHashRouter([
         children: [
           {
             index: true,
-            element: <CurrentWorkout />,
+            element: <CurrentWorkoutTab />,
           },
           {
             path: "plan",
-            element: <Plan />,
+            element: <PlanWorkoutTab />,
           },
           {
             path: "history",
-            element: <History />,
+            element: <HistoryTab />,
           },
         ],
       },
