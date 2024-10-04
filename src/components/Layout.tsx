@@ -33,7 +33,7 @@ export function Layout() {
             component="a"
             target="_blank"
             rel="noopener noreferrer"
-            href="https://github.com/scwood/workout-log"
+            href="https://github.com/scwood/lifting-log"
           >
             <IconBrandGithub />
           </ActionIcon>
