@@ -1,21 +1,19 @@
-import { Box, Card, Flex, Text, useMantineTheme } from "@mantine/core";
+import { Box, Card, Flex, Text } from "@mantine/core";
 
-import { LegacyWorkout } from "../types/LegacyWorkout";
-import { allExercises, exerciseDisplayNames } from "../types/ExerciseName";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { Workout } from "../types/Workout";
+import { getVolumeLoad } from "../utils/workoutUtils";
 
 export interface PastWorkoutCardProps {
-  workout: LegacyWorkout;
+  workout: Workout;
 }
 
 export function PastWorkoutCard(props: PastWorkoutCardProps) {
   const { workout } = props;
-  const theme = useMantineTheme();
 
   return (
     <Card withBorder shadow="sm" fz="sm">
       <Card.Section withBorder inheritPadding py="xs" mb="xs">
-        <Text c="dimmed" size="xs">
+        <Text c="dimmed" size="sm">
           Completed on{" "}
           {new Date(workout.completedTimestamp || 0).toLocaleString(undefined, {
             dateStyle: "long",
@@ -23,37 +21,31 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
           })}
         </Text>
       </Card.Section>
-      <Flex>
-        <Flex direction="column" justify="space-around">
-          {allExercises.map((exercise) => {
-            return <span key={exercise}>{exerciseDisplayNames[exercise]}</span>;
-          })}
-        </Flex>
-        <Flex direction="column" justify="space-around" pl="sm">
-          {allExercises.map((exercise) => {
-            return (workout.lastSetReps[exercise] || 0) >= 5 ? (
-              <IconCheck
-                key={exercise}
-                color={theme.colors.lime[5]}
-                size={14}
-              />
-            ) : (
-              <IconX key={exercise} color={theme.colors.red[6]} size={14} />
-            );
-          })}
-        </Flex>
-        <Flex direction="column" pl="xs">
-          {allExercises.map((exercise) => {
-            return (
-              <span key={exercise}>
-                {workout.workingWeight[exercise]} lbs for{" "}
-                {workout.lastSetReps[exercise]} reps
-              </span>
-            );
-          })}
-        </Flex>
+      <Flex direction="column" gap="xs">
+        {workout.days.map((day) => {
+          return (
+            <div key={day.id}>
+              <u>{day.name}</u>
+              <Flex direction="column">
+                {day.exercises.map((exercise) => {
+                  return (
+                    <span>
+                      {exercise.name}: {getVolumeLoad(exercise)} (
+                      {Object.values(exercise.workingSets)
+                        .map((workingSet) => {
+                          return workingSet.reps;
+                        })
+                        .join(",")}
+                      )
+                    </span>
+                  );
+                })}
+              </Flex>
+            </div>
+          );
+        })}
+        {workout.notes && <Box>Notes: {workout.notes}</Box>}
       </Flex>
-      {workout.notes && <Box mt={6}>Notes: {workout.notes}</Box>}
     </Card>
   );
 }
