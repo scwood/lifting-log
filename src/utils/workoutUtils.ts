@@ -33,11 +33,6 @@ export function calculatePlates(
   return result.join(", ");
 }
 
-export function calculateDeload(weight: number): number {
-  const unrounded = weight * 0.9;
-  return unrounded - (unrounded % 5);
-}
-
 export function isExerciseComplete(exercise: Exercise): boolean {
   const workingSets = Object.values(exercise.workingSets);
   return (

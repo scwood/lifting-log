@@ -1,4 +1,4 @@
-import { Divider, Table, Title } from "@mantine/core";
+import { Divider, Modal, Table, Title } from "@mantine/core";
 import { useState } from "react";
 
 import { Day } from "../types/Day";
@@ -7,7 +7,7 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { WorkingSetTableRow } from "./WorkingSetTableRow";
 import { Workout } from "../types/Workout";
 import { WorkingSet } from "../types/WorkingSet";
-import { CompleteExerciseModal } from "./CompleteExerciseModal";
+import { ExerciseCompleteForm } from "./ExerciseCompleteForm";
 import { NextSessionPlan } from "../types/NextSessionPlan";
 import {
   calculatePlates,
@@ -24,7 +24,7 @@ export interface CurrentWorkoutDayProps {
 export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const { workout, day } = props;
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
-  const [isCompleteExerciseModalOpen, setIsCompleteExerciseModalOpen] =
+  const [isExerciseCompleteModalOpen, setIsExerciseCompleteModalOpen] =
     useState(false);
   const [completedExercise, setCompletedExercise] = useState<Exercise | null>(
     null
@@ -94,12 +94,19 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
           </div>
         );
       })}
-      <CompleteExerciseModal
-        exercise={completedExercise}
-        opened={isCompleteExerciseModalOpen}
-        onSave={handleSaveWorkoutCompletion}
-        onClose={() => setIsCompleteExerciseModalOpen(false)}
-      />
+      <Modal
+        centered
+        opened={isExerciseCompleteModalOpen}
+        onClose={() => setIsExerciseCompleteModalOpen(false)}
+        title="Exercise complete"
+      >
+        {completedExercise && (
+          <ExerciseCompleteForm
+            initialValues={completedExercise}
+            onSave={handleSaveWorkoutCompletion}
+          />
+        )}
+      </Modal>
     </>
   );
 
@@ -119,7 +126,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       setCompletedExercise(exercise);
       setLastWorkingSet(workingSet);
       setLastWorkingSetIndex(setNumber);
-      setIsCompleteExerciseModalOpen(true);
+      setIsExerciseCompleteModalOpen(true);
     } else {
       await updateExercise(exerciseCopy);
     }
@@ -133,6 +140,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
     ) {
       return;
     }
+    setIsExerciseCompleteModalOpen(false);
     const exerciseCopy = {
       ...completedExercise,
       workingSets: {

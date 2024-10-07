@@ -1,14 +1,21 @@
-import { Button, Center, Divider, Flex, Loader, Title } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Divider,
+  Flex,
+  Loader,
+  Modal,
+  Title,
+} from "@mantine/core";
 import { useState } from "react";
-import { v4 as uuidV4 } from "uuid";
 
-import { DayModal } from "./DayModal";
 import { Day } from "../types/Day";
 import { PlanDay } from "./PlanDay";
 import { moveItem } from "../utils/arrayUtils";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
+import { DayForm } from "./DayForm";
 
 export default function PlanWorkoutTab() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -70,26 +77,32 @@ export default function PlanWorkoutTab() {
         <Divider />
         <Button onClick={handleAddDay}>Add day</Button>
       </Flex>
-      <DayModal
+      <Modal
+        title={`${dayToEdit ? "Edit" : "Create"} day`}
+        centered
         opened={isDayModalOpen}
-        day={dayToEdit ?? undefined}
-        onClose={handleDayModalClose}
-        onSave={handleSaveDay}
-      />
+        onClose={() => setIsDayModalOpen(false)}
+      >
+        <DayForm
+          initialValues={dayToEdit ?? undefined}
+          onSave={handleSaveDay}
+        />
+      </Modal>
     </>
   );
 
-  async function handleSaveDay(name: string) {
+  async function handleSaveDay(day: Day) {
     if (!workout) {
       return;
     }
+    setIsDayModalOpen(false);
     let days: Day[];
     if (dayToEdit) {
-      days = workout.days.map((day) => {
-        return day.id === dayToEdit.id ? { ...day, name } : day;
+      days = workout.days.map((d) => {
+        return d.id === dayToEdit.id ? { ...day } : d;
       });
     } else {
-      days = [...workout.days, { id: uuidV4(), name, exercises: [] }];
+      days = [...workout.days, day];
     }
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
@@ -108,10 +121,6 @@ export default function PlanWorkoutTab() {
     }
     const days = moveItem(workout.days, (d) => d.id === day.id, direction);
     await updateWorkout({ workoutId: workout.id, updates: { days } });
-  }
-
-  function handleDayModalClose() {
-    setIsDayModalOpen(false);
   }
 
   function handleEditDay(day: Day) {
