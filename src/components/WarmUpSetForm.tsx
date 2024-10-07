@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 
 import { WarmUpType } from "../types/WarmUpType";
 import { WarmUpSet } from "../types/WarmUpSet";
-import { validateNumberInput } from "../utils/formUtils";
+import { validateNumberNotEmpty } from "../utils/formUtils";
 
 export interface WarmUpSetFormProps {
   initialValues?: WarmUpSet;
@@ -15,14 +15,15 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
   const { initialValues, onSave } = props;
 
   const form = useForm({
+    mode: "uncontrolled",
     initialValues: {
       type: initialValues?.type ?? WarmUpType.Percentage,
       reps: initialValues?.reps ?? 0,
       value: initialValues?.value ?? 0,
     },
     validate: {
-      reps: validateNumberInput,
-      value: validateNumberInput,
+      reps: validateNumberNotEmpty,
+      value: validateNumberNotEmpty,
     },
   });
 

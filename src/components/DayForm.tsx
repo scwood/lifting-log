@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { v4 as uuidV4 } from "uuid";
 
 import { Day } from "../types/Day";
-import { validateTextInput } from "../utils/formUtils";
+import { validateTextNotEmpty } from "../utils/formUtils";
 
 export interface DayFormProps {
   initialValues?: Day;
@@ -19,7 +19,7 @@ export function DayForm(props: DayFormProps) {
       name: initialValues?.name ?? "",
     },
     validate: {
-      name: validateTextInput,
+      name: validateTextNotEmpty,
     },
   });
 

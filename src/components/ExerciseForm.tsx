@@ -19,7 +19,11 @@ import { WarmUpSetForm } from "./WarmUpSetForm";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpSetCard } from "./WarmUpSetCard";
 import { moveItem } from "../utils/arrayUtils";
-import { validateNumberInput, validateTextInput } from "../utils/formUtils";
+import {
+  validateNumberGreaterThanZero,
+  validateNumberNotEmpty,
+  validateTextNotEmpty,
+} from "../utils/formUtils";
 import { FormErrorsSummary } from "./FormErrorsSummary";
 
 export interface ExerciseModalProps {
@@ -37,6 +41,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
   );
 
   const form = useForm({
+    mode: "uncontrolled",
     initialValues: {
       name: initialValues?.name ?? "",
       weight: initialValues?.weight ?? 0,
@@ -46,11 +51,11 @@ export function ExerciseForm(props: ExerciseModalProps) {
       minimumWeightIncrement: initialValues?.minimumWeightIncrement ?? 0,
     },
     validate: {
-      name: validateTextInput,
-      weight: validateNumberInput,
-      sets: validateNumberInput,
-      reps: validateNumberInput,
-      minimumWeightIncrement: validateNumberInput,
+      name: validateTextNotEmpty,
+      weight: validateNumberNotEmpty,
+      sets: validateNumberGreaterThanZero,
+      reps: validateNumberGreaterThanZero,
+      minimumWeightIncrement: validateNumberNotEmpty,
     },
   });
 
