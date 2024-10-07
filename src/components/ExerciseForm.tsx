@@ -7,14 +7,15 @@ import {
   Radio,
   TextInput,
   Box,
+  Modal,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { v4 as uuidV4 } from "uuid";
+import { useState } from "react";
 
 import { Exercise } from "../types/Exercise";
-import { useState } from "react";
 import { ExerciseType } from "../types/ExerciseType";
-import { WarmUpSetModal } from "./WarmUpSetModal";
+import { WarmUpSetForm } from "./WarmUpSetForm";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpSetCard } from "./WarmUpSetCard";
 import { moveItem } from "../utils/arrayUtils";
@@ -183,12 +184,17 @@ export function ExerciseForm(props: ExerciseModalProps) {
           Save
         </Button>
       </Flex>
-      <WarmUpSetModal
-        warmUpSet={warmUpSetToEdit ?? undefined}
+      <Modal
+        centered
         opened={isWarmUpSetModalOpen}
         onClose={() => setIsWarmUpSetModalOpen(false)}
-        onSave={handleSaveWarmUpSet}
-      />
+        title={`${warmUpSetToEdit ? "Edit" : "Create"} warm-up set`}
+      >
+        <WarmUpSetForm
+          initialValues={warmUpSetToEdit ?? undefined}
+          onSave={handleSaveWarmUpSet}
+        />
+      </Modal>
     </form>
   );
 
@@ -215,14 +221,11 @@ export function ExerciseForm(props: ExerciseModalProps) {
   }
 
   function handleSaveWarmUpSet(warmUpSet: WarmUpSet) {
+    setIsWarmUpSetModalOpen(false);
     if (warmUpSetToEdit) {
       setWarmUpSets((prev) => {
-        return prev.map((set) => {
-          if (set.id === warmUpSetToEdit.id) {
-            return warmUpSet;
-          } else {
-            return set;
-          }
+        return prev.map((w) => {
+          return w.id === warmUpSetToEdit.id ? warmUpSet : w;
         });
       });
     } else {

@@ -85,7 +85,6 @@ export default function PlanWorkoutTab() {
       >
         <DayForm
           initialValues={dayToEdit ?? undefined}
-          key={dayToEdit?.id}
           onSave={handleSaveDay}
         />
       </Modal>
