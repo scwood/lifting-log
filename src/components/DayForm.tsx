@@ -1,11 +1,13 @@
 import { Button, Flex, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { v4 as uuidV4 } from "uuid";
 
 import { Day } from "../types/Day";
+import { validateTextInput } from "../utils/formUtils";
 
 export interface DayFormProps {
   initialValues?: Day;
-  onSave: (name: string) => void;
+  onSave: (day: Day) => void;
 }
 
 export function DayForm(props: DayFormProps) {
@@ -17,12 +19,20 @@ export function DayForm(props: DayFormProps) {
       name: initialValues?.name ?? "",
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? "Invalid name" : null),
+      name: validateTextInput,
     },
   });
 
+  const handleSubmit = form.onSubmit((values) => {
+    if (initialValues) {
+      onSave({ ...initialValues, ...values });
+    } else {
+      onSave({ id: uuidV4(), exercises: [], ...values });
+    }
+  });
+
   return (
-    <form onSubmit={form.onSubmit((values) => onSave(values.name))}>
+    <form onSubmit={handleSubmit}>
       <TextInput
         withAsterisk
         label="Label"

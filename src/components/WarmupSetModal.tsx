@@ -75,7 +75,7 @@ export function WarmUpSetModal(props: WarmUpSetModalProps) {
           description={
             warmUpType === WarmUpType.Percentage
               ? "Percentage of working weight (1-100)"
-              : "Weight in pounds"
+              : "Weight for the set"
           }
           label={warmUpType === WarmUpType.Percentage ? "Percentage" : "Weight"}
           value={value}

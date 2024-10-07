@@ -1,9 +1,17 @@
 import { useState } from "react";
-import { ActionIcon, Button, Divider, Flex, Menu, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Divider,
+  Flex,
+  Menu,
+  Modal,
+  Title,
+} from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { Day } from "../types/Day";
-import { ExerciseModal } from "./ExerciseModal";
+import { ExerciseForm } from "./ExerciseForm";
 import { Exercise } from "../types/Exercise";
 import { PlanExerciseCard } from "./PlanExerciseCard";
 import { moveItem } from "../utils/arrayUtils";
@@ -88,12 +96,18 @@ export function PlanDay(props: PlanDayProps) {
         })}
         <Button onClick={handleAddExercise}>Add exercise</Button>
       </Flex>
-      <ExerciseModal
-        exercise={exerciseToEdit ?? undefined}
-        onSave={handleSaveExercise}
+      <Modal
+        centered
         opened={isExerciseModalOpen}
         onClose={() => setIsExerciseModalOpen(false)}
-      />
+        title={`${exerciseToEdit ? "Edit" : "Create"} exercise`}
+      >
+        <ExerciseForm
+          key={exerciseToEdit?.id}
+          initialValues={exerciseToEdit ?? undefined}
+          onSave={handleSaveExercise}
+        />
+      </Modal>
     </div>
   );
 
@@ -108,6 +122,7 @@ export function PlanDay(props: PlanDayProps) {
   }
 
   async function handleSaveExercise(exercise: Exercise) {
+    setIsExerciseModalOpen(false);
     let exercises: Exercise[];
     if (exerciseToEdit) {
       exercises = day.exercises.map((e) => {

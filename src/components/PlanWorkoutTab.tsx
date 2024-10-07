@@ -8,7 +8,6 @@ import {
   Title,
 } from "@mantine/core";
 import { useState } from "react";
-import { v4 as uuidV4 } from "uuid";
 
 import { Day } from "../types/Day";
 import { PlanDay } from "./PlanDay";
@@ -93,18 +92,18 @@ export default function PlanWorkoutTab() {
     </>
   );
 
-  async function handleSaveDay(name: string) {
+  async function handleSaveDay(day: Day) {
     if (!workout) {
       return;
     }
     setIsDayModalOpen(false);
     let days: Day[];
     if (dayToEdit) {
-      days = workout.days.map((day) => {
-        return day.id === dayToEdit.id ? { ...day, name } : day;
+      days = workout.days.map((d) => {
+        return d.id === dayToEdit.id ? { ...day } : d;
       });
     } else {
-      days = [...workout.days, { id: uuidV4(), name, exercises: [] }];
+      days = [...workout.days, day];
     }
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
