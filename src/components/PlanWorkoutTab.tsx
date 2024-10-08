@@ -16,9 +16,11 @@ import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { DayForm } from "./DayForm";
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 
 export default function PlanWorkoutTab() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [dayToEdit, setDayToEdit] = useState<Day | null>(null);
 
   const { data: workout, isLoading, isError } = useCurrentWorkoutQuery();
@@ -68,7 +70,7 @@ export default function PlanWorkoutTab() {
               moveUpDisabled={index === 0}
               moveDownDisabled={index === workout.days.length - 1}
               onEdit={handleEditDay}
-              onDelete={handleDeleteDay}
+              onDelete={handleConfirmDeleteDay}
               onMoveUp={(day) => handleMoveDay(day, "up")}
               onMoveDown={(day) => handleMoveDay(day, "down")}
             />
@@ -88,6 +90,12 @@ export default function PlanWorkoutTab() {
           onSave={handleSaveDay}
         />
       </Modal>
+      <DeleteConfirmationModal
+        itemName="day"
+        opened={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={() => handleDeleteDay()}
+      />
     </>
   );
 
@@ -107,11 +115,11 @@ export default function PlanWorkoutTab() {
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
 
-  async function handleDeleteDay(day: Day) {
-    if (!workout) {
+  async function handleDeleteDay() {
+    if (!workout || !dayToEdit) {
       return;
     }
-    const days = workout.days.filter((d) => d.id !== day.id);
+    const days = workout.days.filter((d) => d.id !== dayToEdit.id);
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
 
@@ -126,6 +134,11 @@ export default function PlanWorkoutTab() {
   function handleEditDay(day: Day) {
     setDayToEdit(day);
     setIsDayModalOpen(true);
+  }
+
+  function handleConfirmDeleteDay(day: Day) {
+    setDayToEdit(day);
+    setIsDeleteModalOpen(true);
   }
 
   function handleAddDay() {

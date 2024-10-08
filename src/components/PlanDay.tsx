@@ -17,6 +17,7 @@ import { PlanExerciseCard } from "./PlanExerciseCard";
 import { moveItem } from "../utils/arrayUtils";
 import { Workout } from "../types/Workout";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 
 export interface PlanDayProps {
   day: Day;
@@ -41,6 +42,7 @@ export function PlanDay(props: PlanDayProps) {
     onMoveUp,
   } = props;
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
 
@@ -86,7 +88,7 @@ export function PlanDay(props: PlanDayProps) {
               moveUpDisabled={index === 0}
               moveDownDisabled={index === day.exercises.length - 1}
               onEdit={handleEditExercise}
-              onDelete={handleDeleteExercise}
+              onDelete={handleConfirmDeleteExercise}
               onMoveUp={(exercise) => handleMoveExercise(exercise, "up")}
               onMoveDown={(exercise) => {
                 handleMoveExercise(exercise, "down");
@@ -108,6 +110,12 @@ export function PlanDay(props: PlanDayProps) {
           onSave={handleSaveExercise}
         />
       </Modal>
+      <DeleteConfirmationModal
+        itemName="exercise"
+        opened={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDeleteExercise}
+      />
     </div>
   );
 
@@ -134,8 +142,16 @@ export function PlanDay(props: PlanDayProps) {
     await updateExercises(exercises);
   }
 
-  async function handleDeleteExercise(exercise: Exercise) {
-    const exercises = day.exercises.filter((e) => e.id !== exercise.id);
+  function handleConfirmDeleteExercise(exercise: Exercise) {
+    setExerciseToEdit(exercise);
+    setIsDeleteModalOpen(true);
+  }
+
+  async function handleDeleteExercise() {
+    if (!exerciseToEdit) {
+      return;
+    }
+    const exercises = day.exercises.filter((e) => e.id !== exerciseToEdit.id);
     await updateExercises(exercises);
   }
 

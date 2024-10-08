@@ -25,6 +25,7 @@ import {
   validateTextNotEmpty,
 } from "../utils/formUtils";
 import { FormErrorsSummary } from "./FormErrorsSummary";
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 
 export interface ExerciseModalProps {
   initialValues?: Exercise;
@@ -36,6 +37,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
 
   const [warmUpSets, setWarmUpSets] = useState(initialValues?.warmUpSets ?? []);
   const [isWarmUpSetModalOpen, setIsWarmUpSetModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [warmUpSetToEdit, setWarmUpSetToEdit] = useState<WarmUpSet | null>(
     null
   );
@@ -175,7 +177,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
               onMoveUp={(warmUpSet) => handleMoveWarmUpSet(warmUpSet, "up")}
               onMoveDown={(warmUpSet) => handleMoveWarmUpSet(warmUpSet, "down")}
               onEdit={handleEditWarmUpSet}
-              onDelete={handleDeleteWarmUpSet}
+              onDelete={handleConfirmDeleteWarmUpSet}
             />
           );
         })}
@@ -200,6 +202,12 @@ export function ExerciseForm(props: ExerciseModalProps) {
           onSave={handleSaveWarmUpSet}
         />
       </Modal>
+      <DeleteConfirmationModal
+        opened={isDeleteModalOpen}
+        itemName="warm-up set"
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDeleteWarmUpSet}
+      />
     </form>
   );
 
@@ -213,9 +221,17 @@ export function ExerciseForm(props: ExerciseModalProps) {
     setIsWarmUpSetModalOpen(true);
   }
 
-  function handleDeleteWarmUpSet(warmUpSet: WarmUpSet) {
+  function handleConfirmDeleteWarmUpSet(warmUpSet: WarmUpSet) {
+    setWarmUpSetToEdit(warmUpSet);
+    setIsDeleteModalOpen(true);
+  }
+
+  function handleDeleteWarmUpSet() {
+    if (!warmUpSetToEdit) {
+      return;
+    }
     setWarmUpSets((prev) => {
-      return prev.filter((w) => w.id !== warmUpSet.id);
+      return prev.filter((w) => w.id !== warmUpSetToEdit.id);
     });
   }
 
