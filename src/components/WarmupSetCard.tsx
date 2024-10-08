@@ -29,9 +29,9 @@ export function WarmUpSetCard(props: WarmUpSetCardProps) {
     <Card>
       <Flex justify="space-between" align="center">
         <Text size="sm">
-          {warmUpSet.reps} rep{warmUpSet.reps !== 1 && "s"} for{" "}
+          {warmUpSet.reps} rep{warmUpSet.reps !== 1 && "s"} with{" "}
           {warmUpSet.value}
-          {warmUpSet.type === WarmUpType.Weight ? "lbs" : "% of working weight"}
+          {warmUpSet.type === WarmUpType.Percentage && "% of working weight"}
         </Text>
         <Menu>
           <Menu.Target>
