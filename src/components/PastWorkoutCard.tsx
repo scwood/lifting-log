@@ -11,9 +11,18 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
   const { workout } = props;
 
   return (
-    <Card withBorder shadow="sm" fz="sm">
-      <Card.Section withBorder inheritPadding py="xs" mb="xs">
-        <Text c="dimmed" size="sm">
+    <Card
+      withBorder
+      shadow="sm"
+      fz="sm">
+      <Card.Section
+        withBorder
+        inheritPadding
+        py="xs"
+        mb="xs">
+        <Text
+          c="dimmed"
+          size="sm">
           Completed on{" "}
           {new Date(workout.completedTimestamp || 0).toLocaleString(undefined, {
             dateStyle: "long",
@@ -21,7 +30,9 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
           })}
         </Text>
       </Card.Section>
-      <Flex direction="column" gap="xs">
+      <Flex
+        direction="column"
+        gap="xs">
         {workout.days.map((day) => {
           return (
             <div key={day.id}>
@@ -44,7 +55,12 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
             </div>
           );
         })}
-        {workout.notes && <Box>Notes: {workout.notes}</Box>}
+        {workout.notes && (
+          <Box>
+            <span className="underline">Notes</span>
+            <Text>{workout.notes}</Text>
+          </Box>
+        )}
       </Flex>
     </Card>
   );
