@@ -20,7 +20,7 @@
     "@mantine/hooks": "^7.1.5",
     "@tabler/icons-react": "^2.39.0",
     "@tanstack/react-query": "^5.8.4",
-    "firebase": "^10.6.0",
+    "firebase": "^10.9.0",
     "gh-pages": "^6.1.0",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
