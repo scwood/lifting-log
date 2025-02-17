@@ -43,7 +43,6 @@ export function ExerciseForm(props: ExerciseModalProps) {
   );
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       name: initialValues?.name ?? "",
       weight: initialValues?.weight ?? 0,

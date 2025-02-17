@@ -28,7 +28,6 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
   );
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       weight: initialValues.weight,
       sets: initialValues.sets,

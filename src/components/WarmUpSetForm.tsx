@@ -15,7 +15,6 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
   const { initialValues, onSave } = props;
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       type: initialValues?.type ?? WarmUpType.Percentage,
       reps: initialValues?.reps ?? 0,

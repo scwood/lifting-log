@@ -14,7 +14,6 @@ export function DayForm(props: DayFormProps) {
   const { initialValues, onSave } = props;
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       name: initialValues?.name ?? "",
     },
