@@ -97,7 +97,6 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
       </Radio.Group>
       <form onSubmit={handleSubmit}>
         <Flex direction="column" gap={4} ml="xl" mt={4}>
-          xs
           <NumberInput
             withAsterisk
             disabled={nextSessionAction !== NextSessionAction.Custom}
