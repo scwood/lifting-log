@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { Alert, Button, Flex } from "@mantine/core";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 
 import { useAuth } from "../hooks/useAuth";
 
 export default function SignInPage() {
-  const { signIn, error } = useAuth();
+  const { signIn, userId, error } = useAuth();
   const navigate = useNavigate();
+
+  if (userId) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <>
