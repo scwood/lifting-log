@@ -1,5 +1,6 @@
 import { Button, Radio, Flex, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useState } from "react";
 
 import { Exercise } from "../types/Exercise";
 import { NextSessionPlan } from "../types/NextSessionPlan";
@@ -22,11 +23,13 @@ enum NextSessionAction {
 
 export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
   const { initialValues, onSave } = props;
+  const [nextSessionAction, setNextSessionAction] = useState<NextSessionAction>(
+    NextSessionAction.DoNothing
+  );
 
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      nextSessionAction: NextSessionAction.DoNothing,
       weight: initialValues.weight,
       sets: initialValues.sets,
       reps: initialValues.reps,
@@ -60,17 +63,15 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
     onSave(nextSessionPlan);
   });
 
-  const nextSessionAction = form.getValues().nextSessionAction;
-
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <Radio.Group
+        value={nextSessionAction}
+        onChange={(value) => setNextSessionAction(value as NextSessionAction)}
         withAsterisk
         label="What do you want to do next session?"
-        key={form.key("nextSessionAction")}
-        {...form.getInputProps("nextSessionAction")}
       >
-        <Flex gap="xs" direction="column">
+        <Flex direction="column" gap="xs">
           <Radio
             mt="md"
             label="Do nothing"
@@ -82,72 +83,55 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
             description="Add a single rep for next session"
             value={NextSessionAction.AddRep}
           />
-          <div>
-            <Radio
-              label="Add weight"
-              description="Increases weight by the minimum amount for next session"
-              value={NextSessionAction.AddWeight}
-            />
-            {nextSessionAction === NextSessionAction.AddWeight && (
-              <NumberInput
-                withAsterisk
-                allowDecimal={false}
-                allowNegative={false}
-                label="Rep goal at new weight"
-                mb="xs"
-                ml="xl"
-                key={form.key("reps")}
-                {...form.getInputProps("reps")}
-              />
-            )}
-          </div>
-          <div>
-            <Radio
-              label="Custom"
-              description="Change the weight, reps, and/or sets for next session"
-              value={NextSessionAction.Custom}
-            />
-
-            {nextSessionAction === NextSessionAction.Custom && (
-              <Flex direction="column" gap={4} mt={4}>
-                <NumberInput
-                  withAsterisk
-                  allowDecimal={false}
-                  allowNegative={false}
-                  label="Weight"
-                  ml="xl"
-                  key={form.key("weight")}
-                  {...form.getInputProps("weight")}
-                />
-                <NumberInput
-                  withAsterisk
-                  allowDecimal={false}
-                  allowNegative={false}
-                  label="Sets"
-                  ml="xl"
-                  key={form.key("sets")}
-                  {...form.getInputProps("sets")}
-                />
-                <NumberInput
-                  withAsterisk
-                  allowDecimal={false}
-                  allowNegative={false}
-                  label="Reps"
-                  ml="xl"
-                  required
-                  key={form.key("reps")}
-                  {...form.getInputProps("reps")}
-                />
-              </Flex>
-            )}
-          </div>
+          <Radio
+            label="Add weight"
+            description="Increases weight by the minimum amount for next session"
+            value={NextSessionAction.AddWeight}
+          />
+          <Radio
+            label="Custom"
+            description="Change the weight, reps, and/or sets for next session"
+            value={NextSessionAction.Custom}
+          />
         </Flex>
       </Radio.Group>
-      <Flex justify="flex-end" mt="lg">
-        <Button color="green" type="submit">
-          Save
-        </Button>
-      </Flex>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <Flex direction="column" gap={4} ml="xl" mt={4}>
+          <NumberInput
+            withAsterisk
+            disabled={nextSessionAction !== NextSessionAction.Custom}
+            allowDecimal={false}
+            allowNegative={false}
+            label="Weight"
+            key={form.key("weight")}
+            {...form.getInputProps("weight")}
+          />
+          <NumberInput
+            withAsterisk
+            disabled={nextSessionAction !== NextSessionAction.Custom}
+            allowDecimal={false}
+            allowNegative={false}
+            label="Sets"
+            key={form.key("sets")}
+            {...form.getInputProps("sets")}
+          />
+          <NumberInput
+            withAsterisk
+            disabled={nextSessionAction !== NextSessionAction.Custom}
+            allowDecimal={false}
+            allowNegative={false}
+            label="Reps"
+            required
+            key={form.key("reps")}
+            {...form.getInputProps("reps")}
+          />
+        </Flex>
+        <Flex justify="flex-end" mt="lg">
+          <Button color="green" type="submit">
+            Save
+          </Button>
+        </Flex>
+      </form>
+    </div>
   );
 }
