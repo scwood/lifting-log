@@ -44,7 +44,11 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
             </div>
           );
         })}
-        {workout.notes && <Box>Notes: {workout.notes}</Box>}
+        {workout.notes && (
+          <Box>
+            <u>Notes:</u> {workout.notes}
+          </Box>
+        )}
       </Flex>
     </Card>
   );
