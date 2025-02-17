@@ -10,7 +10,7 @@ import {
   Divider,
 } from "@mantine/core";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";

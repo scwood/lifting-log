@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router";
+import { Link } from "react-router";
 import {
   UnstyledButton,
   Container,

@@ -6,7 +6,7 @@ import { getAuth } from "firebase/auth";
 import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
 
 import { AuthProvider } from "./AuthProvider";
-import { AppRouterProvider } from "./AppRouterProvider";
+import { AppRouter } from "./AppRouter";
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyBQpLMpVWLjHU7xenqPbsEWzGQ1b2eIdcw",
@@ -29,7 +29,7 @@ export function App() {
     <AuthProvider>
       <MantineProvider theme={theme} defaultColorScheme="dark">
         <QueryClientProvider client={queryClient}>
-          <AppRouterProvider />
+          <AppRouter />
         </QueryClientProvider>
       </MantineProvider>
     </AuthProvider>
