@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 import { authContext } from "../contexts/authContext";
+import { SignInProvider } from "../types/SignInProvider";
 
 export interface AuthProviderProps {
   children?: JSX.Element;
@@ -32,11 +33,14 @@ export function AuthProvider(props: AuthProviderProps) {
     });
   }, []);
 
-  const signIn = useCallback(async (provider: "google" | "github") => {
+  const signIn = useCallback(async (provider: SignInProvider) => {
     try {
-      provider === "github"
-        ? await signInWithGitHub()
-        : await signInWithGoogle();
+      await signInWithPopup(
+        getAuth(),
+        provider === SignInProvider.GitHub
+          ? new GithubAuthProvider()
+          : new GoogleAuthProvider()
+      );
       setError(null);
     } catch (error) {
       setError(error as Error);
@@ -66,12 +70,4 @@ export function AuthProvider(props: AuthProviderProps) {
       {isLoading ? null : children}
     </authContext.Provider>
   );
-}
-
-function signInWithGoogle() {
-  return signInWithPopup(getAuth(), new GoogleAuthProvider());
-}
-
-function signInWithGitHub() {
-  return signInWithPopup(getAuth(), new GithubAuthProvider());
 }

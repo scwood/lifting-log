@@ -3,6 +3,7 @@ import { Alert, Button, Flex } from "@mantine/core";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 
 import { useAuth } from "../hooks/useAuth";
+import { SignInProvider } from "../types/SignInProvider";
 
 export default function SignInPage() {
   const { signIn, userId, error } = useAuth();
@@ -20,7 +21,7 @@ export default function SignInPage() {
           size="md"
           color="gray"
           leftSection={<IconBrandGithub />}
-          onClick={() => handleSignIn("github")}
+          onClick={() => handleSignIn(SignInProvider.GitHub)}
         >
           Sign in with GitHub
         </Button>
@@ -28,7 +29,7 @@ export default function SignInPage() {
           size="md"
           color="gray"
           leftSection={<IconBrandGoogle />}
-          onClick={() => handleSignIn("google")}
+          onClick={() => handleSignIn(SignInProvider.Google)}
         >
           Sign in with Google
         </Button>
@@ -36,7 +37,7 @@ export default function SignInPage() {
     </>
   );
 
-  async function handleSignIn(provider: "google" | "github") {
+  async function handleSignIn(provider: SignInProvider) {
     await signIn(provider);
     navigate("/");
   }
