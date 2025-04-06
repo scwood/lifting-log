@@ -4,7 +4,7 @@ import {
   getAuth,
   signInWithPopup,
 } from "firebase/auth";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, JSX } from "react";
 
 import { authContext } from "../contexts/authContext";
 
@@ -32,26 +32,6 @@ export function AuthProvider(props: AuthProviderProps) {
     });
   }, []);
 
-  const signIn = useCallback(async (provider: "google" | "github") => {
-    try {
-      provider === "github"
-        ? await signInWithGitHub()
-        : await signInWithGoogle();
-      setError(null);
-    } catch (error) {
-      setError(error as Error);
-    }
-  }, []);
-
-  const signOut = useCallback(async () => {
-    try {
-      await getAuth().signOut();
-      setError(null);
-    } catch (error) {
-      setError(error as Error);
-    }
-  }, []);
-
   return (
     <authContext.Provider
       value={{
@@ -66,12 +46,27 @@ export function AuthProvider(props: AuthProviderProps) {
       {isLoading ? null : children}
     </authContext.Provider>
   );
-}
 
-function signInWithGoogle() {
-  return signInWithPopup(getAuth(), new GoogleAuthProvider());
-}
+  async function signIn(provider: "google" | "github") {
+    try {
+      await signInWithPopup(
+        getAuth(),
+        provider === "github"
+          ? new GithubAuthProvider()
+          : new GoogleAuthProvider()
+      );
+      setError(null);
+    } catch (error) {
+      setError(error as Error);
+    }
+  }
 
-function signInWithGitHub() {
-  return signInWithPopup(getAuth(), new GithubAuthProvider());
+  async function signOut() {
+    try {
+      await getAuth().signOut();
+      setError(null);
+    } catch (error) {
+      setError(error as Error);
+    }
+  }
 }
