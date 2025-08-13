@@ -1,50 +1,65 @@
-import { Button, Flex, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { Flex } from "@mantine/core";
 import { v4 as uuidV4 } from "uuid";
+import { z } from "zod";
 
 import { Day } from "../types/Day";
-import { validateTextNotEmpty } from "../utils/formUtils";
+import { useAppForm } from "../hooks/useAppForm";
 
 export interface DayFormProps {
   initialValues?: Day;
   onSave: (day: Day) => void;
 }
 
+const formSchema = z.object({
+  name: z.string().trim().nonempty("Name cannot be empty"),
+});
+
 export function DayForm(props: DayFormProps) {
   const { initialValues, onSave } = props;
 
-  const form = useForm({
-    initialValues: {
+  const form = useAppForm({
+    defaultValues: {
       name: initialValues?.name ?? "",
     },
-    validate: {
-      name: validateTextNotEmpty,
+    validators: {
+      onChange: formSchema,
     },
-  });
-
-  const handleSubmit = form.onSubmit((values) => {
-    if (initialValues) {
-      onSave({ ...initialValues, ...values });
-    } else {
-      onSave({ id: uuidV4(), exercises: [], ...values });
-    }
+    onSubmit: async ({ value }) => {
+      const result = formSchema.parse(value);
+      if (initialValues) {
+        onSave({ ...initialValues, ...result });
+      } else {
+        onSave({ id: uuidV4(), exercises: [], ...result });
+      }
+    },
   });
 
   return (
-    <form onSubmit={handleSubmit}>
-      <TextInput
-        withAsterisk
-        label="Label"
-        placeholder="Monday"
-        description="Label for the day. For example: A, B, Monday, Tuesday, etc."
-        key={form.key("name")}
-        {...form.getInputProps("name")}
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.AppField
+        name="name"
+        children={(field) => {
+          return (
+            <field.AppTextInput
+              withAsterisk
+              label="Name"
+              placeholder="Monday"
+              description="Label for the day. For example: A, B, Monday, Tuesday, etc."
+            />
+          );
+        }}
       />
-      <Flex justify="flex-end" mt="lg">
-        <Button type="submit" color="green">
-          Save
-        </Button>
-      </Flex>
+      <form.AppForm>
+        <Flex justify="flex-end" mt="lg">
+          <form.AppSubmitButton />
+        </Flex>
+      </form.AppForm>
     </form>
   );
 }
