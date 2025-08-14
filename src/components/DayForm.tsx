@@ -11,7 +11,7 @@ export interface DayFormProps {
 }
 
 const formSchema = z.object({
-  name: z.string().trim().nonempty("Name cannot be empty"),
+  name: z.string().trim().nonempty("Name is required"),
 });
 
 export function DayForm(props: DayFormProps) {

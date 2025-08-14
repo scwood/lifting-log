@@ -197,7 +197,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
         title={`${warmUpSetToEdit ? "Edit" : "Create"} warm-up set`}
       >
         <WarmUpSetForm
-          initialValues={warmUpSetToEdit ?? undefined}
+          defaultValues={warmUpSetToEdit ?? undefined}
           onSave={handleSaveWarmUpSet}
         />
       </Modal>

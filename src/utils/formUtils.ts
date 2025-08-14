@@ -1,3 +1,5 @@
+import { AnyFieldApi } from "@tanstack/react-form";
+
 const requiredMessage = "Required field";
 
 export function validateNumberNotEmpty(value: number) {
@@ -14,4 +16,10 @@ export function validateNumberGreaterThanZero(value: number) {
 
 export function validateTextNotEmpty(value: string) {
   return value.trim() === "" ? requiredMessage : null;
+}
+
+export function getFieldErrors(field: AnyFieldApi) {
+  return field.state.meta.isTouched && !field.state.meta.isValid
+    ? field.state.meta.errors.map((error) => error.message).join(", ")
+    : undefined;
 }

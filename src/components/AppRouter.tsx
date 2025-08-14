@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { Navigate, HashRouter, Routes, Route } from "react-router";
 
-import { Layout } from "./Layout";
+import { AppShell } from "./AppShell";
 import { AuthenticatedRoute } from "./AuthenticatedRoute";
 
 const CurrentWorkoutTab = lazy(() => import("./CurrentWorkoutTab"));
@@ -13,7 +13,7 @@ export function AppRouter() {
   return (
     <HashRouter>
       <Routes>
-        <Route element={<Layout />}>
+        <Route element={<AppShell />}>
           <Route element={<AuthenticatedRoute />}>
             <Route path="/" element={<CurrentWorkoutTab />} />
             <Route path="plan" element={<PlanWorkoutTab />} />
