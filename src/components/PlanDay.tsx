@@ -14,7 +14,7 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { Workout } from "../types/Workout";
-import { moveItem } from "../utils/arrayUtils";
+import { Direction, moveItem } from "../utils/arrayUtils";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ExerciseForm } from "./ExerciseForm";
 import { PlanExerciseCard } from "./PlanExerciseCard";
@@ -89,10 +89,8 @@ export function PlanDay(props: PlanDayProps) {
               moveDownDisabled={index === day.exercises.length - 1}
               onEdit={handleEditExercise}
               onDelete={handleConfirmDeleteExercise}
-              onMoveUp={(exercise) => handleMoveExercise(exercise, "up")}
-              onMoveDown={(exercise) => {
-                handleMoveExercise(exercise, "down");
-              }}
+              onMoveUp={() => handleMoveExercise(index, Direction.Up)}
+              onMoveDown={() => handleMoveExercise(index, Direction.Down)}
             />
           );
         })}
@@ -155,15 +153,8 @@ export function PlanDay(props: PlanDayProps) {
     await updateExercises(exercises);
   }
 
-  async function handleMoveExercise(
-    exercise: Exercise,
-    direction: "up" | "down",
-  ) {
-    const exercises = moveItem(
-      day.exercises,
-      (e) => e.id === exercise.id,
-      direction,
-    );
+  async function handleMoveExercise(index: number, direction: Direction) {
+    const exercises = moveItem(day.exercises, index, direction);
     await updateExercises(exercises);
   }
 

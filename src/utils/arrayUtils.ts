@@ -6,16 +6,20 @@ export function arraySwap<T>(array: T[], index1: number, index2: number): T[] {
   return newArray;
 }
 
+export enum Direction {
+  Up = "up",
+  Down = "down",
+}
+
 export function moveItem<T>(
   array: T[],
-  itemLocator: (item: T) => boolean,
-  direction: "up" | "down"
+  index: number,
+  direction: Direction,
 ): T[] {
-  const fromIndex = array.findIndex(itemLocator);
-  const directionLimit = direction === "up" ? 0 : array.length - 1;
-  if (fromIndex === -1 || fromIndex === directionLimit) {
+  const directionLimit = direction === Direction.Up ? 0 : array.length - 1;
+  if (index < 0 || index > array.length - 1 || index === directionLimit) {
     return array;
   }
-  const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  return arraySwap(array, fromIndex, toIndex);
+  const newIndex = direction === Direction.Up ? index - 1 : index + 1;
+  return arraySwap(array, index, newIndex);
 }

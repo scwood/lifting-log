@@ -14,7 +14,7 @@ import { useAppForm } from "../hooks/useAppForm";
 import { Exercise } from "../types/Exercise";
 import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpSet } from "../types/WarmUpSet";
-import { moveItem } from "../utils/arrayUtils";
+import { Direction, moveItem } from "../utils/arrayUtils";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { WarmUpSetCard } from "./WarmUpSetCard";
 import { WarmUpSetForm } from "./WarmUpSetForm";
@@ -229,8 +229,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
               warmUpSet={warmUpSet}
               moveUpDisabled={index === 0}
               moveDownDisabled={index === warmUpSets.length - 1}
-              onMoveUp={(warmUpSet) => handleMoveWarmUpSet(warmUpSet, "up")}
-              onMoveDown={(warmUpSet) => handleMoveWarmUpSet(warmUpSet, "down")}
+              onMoveUp={() => handleMoveWarmUpSet(index, Direction.Up)}
+              onMoveDown={() => handleMoveWarmUpSet(index, Direction.Down)}
               onEdit={handleEditWarmUpSet}
               onDelete={handleConfirmDeleteWarmUpSet}
             />
@@ -287,10 +287,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
     });
   }
 
-  function handleMoveWarmUpSet(warmUpSet: WarmUpSet, direction: "up" | "down") {
-    setWarmUpSets((prev) => {
-      return moveItem(prev, (w) => w.id === warmUpSet.id, direction);
-    });
+  function handleMoveWarmUpSet(index: number, direction: Direction) {
+    setWarmUpSets((prev) => moveItem(prev, index, direction));
   }
 
   function handleSaveWarmUpSet(warmUpSet: WarmUpSet) {

@@ -13,7 +13,7 @@ import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
-import { moveItem } from "../utils/arrayUtils";
+import { Direction, moveItem } from "../utils/arrayUtils";
 import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { PlanDay } from "./PlanDay";
@@ -71,8 +71,8 @@ export default function PlanWorkoutTab() {
               moveDownDisabled={index === workout.days.length - 1}
               onEdit={handleEditDay}
               onDelete={handleConfirmDeleteDay}
-              onMoveUp={(day) => handleMoveDay(day, "up")}
-              onMoveDown={(day) => handleMoveDay(day, "down")}
+              onMoveUp={() => handleMoveDay(index, Direction.Up)}
+              onMoveDown={() => handleMoveDay(index, Direction.Down)}
             />
           );
         })}
@@ -123,11 +123,11 @@ export default function PlanWorkoutTab() {
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
 
-  async function handleMoveDay(day: Day, direction: "up" | "down") {
+  async function handleMoveDay(index: number, direction: Direction) {
     if (!workout) {
       return;
     }
-    const days = moveItem(workout.days, (d) => d.id === day.id, direction);
+    const days = moveItem(workout.days, index, direction);
     await updateWorkout({ workoutId: workout.id, updates: { days } });
   }
 
