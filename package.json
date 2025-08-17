@@ -43,6 +43,6 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
-    "vite": "^4.5.9"
+    "vite": "^4.5.14"
   }
 }
