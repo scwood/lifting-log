@@ -70,9 +70,9 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
         form.handleSubmit();
       }}
     >

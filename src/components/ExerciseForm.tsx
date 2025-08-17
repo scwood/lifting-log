@@ -66,7 +66,6 @@ export function ExerciseForm(props: ExerciseModalProps) {
     },
     onSubmit: async ({ value }) => {
       const parsedValues = formSchema.parse(value);
-      console.log("Parsed values:", parsedValues);
       if (defaultValues) {
         onSave({
           ...defaultValues,
@@ -87,9 +86,9 @@ export function ExerciseForm(props: ExerciseModalProps) {
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
         form.handleSubmit();
       }}
     >
