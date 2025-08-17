@@ -1,16 +1,12 @@
-import { Button, Radio, Flex, NumberInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { Flex, Radio } from "@mantine/core";
+import z from "zod";
 
+import { useAppForm } from "../hooks/useAppForm";
 import { Exercise } from "../types/Exercise";
 import { NextSessionPlan } from "../types/NextSessionPlan";
-import {
-  validateNumberGreaterThanZero,
-  validateNumberNotEmpty,
-} from "../utils/formUtils";
 
 export interface ExerciseCompleteFormProps {
-  initialValues: Exercise;
+  defaultValues: Exercise;
   onSave: (nextSessionPlan: NextSessionPlan) => void;
 }
 
@@ -21,116 +17,155 @@ enum NextSessionAction {
   Custom = "custom",
 }
 
+const formSchema = z.object({
+  nextSessionAction: z.enum(NextSessionAction),
+  weight: z
+    .number("Weight is required")
+    .min(0, "Weight must be greater than or equal to 0"),
+  reps: z
+    .number("Reps is required")
+    .min(1, "Reps must be greater than or equal to 1"),
+  sets: z
+    .number("Sets is required")
+    .min(1, "Sets must be greater than or equal to 1"),
+});
+
 export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
-  const { initialValues, onSave } = props;
-  const [nextSessionAction, setNextSessionAction] = useState<NextSessionAction>(
-    NextSessionAction.DoNothing
-  );
+  const { defaultValues, onSave } = props;
 
-  const form = useForm({
-    initialValues: {
-      weight: initialValues.weight,
-      sets: initialValues.sets,
-      reps: initialValues.reps,
+  const form = useAppForm({
+    defaultValues: {
+      nextSessionAction: NextSessionAction.DoNothing,
+      weight: defaultValues.weight,
+      sets: defaultValues.sets,
+      reps: defaultValues.reps,
     },
-    validate: {
-      weight: validateNumberNotEmpty,
-      sets: validateNumberGreaterThanZero,
-      reps: validateNumberGreaterThanZero,
+    validators: {
+      onChange: formSchema,
     },
-  });
-
-  const handleSubmit = form.onSubmit((values) => {
-    const nextSessionPlan: NextSessionPlan = {};
-    switch (nextSessionAction) {
-      case NextSessionAction.AddRep:
-        nextSessionPlan.reps = initialValues.reps + 1;
-        break;
-      case NextSessionAction.AddWeight:
-        nextSessionPlan.weight =
-          initialValues.weight + initialValues.minimumWeightIncrement;
-        nextSessionPlan.reps = values.reps;
-        break;
-      case NextSessionAction.Custom:
-        nextSessionPlan.weight = values.weight;
-        nextSessionPlan.sets = values.sets;
-        nextSessionPlan.reps = values.reps;
-        break;
-      case NextSessionAction.DoNothing:
-      default:
-    }
-    onSave(nextSessionPlan);
+    onSubmit: ({ value }) => {
+      const nextSessionPlan: NextSessionPlan = {};
+      const { nextSessionAction, reps, weight, sets } = value;
+      switch (nextSessionAction) {
+        case NextSessionAction.AddRep:
+          nextSessionPlan.reps = defaultValues.reps + 1;
+          break;
+        case NextSessionAction.AddWeight:
+          nextSessionPlan.weight =
+            defaultValues.weight + defaultValues.minimumWeightIncrement;
+          nextSessionPlan.reps = reps;
+          break;
+        case NextSessionAction.Custom:
+          nextSessionPlan.weight = weight;
+          nextSessionPlan.sets = sets;
+          nextSessionPlan.reps = reps;
+          break;
+        case NextSessionAction.DoNothing:
+        default:
+      }
+      onSave(nextSessionPlan);
+    },
   });
 
   return (
-    <div>
-      <Radio.Group
-        value={nextSessionAction}
-        onChange={(value) => setNextSessionAction(value as NextSessionAction)}
-        withAsterisk
-        label="What do you want to do next session?"
-      >
-        <Flex direction="column" gap="xs">
-          <Radio
-            mt="md"
-            label="Do nothing"
-            description="Keep things the same for next session"
-            value={NextSessionAction.DoNothing}
-          />
-          <Radio
-            label="Add a rep"
-            description="Add a single rep for next session"
-            value={NextSessionAction.AddRep}
-          />
-          <Radio
-            label="Add weight"
-            description="Increases weight by the minimum amount for next session"
-            value={NextSessionAction.AddWeight}
-          />
-          <Radio
-            label="Custom"
-            description="Change the weight, reps, and/or sets for next session"
-            value={NextSessionAction.Custom}
-          />
-        </Flex>
-      </Radio.Group>
-      <form onSubmit={handleSubmit}>
-        <Flex direction="column" gap={4} ml="xl" mt={4}>
-          <NumberInput
-            withAsterisk
-            disabled={nextSessionAction !== NextSessionAction.Custom}
-            allowDecimal={false}
-            allowNegative={false}
-            label="Weight"
-            key={form.key("weight")}
-            {...form.getInputProps("weight")}
-          />
-          <NumberInput
-            withAsterisk
-            disabled={nextSessionAction !== NextSessionAction.Custom}
-            allowDecimal={false}
-            allowNegative={false}
-            label="Sets"
-            key={form.key("sets")}
-            {...form.getInputProps("sets")}
-          />
-          <NumberInput
-            withAsterisk
-            disabled={nextSessionAction !== NextSessionAction.Custom}
-            allowDecimal={false}
-            allowNegative={false}
-            label="Reps"
-            required
-            key={form.key("reps")}
-            {...form.getInputProps("reps")}
-          />
-        </Flex>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.AppField
+        name="nextSessionAction"
+        children={(field) => {
+          return (
+            <field.AppRadioGroup
+              withAsterisk
+              label="What do you want to do next session?"
+            >
+              <Flex direction="column" gap="xs">
+                <Radio
+                  mt="md"
+                  label="Do nothing"
+                  description="Keep things the same for next session"
+                  value={NextSessionAction.DoNothing}
+                />
+                <Radio
+                  label="Add a rep"
+                  description="Add a single rep for next session"
+                  value={NextSessionAction.AddRep}
+                />
+                <Radio
+                  label="Add weight"
+                  description="Increases weight by the minimum amount for next session"
+                  value={NextSessionAction.AddWeight}
+                />
+                <Radio
+                  label="Custom"
+                  description="Change the weight, reps, and/or sets for next session"
+                  value={NextSessionAction.Custom}
+                />
+              </Flex>
+            </field.AppRadioGroup>
+          );
+        }}
+      />
+      <form.Subscribe
+        selector={(state) => state.values.nextSessionAction}
+        children={(nextSessionAction) => {
+          return (
+            <Flex direction="column" gap={4} ml="xl" mt={4}>
+              <form.AppField
+                name="weight"
+                children={(field) => {
+                  return (
+                    <field.AppNumberInput
+                      label="Weight"
+                      required
+                      disabled={nextSessionAction !== NextSessionAction.Custom}
+                      allowDecimal
+                      allowNegative={false}
+                    />
+                  );
+                }}
+              />
+              <form.AppField
+                name="sets"
+                children={(field) => {
+                  return (
+                    <field.AppNumberInput
+                      label="Sets"
+                      required
+                      disabled={nextSessionAction !== NextSessionAction.Custom}
+                      allowDecimal={false}
+                      allowNegative={false}
+                    />
+                  );
+                }}
+              />
+              <form.AppField
+                name="reps"
+                children={(field) => {
+                  return (
+                    <field.AppNumberInput
+                      label="Reps"
+                      required
+                      disabled={nextSessionAction !== NextSessionAction.Custom}
+                      allowDecimal={false}
+                      allowNegative={false}
+                    />
+                  );
+                }}
+              />
+            </Flex>
+          );
+        }}
+      />
+      <form.AppForm>
         <Flex justify="flex-end" mt="lg">
-          <Button color="green" type="submit">
-            Save
-          </Button>
+          <form.AppSubmitButton />
         </Flex>
-      </form>
-    </div>
+      </form.AppForm>
+    </form>
   );
 }

@@ -1,10 +1,10 @@
-import { v4 as uuidV4 } from "uuid";
 import { Flex, Radio } from "@mantine/core";
+import { v4 as uuidV4 } from "uuid";
 import z from "zod";
 
-import { WarmUpType } from "../types/WarmUpType";
-import { WarmUpSet } from "../types/WarmUpSet";
 import { useAppForm } from "../hooks/useAppForm";
+import { WarmUpSet } from "../types/WarmUpSet";
+import { WarmUpType } from "../types/WarmUpType";
 
 export interface WarmUpSetFormProps {
   defaultValues?: WarmUpSet;
@@ -13,10 +13,12 @@ export interface WarmUpSetFormProps {
 
 const formSchema = z.object({
   type: z.enum(WarmUpType),
-  reps: z.number("Reps is required").gt(0, "Reps must be greater than 0"),
+  reps: z
+    .number("Reps is required")
+    .min(1, "Reps must be greater than or equal to 1"),
   value: z
     .number("Value is required")
-    .gte(0, "Value must be greater than or equal to 0"),
+    .min(0, "Value must be greater than or equal to 0"),
 });
 
 export function WarmUpSetForm(props: WarmUpSetFormProps) {

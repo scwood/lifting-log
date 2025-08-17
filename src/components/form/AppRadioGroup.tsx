@@ -15,14 +15,3 @@ export function AppRadioGroup(props: RadioGroupProps) {
     />
   );
 }
-
-// <TextInput
-//   value={field.state.value}
-//   onChange={(e) => field.handleChange(e.currentTarget.value)}
-//   error={
-//     field.state.meta.isTouched && !field.state.meta.isValid
-//       ? field.state.meta.errors.map((error) => error.message).join(", ")
-//       : undefined
-//   }
-//   {...props}
-// />
