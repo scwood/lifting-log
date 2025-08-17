@@ -41,6 +41,7 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
       reps: defaultValues.reps,
     },
     validators: {
+      onMount: formSchema,
       onChange: formSchema,
     },
     onSubmit: ({ value }) => {
@@ -121,7 +122,7 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                   return (
                     <field.AppNumberInput
                       label="Weight"
-                      required
+                      withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
                       allowDecimal
                       allowNegative={false}
@@ -135,7 +136,7 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                   return (
                     <field.AppNumberInput
                       label="Sets"
-                      required
+                      withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
                       allowDecimal={false}
                       allowNegative={false}
@@ -149,7 +150,7 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                   return (
                     <field.AppNumberInput
                       label="Reps"
-                      required
+                      withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
                       allowDecimal={false}
                       allowNegative={false}

@@ -9,14 +9,14 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 
-import { Day } from "../types/Day";
-import { PlanDay } from "./PlanDay";
-import { moveItem } from "../utils/arrayUtils";
+import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
+import { Day } from "../types/Day";
+import { moveItem } from "../utils/arrayUtils";
 import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { PlanDay } from "./PlanDay";
 
 export default function PlanWorkoutTab() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -86,7 +86,7 @@ export default function PlanWorkoutTab() {
         onClose={() => setIsDayModalOpen(false)}
       >
         <DayForm
-          initialValues={dayToEdit ?? undefined}
+          defaultValues={dayToEdit ?? undefined}
           onSave={handleSaveDay}
         />
       </Modal>

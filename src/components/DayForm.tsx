@@ -2,11 +2,11 @@ import { Flex } from "@mantine/core";
 import { v4 as uuidV4 } from "uuid";
 import { z } from "zod";
 
-import { Day } from "../types/Day";
 import { useAppForm } from "../hooks/useAppForm";
+import { Day } from "../types/Day";
 
 export interface DayFormProps {
-  initialValues?: Day;
+  defaultValues?: Day;
   onSave: (day: Day) => void;
 }
 
@@ -15,21 +15,22 @@ const formSchema = z.object({
 });
 
 export function DayForm(props: DayFormProps) {
-  const { initialValues, onSave } = props;
+  const { defaultValues, onSave } = props;
 
   const form = useAppForm({
     defaultValues: {
-      name: initialValues?.name ?? "",
+      name: defaultValues?.name ?? "",
     },
     validators: {
+      onMount: formSchema,
       onChange: formSchema,
     },
     onSubmit: async ({ value }) => {
-      const result = formSchema.parse(value);
-      if (initialValues) {
-        onSave({ ...initialValues, ...result });
+      const parsedValues = formSchema.parse(value);
+      if (defaultValues) {
+        onSave({ ...defaultValues, ...parsedValues });
       } else {
-        onSave({ id: uuidV4(), exercises: [], ...result });
+        onSave({ id: uuidV4(), exercises: [], ...parsedValues });
       }
     },
   });

@@ -27,22 +27,24 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
   const form = useAppForm({
     defaultValues: {
       type: defaultValues?.type ?? WarmUpType.Percentage,
-      reps: defaultValues?.reps ?? 0,
-      value: defaultValues?.value ?? 0,
+      reps: defaultValues?.reps,
+      value: defaultValues?.value,
     },
     validators: {
+      onMount: formSchema,
       onChange: formSchema,
     },
     onSubmit: ({ value }) => {
+      const parsedValues = formSchema.parse(value);
       if (defaultValues) {
         onSave({
           ...defaultValues,
-          ...value,
+          ...parsedValues,
         });
       } else {
         onSave({
           id: uuidV4(),
-          ...value,
+          ...parsedValues,
         });
       }
     },
@@ -92,6 +94,7 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                         allowNegative={false}
                         label="Reps"
                         description="Number of reps for the set"
+                        placeholder="5"
                       />
                     );
                   }}
@@ -116,6 +119,9 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                           warmUpType === WarmUpType.Percentage
                             ? "Percentage"
                             : "Weight"
+                        }
+                        placeholder={
+                          warmUpType === WarmUpType.Percentage ? "60" : "45"
                         }
                       />
                     );

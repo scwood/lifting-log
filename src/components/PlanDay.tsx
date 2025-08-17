@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ActionIcon,
   Button,
@@ -9,15 +8,16 @@ import {
   Title,
 } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
+import { useState } from "react";
 
-import { Day } from "../types/Day";
-import { ExerciseForm } from "./ExerciseForm";
-import { Exercise } from "../types/Exercise";
-import { PlanExerciseCard } from "./PlanExerciseCard";
-import { moveItem } from "../utils/arrayUtils";
-import { Workout } from "../types/Workout";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
+import { Day } from "../types/Day";
+import { Exercise } from "../types/Exercise";
+import { Workout } from "../types/Workout";
+import { moveItem } from "../utils/arrayUtils";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { ExerciseForm } from "./ExerciseForm";
+import { PlanExerciseCard } from "./PlanExerciseCard";
 
 export interface PlanDayProps {
   day: Day;
@@ -106,7 +106,7 @@ export function PlanDay(props: PlanDayProps) {
       >
         <ExerciseForm
           key={exerciseToEdit?.id}
-          initialValues={exerciseToEdit ?? undefined}
+          defaultValues={exerciseToEdit ?? undefined}
           onSave={handleSaveExercise}
         />
       </Modal>
@@ -157,12 +157,12 @@ export function PlanDay(props: PlanDayProps) {
 
   async function handleMoveExercise(
     exercise: Exercise,
-    direction: "up" | "down"
+    direction: "up" | "down",
   ) {
     const exercises = moveItem(
       day.exercises,
       (e) => e.id === exercise.id,
-      direction
+      direction,
     );
     await updateExercises(exercises);
   }
@@ -172,7 +172,7 @@ export function PlanDay(props: PlanDayProps) {
       workoutId: workout.id,
       updates: {
         days: workout.days.map((d) =>
-          d.id === day.id ? { ...d, exercises } : d
+          d.id === day.id ? { ...d, exercises } : d,
         ),
       },
     });
