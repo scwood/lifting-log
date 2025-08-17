@@ -1,20 +1,20 @@
 import { Divider, Modal, Table, Title } from "@mantine/core";
 import { useState } from "react";
 
+import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
-import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { WorkingSetTableRow } from "./WorkingSetTableRow";
-import { Workout } from "../types/Workout";
-import { WorkingSet } from "../types/WorkingSet";
-import { ExerciseCompleteForm } from "./ExerciseCompleteForm";
 import { NextSessionPlan } from "../types/NextSessionPlan";
+import { WorkingSet } from "../types/WorkingSet";
+import { Workout } from "../types/Workout";
 import {
   calculatePlates,
   getWarmUpWeight,
   isExerciseComplete,
   isPlateExercise,
 } from "../utils/workoutUtils";
+import { ExerciseCompleteForm } from "./ExerciseCompleteForm";
+import { WorkingSetTableRow } from "./WorkingSetTableRow";
 
 export interface CurrentWorkoutDayProps {
   workout: Workout;
@@ -27,11 +27,11 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const [isExerciseCompleteModalOpen, setIsExerciseCompleteModalOpen] =
     useState(false);
   const [completedExercise, setCompletedExercise] = useState<Exercise | null>(
-    null
+    null,
   );
   const [lastWorkingSet, setLastWorkingSet] = useState<WorkingSet | null>(null);
   const [lastWorkingSetIndex, setLastWorkingSetIndex] = useState<number | null>(
-    null
+    null,
   );
   const incompleteExercises = day.exercises.filter((exercise) => {
     return !isExerciseComplete(exercise);
@@ -102,7 +102,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       >
         {completedExercise && (
           <ExerciseCompleteForm
-            initialValues={completedExercise}
+            defaultValues={completedExercise}
             onSave={handleSaveWorkoutCompletion}
           />
         )}
@@ -113,7 +113,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   async function updateWorkingSet(
     exercise: Exercise,
     setNumber: number,
-    workingSet: WorkingSet
+    workingSet: WorkingSet,
   ) {
     const exerciseCopy = {
       ...exercise,

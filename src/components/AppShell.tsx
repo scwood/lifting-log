@@ -15,7 +15,7 @@ import { IconBrandGithub, IconLogout, IconUser } from "@tabler/icons-react";
 
 import { useAuth } from "../hooks/useAuth";
 
-export function Layout() {
+export function AppShell() {
   const { signOut, userId, displayName } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

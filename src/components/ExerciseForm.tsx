@@ -3,163 +3,219 @@ import {
   Flex,
   InputDescription,
   InputLabel,
-  NumberInput,
-  Radio,
-  TextInput,
-  Box,
   Modal,
+  Radio,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { v4 as uuidV4 } from "uuid";
 import { useState } from "react";
+import { v4 as uuidV4 } from "uuid";
+import z from "zod";
 
+import { useAppForm } from "../hooks/useAppForm";
 import { Exercise } from "../types/Exercise";
 import { ExerciseType } from "../types/ExerciseType";
-import { WarmUpSetForm } from "./WarmUpSetForm";
 import { WarmUpSet } from "../types/WarmUpSet";
-import { WarmUpSetCard } from "./WarmUpSetCard";
 import { moveItem } from "../utils/arrayUtils";
-import {
-  validateNumberGreaterThanZero,
-  validateNumberNotEmpty,
-  validateTextNotEmpty,
-} from "../utils/formUtils";
-import { FormErrorsSummary } from "./FormErrorsSummary";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { WarmUpSetCard } from "./WarmUpSetCard";
+import { WarmUpSetForm } from "./WarmUpSetForm";
+
+const formSchema = z.object({
+  name: z.string().trim().nonempty("Name is required"),
+  weight: z
+    .number("Weight is required")
+    .min(0, "Weight must be greater than or equal to 0"),
+  sets: z
+    .number("Sets is required")
+    .min(1, "Sets must be greater than or equal to 1"),
+  reps: z
+    .number("Reps is required")
+    .min(1, "Reps must be greater than or equal to 1"),
+  type: z.enum(ExerciseType),
+  minimumWeightIncrement: z
+    .number("Minimum weight increment is required")
+    .gt(0, "Minimum weight increment must be greater than 0"),
+});
 
 export interface ExerciseModalProps {
-  initialValues?: Exercise;
+  defaultValues?: Exercise;
   onSave: (exercise: Exercise) => void;
 }
 
 export function ExerciseForm(props: ExerciseModalProps) {
-  const { initialValues, onSave } = props;
+  const { defaultValues, onSave } = props;
 
-  const [warmUpSets, setWarmUpSets] = useState(initialValues?.warmUpSets ?? []);
+  const [warmUpSets, setWarmUpSets] = useState(defaultValues?.warmUpSets ?? []);
   const [isWarmUpSetModalOpen, setIsWarmUpSetModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [warmUpSetToEdit, setWarmUpSetToEdit] = useState<WarmUpSet | null>(
-    null
+    null,
   );
 
-  const form = useForm({
-    initialValues: {
-      name: initialValues?.name ?? "",
-      weight: initialValues?.weight ?? 0,
-      sets: initialValues?.sets ?? 0,
-      reps: initialValues?.reps ?? 0,
-      type: initialValues?.type ?? ExerciseType.DoublePlate,
-      minimumWeightIncrement: initialValues?.minimumWeightIncrement ?? 0,
+  const form = useAppForm({
+    defaultValues: {
+      name: defaultValues?.name ?? "",
+      weight: defaultValues?.weight,
+      sets: defaultValues?.sets,
+      reps: defaultValues?.reps,
+      type: defaultValues?.type ?? ExerciseType.DoublePlate,
+      minimumWeightIncrement: defaultValues?.minimumWeightIncrement ?? 5,
     },
-    validate: {
-      name: validateTextNotEmpty,
-      weight: validateNumberNotEmpty,
-      sets: validateNumberGreaterThanZero,
-      reps: validateNumberGreaterThanZero,
-      minimumWeightIncrement: validateNumberNotEmpty,
+    validators: {
+      onMount: formSchema,
+      onChange: formSchema,
     },
-  });
-
-  const handleSubmit = form.onSubmit((values) => {
-    if (initialValues) {
-      onSave({
-        ...initialValues,
-        ...values,
-        warmUpSets,
-        minimumWeightIncrement: getMinimumWeightIncrement(),
-      });
-    } else {
-      onSave({
-        ...values,
-        id: uuidV4(),
-        warmUpSets,
-        workingSets: {},
-        nextSession: {},
-        minimumWeightIncrement: getMinimumWeightIncrement(),
-      });
-    }
+    onSubmit: async ({ value }) => {
+      const parsedValues = formSchema.parse(value);
+      if (defaultValues) {
+        onSave({
+          ...defaultValues,
+          ...parsedValues,
+          warmUpSets,
+        });
+      } else {
+        onSave({
+          ...parsedValues,
+          id: uuidV4(),
+          warmUpSets,
+          workingSets: {},
+          nextSession: {},
+        });
+      }
+    },
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       <Flex direction="column" gap="sm">
-        <TextInput
-          withAsterisk
-          label="Name"
-          description="Name of the exercise"
-          placeholder="Bench press"
-          key={form.key("name")}
-          {...form.getInputProps("name")}
+        <form.AppField
+          name="name"
+          children={(field) => {
+            return (
+              <field.AppTextInput
+                withAsterisk
+                label="Name"
+                description="Name of the exercise"
+                placeholder="Bench press"
+              />
+            );
+          }}
         />
-        <NumberInput
-          withAsterisk
-          label="Weight"
-          description="Your current working weight for the exercise"
-          placeholder="150"
-          allowNegative={false}
-          allowDecimal
-          key={form.key("weight")}
-          {...form.getInputProps("weight")}
+        <form.AppField
+          name="weight"
+          children={(field) => {
+            return (
+              <field.AppNumberInput
+                withAsterisk
+                label="Weight"
+                description="Your current working weight for the exercise"
+                placeholder="150"
+                allowNegative={false}
+                allowDecimal
+              />
+            );
+          }}
         />
-        <NumberInput
-          withAsterisk
-          label="Sets"
-          placeholder="3"
-          description="Number of working sets you aim to complete currently"
-          allowNegative={false}
-          allowDecimal={false}
-          key={form.key("sets")}
-          {...form.getInputProps("sets")}
+        <form.AppField
+          name="sets"
+          children={(field) => {
+            return (
+              <field.AppNumberInput
+                withAsterisk
+                label="Sets"
+                placeholder="3"
+                description="Number of working sets you aim to complete currently"
+                allowNegative={false}
+                allowDecimal={false}
+              />
+            );
+          }}
         />
-        <NumberInput
-          withAsterisk
-          label="Reps"
-          placeholder="5"
-          description="Number of reps you aim to complete currently"
-          allowNegative={false}
-          allowDecimal={false}
-          key={form.key("reps")}
-          {...form.getInputProps("reps")}
+        <form.AppField
+          name="reps"
+          children={(field) => {
+            return (
+              <field.AppNumberInput
+                withAsterisk
+                label="Reps"
+                placeholder="5"
+                description="Number of reps you aim to complete currently"
+                allowNegative={false}
+                allowDecimal={false}
+              />
+            );
+          }}
         />
-        <Radio.Group
-          withAsterisk
-          name="exerciseType"
-          label="Exercise type"
-          description="This field tells the app how to calculate warm-up sets. If your exercise uses plates, the app will tell you which plates to load."
-          key={form.key("type")}
-          {...form.getInputProps("type")}
-        >
-          <Flex direction="column" gap="xs" mt="xs">
-            <Radio
-              value={ExerciseType.DoublePlate}
-              label="Two sets of plates"
-              description="Use this for barbell exercises or machines that are weighted with plates on two sides (leg press, etc.)."
-            />
-            <Radio
-              value={ExerciseType.SinglePlate}
-              label="One set of plates"
-              description="Use this for exercises that are weighted with a single set of plates (weighted pull-ups, dips, etc.)"
-            />
-            <Radio
-              value={ExerciseType.Other}
-              description="Use this for exercises that are not weighted with plates (dumbbell, cable machines, bodyweight etc.)"
-              label="Other"
-            />
-          </Flex>
-        </Radio.Group>
-        {form.getValues().type === ExerciseType.Other && (
-          <NumberInput
-            withAsterisk
-            allowDecimal
-            ml="xl"
-            allowNegative={false}
-            placeholder="5"
-            label="Minimum weight increment"
-            description="The smallest weight increment for the exercise (might be 5 for a dumbbell exercise, 2.5 for a certain machine, etc.)"
-            key={form.key("minimumWeightIncrement")}
-            {...form.getInputProps("minimumWeightIncrement")}
-          />
-        )}
+        <form.AppField
+          name="type"
+          listeners={{
+            onChange: ({ value }) => {
+              if (value === ExerciseType.SinglePlate) {
+                form.setFieldValue("minimumWeightIncrement", 2.5);
+              } else {
+                form.setFieldValue("minimumWeightIncrement", 5);
+              }
+            },
+          }}
+          children={(field) => {
+            return (
+              <field.AppRadioGroup
+                withAsterisk
+                name="exerciseType"
+                label="Exercise type"
+                description="This field tells the app how to calculate warm-up sets. If your exercise uses plates, the app will tell you which plates to load."
+              >
+                <Flex direction="column" gap="xs" mt="xs">
+                  <Radio
+                    value={ExerciseType.DoublePlate}
+                    label="Two sets of plates"
+                    description="Use this for barbell exercises or machines that are weighted with plates on two sides (leg press, etc.)."
+                  />
+                  <Radio
+                    value={ExerciseType.SinglePlate}
+                    label="One set of plates"
+                    description="Use this for exercises that are weighted with a single set of plates (weighted pull-ups, dips, etc.)"
+                  />
+                  <Radio
+                    value={ExerciseType.Other}
+                    description="Use this for exercises that are not weighted with plates (dumbbell, cable machines, bodyweight etc.)"
+                    label="Other"
+                  />
+                </Flex>
+              </field.AppRadioGroup>
+            );
+          }}
+        />
+        <form.Subscribe
+          selector={(state) => state.values.type}
+          children={(type) => {
+            return (
+              type === ExerciseType.Other && (
+                <form.AppField
+                  name="minimumWeightIncrement"
+                  children={(field) => {
+                    return (
+                      <field.AppNumberInput
+                        withAsterisk
+                        allowDecimal
+                        ml="xl"
+                        allowNegative={false}
+                        placeholder="5"
+                        label="Minimum weight increment"
+                        description="The smallest weight increment for the exercise (might be 5 for a dumbbell exercise, 2.5 for a certain machine, etc.)"
+                      />
+                    );
+                  }}
+                />
+              )
+            );
+          }}
+        />
         <div>
           <InputLabel>Warm-up sets</InputLabel>
           <InputDescription>
@@ -182,14 +238,11 @@ export function ExerciseForm(props: ExerciseModalProps) {
         })}
         <Button onClick={handleCreateWarmUpSet}>Add warm-up set</Button>
       </Flex>
-      <Box mt="lg">
-        <FormErrorsSummary form={form} />
-      </Box>
-      <Flex justify="flex-end" mt="md">
-        <Button type="submit" color="green">
-          Save
-        </Button>
-      </Flex>
+      <form.AppForm>
+        <Flex justify="flex-end" mt="md">
+          <form.AppSubmitButton />
+        </Flex>
+      </form.AppForm>
       <Modal
         centered
         opened={isWarmUpSetModalOpen}
@@ -197,7 +250,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
         title={`${warmUpSetToEdit ? "Edit" : "Create"} warm-up set`}
       >
         <WarmUpSetForm
-          initialValues={warmUpSetToEdit ?? undefined}
+          defaultValues={warmUpSetToEdit ?? undefined}
           onSave={handleSaveWarmUpSet}
         />
       </Modal>
@@ -252,16 +305,6 @@ export function ExerciseForm(props: ExerciseModalProps) {
       setWarmUpSets((prev) => {
         return [...prev, warmUpSet];
       });
-    }
-  }
-
-  function getMinimumWeightIncrement() {
-    if (form.getValues().type === ExerciseType.DoublePlate) {
-      return 5;
-    } else if (form.getValues().type === ExerciseType.SinglePlate) {
-      return 2.5;
-    } else {
-      return form.getValues().minimumWeightIncrement;
     }
   }
 }
