@@ -64,7 +64,6 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
                       <Table.Td>{warmUpWeight}</Table.Td>
                       {isPlateExercise(exercise) && (
                         <Table.Td>
-                          {}
                           {calculatePlates(warmUpWeight, exercise.type)}
                         </Table.Td>
                       )}

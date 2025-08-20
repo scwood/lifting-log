@@ -1,8 +1,9 @@
 import { Checkbox, NumberInput, Table, Tooltip } from "@mantine/core";
+import { useState } from "react";
 
-import { calculatePlates, isPlateExercise } from "../utils/workoutUtils";
-import { WorkingSet } from "../types/WorkingSet";
 import { Exercise } from "../types/Exercise";
+import { WorkingSet } from "../types/WorkingSet";
+import { calculatePlates, isPlateExercise } from "../utils/workoutUtils";
 
 export interface WorkingSetTableRowProps {
   exercise: Exercise;
@@ -12,6 +13,8 @@ export interface WorkingSetTableRowProps {
 
 export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   const { exercise, workingSet, onChange } = props;
+  const [localReps, setLocalReps] = useState(workingSet.reps ?? exercise.reps);
+  const isLocalRepsValid = localReps >= 0;
 
   return (
     <Table.Tr>
@@ -26,7 +29,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
           max={99}
           min={0}
           placeholder={String(exercise.reps)}
-          value={workingSet.reps ?? ""}
+          value={localReps}
           onChange={handleOnChangeReps}
           hideControls
         />
@@ -35,14 +38,14 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
         <Tooltip
           label="Enter reps to log"
           withArrow
-          disabled={workingSet.reps !== null}
+          disabled={isLocalRepsValid}
           events={{ hover: true, touch: true, focus: false }}
         >
           <Checkbox
             size="md"
             color="green"
             onChange={handleOnChangeIsLogged}
-            disabled={workingSet.reps === null}
+            disabled={!isLocalRepsValid}
             checked={workingSet.isLogged}
           />
         </Tooltip>
@@ -52,16 +55,18 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
 
   function handleOnChangeReps(value: string | number) {
     const parsedValue = parseInt(String(value));
+    const isValid = parsedValue >= 0;
+    setLocalReps(parsedValue);
     onChange({
-      isLogged: parsedValue >= 0 ? workingSet.isLogged : false,
-      reps: parsedValue >= 0 ? parsedValue : null,
+      isLogged: isValid ? workingSet.isLogged : false,
+      reps: isValid ? parsedValue : null,
     });
   }
 
   function handleOnChangeIsLogged(event: React.ChangeEvent<HTMLInputElement>) {
     onChange({
       isLogged: event.target.checked,
-      reps: workingSet.reps,
+      reps: localReps,
     });
   }
 }
