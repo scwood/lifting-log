@@ -34,11 +34,11 @@ export function CurrentWorkoutPage() {
   console.log("currentWorkout", currentWorkout);
 
   // Sync notes from currentWorkout to input
-  // const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
-  // if (currentWorkout !== prevCurrentWorkout) {
-  //   setPrevCurrentWorkout(currentWorkout);
-  //   setNotes(currentWorkout?.notes ?? "");
-  // }
+  const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
+  if (currentWorkout !== prevCurrentWorkout) {
+    setPrevCurrentWorkout(currentWorkout);
+    setNotes(currentWorkout?.notes ?? "");
+  }
 
   if (isLoading) {
     return (
