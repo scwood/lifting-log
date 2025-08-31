@@ -31,8 +31,6 @@ export function CurrentWorkoutPage() {
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
 
-  console.log("currentWorkout", currentWorkout);
-
   // Sync notes from currentWorkout to input
   const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
   if (currentWorkout !== prevCurrentWorkout) {
