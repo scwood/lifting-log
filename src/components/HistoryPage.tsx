@@ -3,7 +3,7 @@ import { Center, Flex, Loader, Title } from "@mantine/core";
 import { useWorkoutsQuery } from "../hooks/useWorkoutsQuery";
 import { PastWorkoutCard } from "./PastWorkoutCard";
 
-export default function HistoryTab() {
+export function HistoryPage() {
   const { data: workouts, isLoading, isError } = useWorkoutsQuery();
 
   if (isLoading) {
