@@ -18,7 +18,7 @@ import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { PlanDay } from "./PlanDay";
 
-export default function PlanWorkoutTab() {
+export function PlanWorkoutPage() {
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [dayToEdit, setDayToEdit] = useState<Day | null>(null);

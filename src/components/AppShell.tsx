@@ -1,17 +1,14 @@
-import { Suspense } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router";
-import { Link } from "react-router";
 import {
-  UnstyledButton,
+  ActionIcon,
   Container,
   Flex,
-  ActionIcon,
   Menu,
   Tabs,
-  Center,
-  Loader,
+  UnstyledButton,
 } from "@mantine/core";
 import { IconBrandGithub, IconLogout, IconUser } from "@tabler/icons-react";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 import { useAuth } from "../hooks/useAuth";
 
@@ -66,15 +63,7 @@ export function AppShell() {
           </Tabs.List>
         </Tabs>
       )}
-      <Suspense
-        fallback={
-          <Center>
-            <Loader />
-          </Center>
-        }
-      >
-        <Outlet />
-      </Suspense>
+      <Outlet />
     </Container>
   );
 

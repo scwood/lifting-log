@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import { updateWorkout } from "../api/workoutsApi";
+import { useCurrentUser } from "../hooks/useCurrentUser";
+import { Workout } from "../types/Workout";
 import { currentWorkoutQueryKey } from "./useCurrentWorkoutQuery";
 import { workoutsQueryKey } from "./useWorkoutsQuery";
-import { Workout } from "../types/Workout";
 
 export function useUpdateWorkoutMutation() {
   const { userId } = useCurrentUser();
@@ -22,7 +22,7 @@ export function useUpdateWorkoutMutation() {
     },
     onMutate: ({ workoutId, updates }) => {
       const currentWorkout = queryClient.getQueryData<Workout>(
-        currentWorkoutQueryKey(userId)
+        currentWorkoutQueryKey(userId),
       );
       if (currentWorkout && currentWorkout.id === workoutId) {
         queryClient.setQueryData(currentWorkoutQueryKey(userId), {
@@ -31,13 +31,15 @@ export function useUpdateWorkoutMutation() {
         });
       }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: currentWorkoutQueryKey(userId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: workoutsQueryKey(userId),
-      });
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: currentWorkoutQueryKey(userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: workoutsQueryKey(userId),
+        }),
+      ]);
     },
   });
 }

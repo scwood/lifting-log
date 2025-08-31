@@ -1,4 +1,13 @@
-import { Divider, Modal, Table, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Divider,
+  Flex,
+  Menu,
+  Modal,
+  Table,
+  Title,
+} from "@mantine/core";
+import { IconDots } from "@tabler/icons-react";
 import { useState } from "react";
 
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
@@ -23,7 +32,7 @@ export interface CurrentWorkoutDayProps {
 
 export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const { workout, day } = props;
-  const { mutate: updateWorkout } = useUpdateWorkoutMutation();
+  const { mutateAsync: updateWorkout } = useUpdateWorkoutMutation();
   const [isExerciseCompleteModalOpen, setIsExerciseCompleteModalOpen] =
     useState(false);
   const [completedExercise, setCompletedExercise] = useState<Exercise | null>(
@@ -44,9 +53,21 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       {incompleteExercises.map((exercise) => {
         return (
           <div key={exercise.id}>
-            <Title order={4} mb="xs">
-              {exercise.name}:
-            </Title>
+            <Flex justify="space-between" align="center" mb="xs">
+              <Title order={4}>{exercise.name}:</Title>
+              <Menu>
+                <Menu.Target>
+                  <ActionIcon variant="subtle" color="gray">
+                    <IconDots />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => handleSkipExercise(exercise)}>
+                    Skip exercise
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Flex>
             <Table mb="lg" withTableBorder>
               <Table.Thead>
                 <Table.Tr>
@@ -131,7 +152,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
     }
   }
 
-  function handleSaveWorkoutCompletion(nextSession: NextSessionPlan) {
+  async function handleSaveWorkoutCompletion(nextSession: NextSessionPlan) {
     if (
       completedExercise === null ||
       lastWorkingSet === null ||
@@ -148,7 +169,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       },
       nextSession,
     };
-    updateExercise(exerciseCopy);
+    await updateExercise(exerciseCopy);
   }
 
   async function updateExercise(exercise: Exercise) {
@@ -167,5 +188,21 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
         }),
       },
     });
+  }
+
+  async function handleSkipExercise(exercise: Exercise) {
+    const exerciseCopy: Exercise = {
+      ...exercise,
+      workingSets: {},
+      nextSession: {
+        weight: exercise.weight,
+        reps: exercise.reps,
+        sets: exercise.sets,
+      },
+    };
+    for (let i = 0; i < exercise.sets; i++) {
+      exerciseCopy.workingSets[i] = { isLogged: true, reps: 0 };
+    }
+    await updateExercise(exerciseCopy);
   }
 }

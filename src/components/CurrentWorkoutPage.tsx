@@ -1,42 +1,44 @@
 import {
-  Flex,
-  Title,
-  Center,
-  Loader,
+  Anchor,
   Button,
+  Center,
+  Divider,
+  Flex,
+  Loader,
   Text,
   Textarea,
-  Anchor,
-  Divider,
+  Title,
 } from "@mantine/core";
 import { useState } from "react";
 import { Link } from "react-router";
 
+import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
-import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
+import { Day } from "../types/Day";
+import { Exercise } from "../types/Exercise";
 import {
   isAnyExerciseComplete,
   isEveryDayComplete,
   isExerciseComplete,
 } from "../utils/workoutUtils";
-import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 import { CompletedExercise } from "./CompletedExercise";
-import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
+import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 
-export default function CurrentWorkoutTab() {
+export function CurrentWorkoutPage() {
   const { isLoading, isError, data: currentWorkout } = useCurrentWorkoutQuery();
   const { mutate: createWorkout } = useCreateWorkoutMutation();
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
 
+  console.log("currentWorkout", currentWorkout);
+
   // Sync notes from currentWorkout to input
-  const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
-  if (currentWorkout !== prevCurrentWorkout) {
-    setPrevCurrentWorkout(currentWorkout);
-    setNotes(currentWorkout?.notes ?? "");
-  }
+  // const [prevCurrentWorkout, setPrevCurrentWorkout] = useState(currentWorkout);
+  // if (currentWorkout !== prevCurrentWorkout) {
+  //   setPrevCurrentWorkout(currentWorkout);
+  //   setNotes(currentWorkout?.notes ?? "");
+  // }
 
   if (isLoading) {
     return (
@@ -126,7 +128,7 @@ export default function CurrentWorkoutTab() {
       return null;
     }
     const daysWithCompletedExercises = currentWorkout.days.filter(
-      isAnyExerciseComplete
+      isAnyExerciseComplete,
     );
     if (daysWithCompletedExercises.length === 0) {
       return null;
