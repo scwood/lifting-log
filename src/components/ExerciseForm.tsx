@@ -93,9 +93,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
       }}
     >
       <Flex direction="column" gap="sm">
-        <form.AppField
-          name="name"
-          children={(field) => {
+        <form.AppField name="name">
+          {(field) => {
             return (
               <field.AppTextInput
                 withAsterisk
@@ -105,10 +104,9 @@ export function ExerciseForm(props: ExerciseModalProps) {
               />
             );
           }}
-        />
-        <form.AppField
-          name="weight"
-          children={(field) => {
+        </form.AppField>
+        <form.AppField name="weight">
+          {(field) => {
             return (
               <field.AppNumberInput
                 withAsterisk
@@ -120,10 +118,9 @@ export function ExerciseForm(props: ExerciseModalProps) {
               />
             );
           }}
-        />
-        <form.AppField
-          name="sets"
-          children={(field) => {
+        </form.AppField>
+        <form.AppField name="sets">
+          {(field) => {
             return (
               <field.AppNumberInput
                 withAsterisk
@@ -135,10 +132,9 @@ export function ExerciseForm(props: ExerciseModalProps) {
               />
             );
           }}
-        />
-        <form.AppField
-          name="reps"
-          children={(field) => {
+        </form.AppField>
+        <form.AppField name="reps">
+          {(field) => {
             return (
               <field.AppNumberInput
                 withAsterisk
@@ -150,7 +146,7 @@ export function ExerciseForm(props: ExerciseModalProps) {
               />
             );
           }}
-        />
+        </form.AppField>
         <form.AppField
           name="type"
           listeners={{
@@ -162,7 +158,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
               }
             },
           }}
-          children={(field) => {
+        >
+          {(field) => {
             return (
               <field.AppRadioGroup
                 withAsterisk
@@ -190,15 +187,13 @@ export function ExerciseForm(props: ExerciseModalProps) {
               </field.AppRadioGroup>
             );
           }}
-        />
-        <form.Subscribe
-          selector={(state) => state.values.type}
-          children={(type) => {
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values.type}>
+          {(type) => {
             return (
               type === ExerciseType.Other && (
-                <form.AppField
-                  name="minimumWeightIncrement"
-                  children={(field) => {
+                <form.AppField name="minimumWeightIncrement">
+                  {(field) => {
                     return (
                       <field.AppNumberInput
                         withAsterisk
@@ -211,11 +206,11 @@ export function ExerciseForm(props: ExerciseModalProps) {
                       />
                     );
                   }}
-                />
+                </form.AppField>
               )
             );
           }}
-        />
+        </form.Subscribe>
         <div>
           <InputLabel>Warm-up sets</InputLabel>
           <InputDescription>

@@ -43,9 +43,8 @@ export function DayForm(props: DayFormProps) {
         form.handleSubmit();
       }}
     >
-      <form.AppField
-        name="name"
-        children={(field) => {
+      <form.AppField name="name">
+        {(field) => {
           return (
             <field.AppTextInput
               withAsterisk
@@ -55,7 +54,7 @@ export function DayForm(props: DayFormProps) {
             />
           );
         }}
-      />
+      </form.AppField>
       <form.AppForm>
         <Flex justify="flex-end" mt="lg">
           <form.AppSubmitButton />
