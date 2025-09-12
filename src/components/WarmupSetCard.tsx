@@ -1,4 +1,4 @@
-import { Text, Card, Flex, ActionIcon, rem, Menu } from "@mantine/core";
+import { ActionIcon, Card, Flex, Menu, Text, rem } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { WarmUpSet } from "../types/WarmUpSet";

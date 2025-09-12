@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import { getWorkouts } from "../api/workoutsApi";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 export function workoutsQueryKey(userId: string) {
   return ["workouts", userId];

@@ -1,17 +1,17 @@
-import { getApp } from "firebase/app";
 import {
-  collection,
-  query,
-  getDocs,
-  where,
-  getFirestore,
   CollectionReference,
+  collection,
   doc,
-  setDoc,
-  orderBy,
+  getDocs,
+  getFirestore,
   limit,
+  orderBy,
+  query,
+  setDoc,
   updateDoc,
+  where,
 } from "@firebase/firestore";
+import { getApp } from "firebase/app";
 
 import { Workout } from "../types/Workout";
 
@@ -40,8 +40,8 @@ export async function getCurrentWorkout(userId: string) {
       getWorkOutCollection(),
       where("userId", "==", userId),
       orderBy("createdTimestamp", "desc"),
-      limit(1)
-    )
+      limit(1),
+    ),
   );
   if (snapshot.empty) {
     return null;
@@ -51,7 +51,7 @@ export async function getCurrentWorkout(userId: string) {
 
 export async function updateWorkout(
   workoutId: string,
-  updates: Partial<Workout>
+  updates: Partial<Workout>,
 ) {
   await updateDoc(doc(getWorkOutCollection(), workoutId), { ...updates });
 }
@@ -61,8 +61,8 @@ export async function getWorkouts(userId: string) {
     query(
       getWorkOutCollection(),
       where("userId", "==", userId),
-      orderBy("createdTimestamp", "desc")
-    )
+      orderBy("createdTimestamp", "desc"),
+    ),
   );
   return snapshot.docs.map((doc) => doc.data());
 }
@@ -70,6 +70,6 @@ export async function getWorkouts(userId: string) {
 function getWorkOutCollection() {
   return collection(
     getFirestore(getApp()),
-    "workouts"
+    "workouts",
   ) as CollectionReference<Workout>;
 }

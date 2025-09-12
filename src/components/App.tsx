@@ -1,12 +1,12 @@
+import { MantineProvider, createTheme } from "@mantine/core";
 import "@mantine/core/styles.css";
-import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
 
-import { AuthProvider } from "./AuthProvider";
 import { AppRouter } from "./AppRouter";
+import { AuthProvider } from "./AuthProvider";
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyBQpLMpVWLjHU7xenqPbsEWzGQ1b2eIdcw",
