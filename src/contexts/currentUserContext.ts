@@ -5,5 +5,5 @@ export interface CurrentUserContext {
 }
 
 export const currentUserContext = createContext<CurrentUserContext | null>(
-  null
+  null,
 );

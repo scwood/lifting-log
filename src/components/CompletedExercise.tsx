@@ -1,4 +1,4 @@
-import { Text, Button, Card, Title } from "@mantine/core";
+import { Button, Card, Text, Title } from "@mantine/core";
 
 import { Exercise } from "../types/Exercise";
 import { getVolumeLoad } from "../utils/workoutUtils";

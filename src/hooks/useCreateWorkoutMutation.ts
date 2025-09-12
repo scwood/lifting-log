@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useCurrentUser } from "../hooks/useCurrentUser";
 import { createWorkout } from "../api/workoutsApi";
-import { currentWorkoutQueryKey } from "./useCurrentWorkoutQuery";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { Workout } from "../types/Workout";
+import { currentWorkoutQueryKey } from "./useCurrentWorkoutQuery";
 
 export function useCreateWorkoutMutation() {
   const { userId } = useCurrentUser();

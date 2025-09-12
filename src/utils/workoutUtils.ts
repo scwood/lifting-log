@@ -10,7 +10,7 @@ const plates = [45, 25, 10, 5, 2.5, 1.25];
 
 export function calculatePlates(
   weight: number,
-  exerciseType: ExerciseType
+  exerciseType: ExerciseType,
 ): string {
   let remainingWeight = weight;
   if (exerciseType === ExerciseType.DoublePlate) {
@@ -71,7 +71,7 @@ export function getWarmUpWeight(exercise: Exercise, warmUpSet: WarmUpSet) {
   const percentage = warmUpSet.value / 100;
   return Math.max(
     minimumWeight,
-    round(exercise.weight * percentage, exercise.minimumWeightIncrement)
+    round(exercise.weight * percentage, exercise.minimumWeightIncrement),
   );
 }
 
