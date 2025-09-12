@@ -59,9 +59,8 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
       }}
     >
       <Flex direction="column" gap="sm">
-        <form.AppField
-          name="type"
-          children={(field) => {
+        <form.AppField name="type">
+          {(field) => {
             return (
               <field.AppRadioGroup
                 withAsterisk
@@ -78,15 +77,13 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
               </field.AppRadioGroup>
             );
           }}
-        />
-        <form.Subscribe
-          selector={(state) => state.values.type}
-          children={(warmUpType) => {
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values.type}>
+          {(warmUpType) => {
             return (
               <>
-                <form.AppField
-                  name="reps"
-                  children={(field) => {
+                <form.AppField name="reps">
+                  {(field) => {
                     return (
                       <field.AppNumberInput
                         withAsterisk
@@ -98,10 +95,9 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                       />
                     );
                   }}
-                />
-                <form.AppField
-                  name="value"
-                  children={(field) => {
+                </form.AppField>
+                <form.AppField name="value">
+                  {(field) => {
                     return (
                       <field.AppNumberInput
                         withAsterisk
@@ -126,11 +122,11 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                       />
                     );
                   }}
-                />
+                </form.AppField>
               </>
             );
           }}
-        />
+        </form.Subscribe>
       </Flex>
       <form.AppForm>
         <Flex justify="flex-end" mt="lg">

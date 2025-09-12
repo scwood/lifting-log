@@ -4,13 +4,13 @@ import {
   getAuth,
   signInWithPopup,
 } from "firebase/auth";
-import { useCallback, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { authContext } from "../contexts/authContext";
 import { SignInProvider } from "../types/SignInProvider";
 
 export interface AuthProviderProps {
-  children?: JSX.Element;
+  children?: ReactNode;
 }
 
 export function AuthProvider(props: AuthProviderProps) {
@@ -33,28 +33,28 @@ export function AuthProvider(props: AuthProviderProps) {
     });
   }, []);
 
-  const signIn = useCallback(async (provider: SignInProvider) => {
+  async function signIn(provider: SignInProvider) {
     try {
       await signInWithPopup(
         getAuth(),
         provider === SignInProvider.GitHub
           ? new GithubAuthProvider()
-          : new GoogleAuthProvider()
+          : new GoogleAuthProvider(),
       );
       setError(null);
     } catch (error) {
       setError(error as Error);
     }
-  }, []);
+  }
 
-  const signOut = useCallback(async () => {
+  async function signOut() {
     try {
       await getAuth().signOut();
       setError(null);
     } catch (error) {
       setError(error as Error);
     }
-  }, []);
+  }
 
   return (
     <authContext.Provider

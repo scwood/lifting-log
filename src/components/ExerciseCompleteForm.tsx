@@ -76,9 +76,8 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
         form.handleSubmit();
       }}
     >
-      <form.AppField
-        name="nextSessionAction"
-        children={(field) => {
+      <form.AppField name="nextSessionAction">
+        {(field) => {
           return (
             <field.AppRadioGroup
               withAsterisk
@@ -110,15 +109,13 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
             </field.AppRadioGroup>
           );
         }}
-      />
-      <form.Subscribe
-        selector={(state) => state.values.nextSessionAction}
-        children={(nextSessionAction) => {
+      </form.AppField>
+      <form.Subscribe selector={(state) => state.values.nextSessionAction}>
+        {(nextSessionAction) => {
           return (
             <Flex direction="column" gap={4} ml="xl" mt={4}>
-              <form.AppField
-                name="weight"
-                children={(field) => {
+              <form.AppField name="weight">
+                {(field) => {
                   return (
                     <field.AppNumberInput
                       label="Weight"
@@ -129,10 +126,9 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                     />
                   );
                 }}
-              />
-              <form.AppField
-                name="sets"
-                children={(field) => {
+              </form.AppField>
+              <form.AppField name="sets">
+                {(field) => {
                   return (
                     <field.AppNumberInput
                       label="Sets"
@@ -143,10 +139,9 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                     />
                   );
                 }}
-              />
-              <form.AppField
-                name="reps"
-                children={(field) => {
+              </form.AppField>
+              <form.AppField name="reps">
+                {(field) => {
                   return (
                     <field.AppNumberInput
                       label="Reps"
@@ -157,11 +152,11 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                     />
                   );
                 }}
-              />
+              </form.AppField>
             </Flex>
           );
         }}
-      />
+      </form.Subscribe>
       <form.AppForm>
         <Flex justify="flex-end" mt="lg">
           <form.AppSubmitButton />

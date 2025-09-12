@@ -69,8 +69,8 @@ export function CurrentWorkoutPage() {
           Workout complete
         </Title>
         <p>
-          Click the button below to create the next workout or click "undo" on
-          an exercise to correct any mistakes.
+          Click the button below to create the next workout or click
+          &quot;undo&quot; on an exercise to correct any mistakes.
         </p>
         <Button color="green" mt={4} mb="md" onClick={handleCreateNextWorkout}>
           Create next workout

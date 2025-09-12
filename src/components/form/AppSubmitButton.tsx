@@ -6,19 +6,19 @@ export function AppSubmitButton(props: ButtonProps) {
   const form = useFormContext();
 
   return (
-    <form.Subscribe
-      selector={(state) => [state.canSubmit, state.isSubmitting]}
-      children={([canSubmit, isSubmitting]) => {
+    <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+      {([canSubmit, isSubmitting]) => {
         return (
           <Button
             type="submit"
             color="green"
             disabled={!canSubmit || isSubmitting}
-            children="Save"
             {...props}
-          />
+          >
+            Save
+          </Button>
         );
       }}
-    />
+    </form.Subscribe>
   );
 }
