@@ -14,7 +14,8 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { Workout } from "../types/Workout";
-import { Direction, moveItem } from "../utils/arrayUtils";
+import { Direction } from "../utils/arrayUtils";
+import { moveExercise } from "../utils/workoutUtils";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ExerciseForm } from "./ExerciseForm";
 import { PlanExerciseCard } from "./PlanExerciseCard";
@@ -45,6 +46,7 @@ export function PlanDay(props: PlanDayProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
+  const dayIndex = workout.days.findIndex((d) => d.id === day.id);
 
   return (
     <div>
@@ -85,12 +87,15 @@ export function PlanDay(props: PlanDayProps) {
             <PlanExerciseCard
               key={exercise.id}
               exercise={exercise}
-              moveUpDisabled={index === 0}
-              moveDownDisabled={index === day.exercises.length - 1}
+              moveUpDisabled={index === 0 && dayIndex === 0}
+              moveDownDisabled={
+                index === day.exercises.length - 1 &&
+                dayIndex === workout.days.length - 1
+              }
               onEdit={handleEditExercise}
               onDelete={handleConfirmDeleteExercise}
-              onMoveUp={() => handleMoveExercise(index, Direction.Up)}
-              onMoveDown={() => handleMoveExercise(index, Direction.Down)}
+              onMoveUp={() => handleMoveExercise(exercise, Direction.Up)}
+              onMoveDown={() => handleMoveExercise(exercise, Direction.Down)}
             />
           );
         })}
@@ -153,9 +158,18 @@ export function PlanDay(props: PlanDayProps) {
     await updateExercises(exercises);
   }
 
-  async function handleMoveExercise(index: number, direction: Direction) {
-    const exercises = moveItem(day.exercises, index, direction);
-    await updateExercises(exercises);
+  async function handleMoveExercise(exercise: Exercise, direction: Direction) {
+    const updatedWorkout = moveExercise(
+      workout,
+      day.id,
+      exercise.id,
+      direction,
+    );
+
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: updatedWorkout,
+    });
   }
 
   async function updateExercises(exercises: Exercise[]) {
