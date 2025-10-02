@@ -1,9 +1,12 @@
+import { produce } from "immer";
+
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpType } from "../types/WarmUpType";
 import { Workout } from "../types/Workout";
+import { Direction, moveItem } from "./arrayUtils";
 
 const weightOfBar = 45;
 const plates = [45, 25, 10, 5, 2.5, 1.25];
@@ -85,4 +88,63 @@ export function getVolumeLoad(values: {
   weight: number;
 }): string {
   return `${values.sets}x${values.reps}x${values.weight}`;
+}
+
+export function moveExercise(
+  workout: Workout,
+  dayId: string,
+  exerciseId: string,
+  direction: Direction,
+): Workout {
+  const originalDayIndex = workout.days.findIndex((d) => d.id === dayId);
+  const originalDay = workout.days[originalDayIndex];
+
+  // Bail if day doesn't exist
+  if (!originalDay) {
+    return workout;
+  }
+
+  const originalExerciseIndex = originalDay.exercises.findIndex(
+    (e) => e.id === exerciseId,
+  );
+  const originalExercise = originalDay.exercises[originalExerciseIndex];
+
+  // Bail if exercise doesn't exist in the day
+  if (!originalExercise) {
+    return workout;
+  }
+
+  // Bail if requested direction is impossible
+  if (
+    (direction === Direction.Up &&
+      originalExerciseIndex === 0 &&
+      originalDayIndex === 0) ||
+    (direction === Direction.Down &&
+      originalExerciseIndex === originalDay.exercises.length - 1 &&
+      originalDayIndex === workout.days.length - 1)
+  ) {
+    return workout;
+  }
+
+  const isDayMove =
+    (direction === Direction.Up && originalExerciseIndex === 0) ||
+    (direction === Direction.Down &&
+      originalExerciseIndex === originalDay.exercises.length - 1);
+
+  return produce(workout, (draft) => {
+    if (!isDayMove) {
+      draft.days[originalDayIndex].exercises = moveItem(
+        draft.days[originalDayIndex].exercises,
+        originalExerciseIndex,
+        direction,
+      );
+    } else {
+      draft.days[originalDayIndex].exercises.splice(originalExerciseIndex, 1);
+      if (direction === Direction.Up) {
+        draft.days[originalDayIndex - 1].exercises.push(originalExercise);
+      } else {
+        draft.days[originalDayIndex + 1].exercises.unshift(originalExercise);
+      }
+    }
+  });
 }
