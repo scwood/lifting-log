@@ -13,9 +13,11 @@ npm run lint-fix     # Auto-fix ESLint issues
 npm run prettier     # Check Prettier formatting
 npm run prettier-fix # Auto-fix Prettier formatting
 npm run deploy       # Build and deploy to GitHub Pages
+npm test             # Run unit tests (Vitest)
+npm run test:watch   # Run unit tests in watch mode
 ```
 
-There is no test runner — the project uses manual testing against real Firebase.
+Unit tests cover pure utility functions in `src/utils/` and use Vitest. Test files are colocated with source (e.g. `src/utils/foo.test.ts`). Firebase-dependent code (API, hooks, components) uses manual testing against real Firebase.
 
 ## Architecture
 
