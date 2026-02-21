@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm info:*)",
+      "Bash(cd /c/Users/spenc/code/lifting-log && npm install 2>&1)",
+      "Bash(cd /c/Users/spenc/code/lifting-log && npm test 2>&1)"
+    ]
+  }
+}
