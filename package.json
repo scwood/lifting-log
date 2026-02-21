@@ -20,6 +20,15 @@
     "preview": "vite preview",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*": [
+      "prettier --write --ignore-unknown"
+    ]
+  },
   "dependencies": {
     "@mantine/core": "^8.3.1",
     "@tabler/icons-react": "^3.34.1",
@@ -48,6 +57,7 @@
     "gh-pages": "^6.3.0",
     "globals": "^16.4.0",
     "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "postcss": "^8.4.31",
     "postcss-preset-mantine": "^1.9.0",
     "postcss-simple-vars": "^7.0.1",
