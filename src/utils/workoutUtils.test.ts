@@ -18,10 +18,6 @@ import {
   moveExercise,
 } from "./workoutUtils";
 
-// ---------------------------------------------------------------------------
-// Fixture factories
-// ---------------------------------------------------------------------------
-
 function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
   return {
     id: "ex1",
@@ -58,10 +54,6 @@ function makeWorkout(overrides: Partial<Workout> = {}): Workout {
     ...overrides,
   };
 }
-
-// ---------------------------------------------------------------------------
-// calculatePlates
-// ---------------------------------------------------------------------------
 
 describe("calculatePlates", () => {
   describe("DoublePlate (barbell — subtracts bar and splits by two)", () => {
@@ -107,10 +99,6 @@ describe("calculatePlates", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// isExerciseComplete
-// ---------------------------------------------------------------------------
-
 describe("isExerciseComplete", () => {
   it("returns true when all working sets are logged and count matches sets", () => {
     const exercise = makeExercise({
@@ -148,10 +136,6 @@ describe("isExerciseComplete", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// isAnyExerciseComplete
-// ---------------------------------------------------------------------------
-
 describe("isAnyExerciseComplete", () => {
   const completeExercise = makeExercise({
     id: "complete",
@@ -177,10 +161,6 @@ describe("isAnyExerciseComplete", () => {
     expect(isAnyExerciseComplete(makeDay())).toBe(false);
   });
 });
-
-// ---------------------------------------------------------------------------
-// isEveryExerciseComplete
-// ---------------------------------------------------------------------------
 
 describe("isEveryExerciseComplete", () => {
   const completeExercise = (id: string) =>
@@ -213,10 +193,6 @@ describe("isEveryExerciseComplete", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// isEveryDayComplete
-// ---------------------------------------------------------------------------
-
 describe("isEveryDayComplete", () => {
   const completeDay = makeDay({
     id: "complete",
@@ -248,10 +224,6 @@ describe("isEveryDayComplete", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// isPlateExercise
-// ---------------------------------------------------------------------------
-
 describe("isPlateExercise", () => {
   it("returns true for DoublePlate exercises", () => {
     expect(
@@ -271,10 +243,6 @@ describe("isPlateExercise", () => {
     );
   });
 });
-
-// ---------------------------------------------------------------------------
-// getWarmUpWeight
-// ---------------------------------------------------------------------------
 
 describe("getWarmUpWeight", () => {
   describe("WarmUpType.Weight", () => {
@@ -359,10 +327,6 @@ describe("getWarmUpWeight", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// getVolumeLoad
-// ---------------------------------------------------------------------------
-
 describe("getVolumeLoad", () => {
   it("formats sets × reps × weight as a string", () => {
     expect(getVolumeLoad({ sets: 3, reps: 5, weight: 135 })).toBe("3x5x135");
@@ -374,10 +338,6 @@ describe("getVolumeLoad", () => {
     );
   });
 });
-
-// ---------------------------------------------------------------------------
-// moveExercise
-// ---------------------------------------------------------------------------
 
 describe("moveExercise", () => {
   // Build a two-day workout with two exercises per day for most tests.
