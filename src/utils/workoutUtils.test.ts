@@ -158,7 +158,10 @@ describe("isAnyExerciseComplete", () => {
     sets: 1,
     workingSets: { 0: { reps: 5, isLogged: true } },
   });
-  const incompleteExercise = makeExercise({ id: "incomplete", workingSets: {} });
+  const incompleteExercise = makeExercise({
+    id: "incomplete",
+    workingSets: {},
+  });
 
   it("returns true when at least one exercise is complete", () => {
     const day = makeDay({ exercises: [incompleteExercise, completeExercise] });
@@ -186,7 +189,10 @@ describe("isEveryExerciseComplete", () => {
       sets: 1,
       workingSets: { 0: { reps: 5, isLogged: true } },
     });
-  const incompleteExercise = makeExercise({ id: "incomplete", workingSets: {} });
+  const incompleteExercise = makeExercise({
+    id: "incomplete",
+    workingSets: {},
+  });
 
   it("returns true when all exercises are complete", () => {
     const day = makeDay({
@@ -248,15 +254,21 @@ describe("isEveryDayComplete", () => {
 
 describe("isPlateExercise", () => {
   it("returns true for DoublePlate exercises", () => {
-    expect(isPlateExercise(makeExercise({ type: ExerciseType.DoublePlate }))).toBe(true);
+    expect(
+      isPlateExercise(makeExercise({ type: ExerciseType.DoublePlate })),
+    ).toBe(true);
   });
 
   it("returns true for SinglePlate exercises", () => {
-    expect(isPlateExercise(makeExercise({ type: ExerciseType.SinglePlate }))).toBe(true);
+    expect(
+      isPlateExercise(makeExercise({ type: ExerciseType.SinglePlate })),
+    ).toBe(true);
   });
 
   it("returns false for Other exercises", () => {
-    expect(isPlateExercise(makeExercise({ type: ExerciseType.Other }))).toBe(false);
+    expect(isPlateExercise(makeExercise({ type: ExerciseType.Other }))).toBe(
+      false,
+    );
   });
 });
 
@@ -268,7 +280,12 @@ describe("getWarmUpWeight", () => {
   describe("WarmUpType.Weight", () => {
     it("returns the warm-up set value directly", () => {
       const exercise = makeExercise({ weight: 200 });
-      const warmUpSet = { id: "w1", type: WarmUpType.Weight, reps: 5, value: 30 };
+      const warmUpSet = {
+        id: "w1",
+        type: WarmUpType.Weight,
+        reps: 5,
+        value: 30,
+      };
       expect(getWarmUpWeight(exercise, warmUpSet)).toBe(30);
     });
   });
@@ -402,24 +419,15 @@ describe("moveExercise", () => {
     it("moves an exercise up within its day", () => {
       // ex2 (index 1) → Up → swaps with ex1 (index 0)
       const result = moveExercise(workout, "dayA", "ex2", Direction.Up);
-      expect(result.days[0].exercises.map((e) => e.id)).toEqual([
-        "ex2",
-        "ex1",
-      ]);
+      expect(result.days[0].exercises.map((e) => e.id)).toEqual(["ex2", "ex1"]);
       // other day is unchanged
-      expect(result.days[1].exercises.map((e) => e.id)).toEqual([
-        "ex3",
-        "ex4",
-      ]);
+      expect(result.days[1].exercises.map((e) => e.id)).toEqual(["ex3", "ex4"]);
     });
 
     it("moves an exercise down within its day", () => {
       // ex1 (index 0) → Down → swaps with ex2 (index 1)
       const result = moveExercise(workout, "dayA", "ex1", Direction.Down);
-      expect(result.days[0].exercises.map((e) => e.id)).toEqual([
-        "ex2",
-        "ex1",
-      ]);
+      expect(result.days[0].exercises.map((e) => e.id)).toEqual(["ex2", "ex1"]);
     });
 
     it("returns a new workout reference on a valid move", () => {
