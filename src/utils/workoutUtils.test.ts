@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
+import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
 import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpType } from "../types/WarmUpType";
-import { Workout } from "../types/Workout";
 import { Direction } from "./arrayUtils";
 import {
   calculatePlates,
@@ -17,43 +15,6 @@ import {
   isPlateExercise,
   moveExercise,
 } from "./workoutUtils";
-
-function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
-  return {
-    id: "ex1",
-    name: "Squat",
-    sets: 3,
-    reps: 5,
-    weight: 135,
-    type: ExerciseType.DoublePlate,
-    minimumWeightIncrement: 5,
-    warmUpSets: [],
-    workingSets: {},
-    nextSession: {},
-    ...overrides,
-  };
-}
-
-function makeDay(overrides: Partial<Day> = {}): Day {
-  return {
-    id: "day1",
-    name: "Day 1",
-    exercises: [],
-    ...overrides,
-  };
-}
-
-function makeWorkout(overrides: Partial<Workout> = {}): Workout {
-  return {
-    id: "w1",
-    userId: "u1",
-    createdTimestamp: 0,
-    completedTimestamp: null,
-    notes: null,
-    days: [],
-    ...overrides,
-  };
-}
 
 describe("calculatePlates", () => {
   describe("DoublePlate (barbell — subtracts bar and splits by two)", () => {
