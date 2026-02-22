@@ -37,12 +37,16 @@ export function AppShell() {
           {userId && (
             <Menu>
               <Menu.Target>
-                <ActionIcon variant="subtle" color="gray">
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  aria-label="User menu"
+                >
                   <IconUser />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                {displayName && <Menu.Item disabled>{displayName}</Menu.Item>}
+                <Menu.Item disabled>{displayName ?? "Unknown user"}</Menu.Item>
                 <Menu.Item
                   onClick={signOut}
                   leftSection={<IconLogout size={14} />}
