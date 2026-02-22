@@ -9,15 +9,15 @@ npm run dev          # Start Vite dev server
 npm run build        # TypeScript check + Vite production build
 npm run check        # TypeScript type-check only
 npm run lint         # Run ESLint
-npm run lint-fix     # Auto-fix ESLint issues
+npm run lint:fix     # Auto-fix ESLint issues
 npm run prettier     # Check Prettier formatting
-npm run prettier-fix # Auto-fix Prettier formatting
+npm run prettier:fix # Auto-fix Prettier formatting
 npm run deploy       # Build and deploy to GitHub Pages
 npm test             # Run unit tests (Vitest)
 npm run test:watch   # Run unit tests in watch mode
 ```
 
-Unit tests cover pure utility functions in `src/utils/` and use Vitest. Test files are colocated with source (e.g. `src/utils/foo.test.ts`). Firebase-dependent code (API, hooks, components) uses manual testing against real Firebase.
+Unit tests use Vitest. Test files are colocated with source (e.g. `src/utils/foo.test.ts`). The goal is broad unit test coverage: pure utility functions in `src/utils/`, React components (using `@testing-library/react`), and any other logic where automated testing adds value. Firebase-dependent code at the API boundary (`src/api/`) is verified manually against real Firebase; everything above that layer (hooks, components) should be tested with Firebase mocked out.
 
 ## Architecture
 
@@ -36,6 +36,7 @@ This is a React 19 + TypeScript SPA deployed to GitHub Pages, backed by Firebase
 - `src/hooks/` — Shared logic hooks and React Query fetch/mutation hooks wrapping the API layer
 - `src/types/` — TypeScript interfaces and enums for the domain model
 - `src/utils/` — Pure utility functions; `workoutUtils.ts` contains plate calculation and completion-check logic
+- `src/test-utils/` — Shared test infrastructure: Vitest setup file (`setup.ts`) and factory functions for constructing test fixtures (`factories.ts`)
 
 **Domain model:** A `Workout` contains an array of `Day`s, each with an array of `Exercise`s. Each exercise has warm-up sets, working sets (logged with reps + `isLogged` flag), and a `NextSessionPlan` for progressive overload suggestions. `ExerciseType` enum distinguishes double-plate (barbell), single-plate, and other exercises for the plate calculator.
 
