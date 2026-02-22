@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useAuth } from "../hooks/useAuth";
 import { useCurrentUser } from "../hooks/useCurrentUser";
+import { makeAuthContext } from "../test-utils/factories";
 import { AuthenticatedRoute } from "./AuthenticatedRoute";
 
 vi.mock("../hooks/useAuth");
@@ -63,17 +64,3 @@ describe("AuthenticatedRoute", () => {
     });
   });
 });
-
-function makeAuthContext(
-  overrides: Partial<ReturnType<typeof useAuth>>,
-): ReturnType<typeof useAuth> {
-  return {
-    userId: null,
-    displayName: null,
-    isLoading: false,
-    error: null,
-    signIn: vi.fn(),
-    signOut: vi.fn(),
-    ...overrides,
-  };
-}
