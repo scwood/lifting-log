@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 
 import { AuthContext } from "../contexts/authContext";
+import { CurrentUserContext } from "../contexts/currentUserContext";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { ExerciseType } from "../types/ExerciseType";
@@ -18,6 +19,12 @@ export function makeAuthContext(
     signOut: vi.fn(),
     ...overrides,
   };
+}
+
+export function makeCurrentUserContext(
+  overrides: Partial<CurrentUserContext> = {},
+): CurrentUserContext {
+  return { userId: "u1", ...overrides };
 }
 
 export function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
