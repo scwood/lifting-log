@@ -5,6 +5,8 @@ import { CurrentUserContext } from "../contexts/currentUserContext";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { ExerciseType } from "../types/ExerciseType";
+import { WarmUpSet } from "../types/WarmUpSet";
+import { WarmUpType } from "../types/WarmUpType";
 import { Workout } from "../types/Workout";
 
 export function makeAuthContext(
@@ -39,6 +41,16 @@ export function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
     warmUpSets: [],
     workingSets: {},
     nextSession: {},
+    ...overrides,
+  };
+}
+
+export function makeWarmUpSet(overrides: Partial<WarmUpSet> = {}): WarmUpSet {
+  return {
+    id: "ws1",
+    type: WarmUpType.Percentage,
+    reps: 5,
+    value: 60,
     ...overrides,
   };
 }

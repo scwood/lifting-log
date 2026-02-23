@@ -6,7 +6,8 @@ import { describe, expect, it, vi } from "vitest";
 import { makeDay } from "../test-utils/factories";
 import { DayForm, DayFormProps } from "./DayForm";
 
-vi.mock("uuid", () => ({ v4: () => "test-uuid" }));
+const testUuid = "test-uuid";
+vi.mock("uuid", () => ({ v4: () => testUuid }));
 
 function renderDayForm(props: Partial<DayFormProps> = {}) {
   const user = userEvent.setup();
@@ -74,7 +75,7 @@ describe("DayForm", () => {
       await user.click(screen.getByRole("button", { name: "Save" }));
       await waitFor(() => {
         expect(onSave).toHaveBeenCalledWith({
-          id: "test-uuid",
+          id: testUuid,
           exercises: [],
           name: "Monday",
         });
