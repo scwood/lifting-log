@@ -29,10 +29,13 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
     <Card withBorder>
       <Flex justify="space-between" align="center">
         <Title order={4}>{exercise.name}</Title>
-        {/* <Text fw={600}>{exercise.name}</Text> */}
         <Menu>
           <Menu.Target>
-            <ActionIcon variant="subtle" color="gray">
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              aria-label="Exercise menu"
+            >
               <IconDots />
             </ActionIcon>
           </Menu.Target>
