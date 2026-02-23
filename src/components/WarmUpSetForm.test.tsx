@@ -37,7 +37,9 @@ describe("WarmUpSetForm", () => {
 
     it("shows the value field labeled Percentage", () => {
       renderWarmUpSetForm();
-      expect(screen.getByRole("textbox", { name: "Percentage" })).toBeDefined();
+      expect(
+        screen.getByRole("textbox", { name: "Percentage" }),
+      ).toBeInTheDocument();
     });
 
     it("disables the Save button", () => {
@@ -81,7 +83,9 @@ describe("WarmUpSetForm", () => {
     it("changes the value field label to Weight when Fixed weight is selected", async () => {
       const { user } = renderWarmUpSetForm();
       await user.click(screen.getByRole("radio", { name: "Fixed weight" }));
-      expect(screen.getByRole("textbox", { name: "Weight" })).toBeDefined();
+      expect(
+        screen.getByRole("textbox", { name: "Weight" }),
+      ).toBeInTheDocument();
     });
 
     it("changes the value field label back to Percentage when Percentage is re-selected", async () => {
@@ -91,7 +95,9 @@ describe("WarmUpSetForm", () => {
       await user.click(
         screen.getByRole("radio", { name: "Percentage of working weight" }),
       );
-      expect(screen.getByRole("textbox", { name: "Percentage" })).toBeDefined();
+      expect(
+        screen.getByRole("textbox", { name: "Percentage" }),
+      ).toBeInTheDocument();
     });
   });
 

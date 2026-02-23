@@ -48,9 +48,11 @@ describe("AppShell", () => {
       renderAppShell();
       expect(
         screen.getByRole("tab", { name: "Current workout" }),
-      ).toBeDefined();
-      expect(screen.getByRole("tab", { name: "Workout plan" })).toBeDefined();
-      expect(screen.getByRole("tab", { name: "History" })).toBeDefined();
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: "Workout plan" }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "History" })).toBeInTheDocument();
     });
 
     it("highlights the tab that matches the current path", () => {
@@ -58,13 +60,15 @@ describe("AppShell", () => {
       renderAppShell("/plan");
       expect(
         screen.getByRole("tab", { name: "Workout plan", selected: true }),
-      ).toBeDefined();
+      ).toBeInTheDocument();
     });
 
     it("renders the user menu trigger", () => {
       mockUseAuth.mockReturnValue(makeAuthContext({ userId: "user-123" }));
       renderAppShell();
-      expect(screen.getByRole("button", { name: "User menu" })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "User menu" }),
+      ).toBeInTheDocument();
     });
 
     describe("user menu dropdown", () => {
@@ -72,7 +76,7 @@ describe("AppShell", () => {
         mockUseAuth.mockReturnValue(makeAuthContext({ userId: "user-123" }));
         const { user } = renderAppShell();
         await user.click(screen.getByRole("button", { name: "User menu" }));
-        expect(screen.getByText("Sign out")).toBeDefined();
+        expect(screen.getByText("Sign out")).toBeInTheDocument();
       });
 
       it("shows 'Unknown user' when displayName is null", async () => {
@@ -81,7 +85,7 @@ describe("AppShell", () => {
         );
         const { user } = renderAppShell();
         await user.click(screen.getByRole("button", { name: "User menu" }));
-        expect(screen.getByText("Unknown user")).toBeDefined();
+        expect(screen.getByText("Unknown user")).toBeInTheDocument();
       });
 
       it("shows a display name item when displayName is set", async () => {
@@ -90,7 +94,7 @@ describe("AppShell", () => {
         );
         const { user } = renderAppShell();
         await user.click(screen.getByRole("button", { name: "User menu" }));
-        expect(screen.getByText("Spencer")).toBeDefined();
+        expect(screen.getByText("Spencer")).toBeInTheDocument();
       });
 
       it("calls signOut when the sign out option is clicked", async () => {

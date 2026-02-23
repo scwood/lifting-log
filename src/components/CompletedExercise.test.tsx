@@ -34,7 +34,7 @@ function renderCompletedExercise(props: Partial<CompletedExerciseProps> = {}) {
 describe("CompletedExercise", () => {
   it("renders the exercise name", () => {
     renderCompletedExercise();
-    expect(screen.getByRole("heading", { name: "Squat" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Squat" })).toBeInTheDocument();
   });
 
   it("renders the this-session volume load and reps", () => {
@@ -43,7 +43,7 @@ describe("CompletedExercise", () => {
     // parent containers that also contain this substring
     expect(
       screen.getByText(/This session: 3x5x135 \(5,5,5\)/, { selector: "p" }),
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   describe("next session volume load", () => {
@@ -58,14 +58,14 @@ describe("CompletedExercise", () => {
       renderCompletedExercise({ exercise });
       expect(
         screen.getByText(/Next session: 3x5x140/, { selector: "p" }),
-      ).toBeDefined();
+      ).toBeInTheDocument();
     });
 
     it("falls back to exercise values when nextSession is empty", () => {
       renderCompletedExercise();
       expect(
         screen.getByText(/Next session: 3x5x135/, { selector: "p" }),
-      ).toBeDefined();
+      ).toBeInTheDocument();
     });
   });
 

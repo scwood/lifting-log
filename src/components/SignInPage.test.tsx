@@ -33,7 +33,7 @@ describe("SignInPage", () => {
     it("redirects to /", () => {
       mockUseAuth.mockReturnValue(makeAuthContext({ userId: "user-123" }));
       renderSignInPage();
-      expect(screen.getByText("Home")).toBeDefined();
+      expect(screen.getByText("Home")).toBeInTheDocument();
     });
 
     it("does not render sign-in buttons", () => {
@@ -47,13 +47,17 @@ describe("SignInPage", () => {
     it("renders the GitHub sign-in button", () => {
       mockUseAuth.mockReturnValue(makeAuthContext());
       renderSignInPage();
-      expect(screen.getByRole("button", { name: /github/i })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: /github/i }),
+      ).toBeInTheDocument();
     });
 
     it("renders the Google sign-in button", () => {
       mockUseAuth.mockReturnValue(makeAuthContext());
       renderSignInPage();
-      expect(screen.getByRole("button", { name: /google/i })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: /google/i }),
+      ).toBeInTheDocument();
     });
 
     it("does not show an error alert", () => {
@@ -69,8 +73,8 @@ describe("SignInPage", () => {
         makeAuthContext({ error: new Error("Sign-in failed") }),
       );
       renderSignInPage();
-      expect(screen.getByRole("alert")).toBeDefined();
-      expect(screen.getByText("Sign-in failed")).toBeDefined();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByText("Sign-in failed")).toBeInTheDocument();
     });
   });
 
@@ -81,7 +85,7 @@ describe("SignInPage", () => {
       const { user } = renderSignInPage();
       await user.click(screen.getByRole("button", { name: /github/i }));
       expect(signIn).toHaveBeenCalledWith(SignInProvider.GitHub);
-      expect(screen.getByText("Home")).toBeDefined();
+      expect(screen.getByText("Home")).toBeInTheDocument();
     });
 
     it("calls signIn with Google provider and navigates to /", async () => {
@@ -90,7 +94,7 @@ describe("SignInPage", () => {
       const { user } = renderSignInPage();
       await user.click(screen.getByRole("button", { name: /google/i }));
       expect(signIn).toHaveBeenCalledWith(SignInProvider.Google);
-      expect(screen.getByText("Home")).toBeDefined();
+      expect(screen.getByText("Home")).toBeInTheDocument();
     });
   });
 });

@@ -34,7 +34,7 @@ describe("AuthenticatedRoute", () => {
     it("redirects to /sign-in", () => {
       mockUseAuth.mockReturnValue(makeAuthContext({ userId: null }));
       renderInRouter();
-      expect(screen.getByText("Sign In Page")).toBeDefined();
+      expect(screen.getByText("Sign In Page")).toBeInTheDocument();
     });
 
     it("does not render outlet content", () => {
@@ -48,7 +48,7 @@ describe("AuthenticatedRoute", () => {
     it("renders the outlet content", () => {
       mockUseAuth.mockReturnValue(makeAuthContext({ userId: "user-123" }));
       renderInRouter();
-      expect(screen.getByTestId("outlet")).toBeDefined();
+      expect(screen.getByTestId("outlet")).toBeInTheDocument();
     });
 
     it("does not render the sign-in page", () => {

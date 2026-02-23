@@ -38,7 +38,7 @@ function renderRow(props: Partial<WorkingSetTableRowProps> = {}) {
 describe("WorkingSetTableRow", () => {
   it("renders the exercise weight", () => {
     renderRow();
-    expect(screen.getByText("135")).toBeDefined();
+    expect(screen.getByText("135")).toBeInTheDocument();
   });
 
   describe("plate column", () => {
@@ -49,7 +49,7 @@ describe("WorkingSetTableRow", () => {
       });
       renderRow({ exercise });
       // (135 - 45) / 2 = 45 per side -> "45"
-      expect(screen.getByText("45")).toBeDefined();
+      expect(screen.getByText("45")).toBeInTheDocument();
     });
 
     it("shows plate breakdown for SinglePlate exercises", () => {
@@ -59,7 +59,7 @@ describe("WorkingSetTableRow", () => {
       });
       renderRow({ exercise });
       // 35 -> 25 + 10 -> "25, 10"
-      expect(screen.getByText("25, 10")).toBeDefined();
+      expect(screen.getByText("25, 10")).toBeInTheDocument();
     });
 
     it("does not show plate breakdown for Other exercises", () => {
@@ -76,13 +76,13 @@ describe("WorkingSetTableRow", () => {
   describe("reps input", () => {
     it("displays workingSet.reps as the current value", () => {
       renderRow({ workingSet: { reps: 8, isLogged: false } });
-      expect(screen.getByDisplayValue("8")).toBeDefined();
+      expect(screen.getByDisplayValue("8")).toBeInTheDocument();
     });
 
     it("falls back to exercise.reps when workingSet.reps is null", () => {
       const exercise = makeExercise({ reps: 5 });
       renderRow({ exercise, workingSet: { reps: null, isLogged: false } });
-      expect(screen.getByDisplayValue("5")).toBeDefined();
+      expect(screen.getByDisplayValue("5")).toBeInTheDocument();
     });
   });
 
