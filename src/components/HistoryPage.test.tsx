@@ -32,13 +32,13 @@ function renderHistoryPage() {
 describe("HistoryPage", () => {
   describe("when loading", () => {
     it("does not render the History title before the fetch completes", async () => {
-      const userDeferred = deferred<Workout[]>();
-      mockGetWorkouts.mockReturnValue(userDeferred.promise);
+      const workoutsDeferred = deferred<Workout[]>();
+      mockGetWorkouts.mockReturnValue(workoutsDeferred.promise);
       renderHistoryPage();
       expect(
         screen.queryByRole("heading", { name: "History" }),
       ).not.toBeInTheDocument();
-      userDeferred.resolve([]);
+      workoutsDeferred.resolve([]);
       expect(
         await screen.findByRole("heading", { name: "History" }),
       ).toBeInTheDocument();

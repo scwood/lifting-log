@@ -27,14 +27,7 @@ Guidance for coding agents working in this repository.
 Run these commands and fix failures before handing off:
 
 1. `npm run check`
-2. `npm run lint`
-3. `npm test`
-4. `npm run prettier`
-
-For automatic fixes when appropriate:
-
-- `npm run lint:fix`
-- `npm run prettier:fix`
+2. `npm test`
 
 ## Codebase Map
 

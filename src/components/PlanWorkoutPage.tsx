@@ -31,7 +31,7 @@ export function PlanWorkoutPage() {
   if (isLoading) {
     return (
       <Center>
-        <Loader />
+        <Loader aria-label="Loading workout" />
       </Center>
     );
   }
