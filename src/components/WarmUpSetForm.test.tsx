@@ -1,5 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -133,13 +133,11 @@ describe("WarmUpSetForm", () => {
         "60",
       );
       await user.click(screen.getByRole("button", { name: "Save" }));
-      await waitFor(() => {
-        expect(onSave).toHaveBeenCalledWith({
-          id: testUuid,
-          type: WarmUpType.Percentage,
-          reps: 5,
-          value: 60,
-        });
+      expect(onSave).toHaveBeenCalledWith({
+        id: testUuid,
+        type: WarmUpType.Percentage,
+        reps: 5,
+        value: 60,
       });
     });
 
@@ -154,9 +152,7 @@ describe("WarmUpSetForm", () => {
       await user.clear(repsInput);
       await user.type(repsInput, "8");
       await user.click(screen.getByRole("button", { name: "Save" }));
-      await waitFor(() => {
-        expect(onSave).toHaveBeenCalledWith({ ...warmUpSet, reps: 8 });
-      });
+      expect(onSave).toHaveBeenCalledWith({ ...warmUpSet, reps: 8 });
     });
   });
 });

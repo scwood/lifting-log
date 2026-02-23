@@ -1,5 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -73,12 +73,10 @@ describe("DayForm", () => {
       const { user } = renderDayForm({ onSave });
       await user.type(screen.getByRole("textbox", { name: "Name" }), "Monday");
       await user.click(screen.getByRole("button", { name: "Save" }));
-      await waitFor(() => {
-        expect(onSave).toHaveBeenCalledWith({
-          id: testUuid,
-          exercises: [],
-          name: "Monday",
-        });
+      expect(onSave).toHaveBeenCalledWith({
+        id: testUuid,
+        exercises: [],
+        name: "Monday",
       });
     });
 
@@ -90,9 +88,7 @@ describe("DayForm", () => {
       await user.clear(nameInput);
       await user.type(nameInput, "Tuesday");
       await user.click(screen.getByRole("button", { name: "Save" }));
-      await waitFor(() => {
-        expect(onSave).toHaveBeenCalledWith({ ...day, name: "Tuesday" });
-      });
+      expect(onSave).toHaveBeenCalledWith({ ...day, name: "Tuesday" });
     });
   });
 });
