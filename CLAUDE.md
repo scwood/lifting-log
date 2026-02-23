@@ -5,16 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev          # Start Vite dev server
-npm run build        # TypeScript check + Vite production build
-npm run check        # TypeScript type-check only
-npm run lint         # Run ESLint
-npm run lint:fix     # Auto-fix ESLint issues
-npm run prettier     # Check Prettier formatting
-npm run prettier:fix # Auto-fix Prettier formatting
-npm run deploy       # Build and deploy to GitHub Pages
-npm test             # Run unit tests (Vitest)
-npm run test:watch   # Run unit tests in watch mode
+npm run dev           # Start Vite dev server
+npm run build         # TypeScript check + Vite production build
+npm run check         # TypeScript type-check only
+npm run lint          # Run ESLint
+npm run lint:fix      # Auto-fix ESLint issues
+npm run prettier      # Check Prettier formatting
+npm run prettier:fix  # Auto-fix Prettier formatting
+npm run deploy        # Build and deploy to GitHub Pages
+npm test              # Run unit tests (Vitest)
+npm run test:coverage # Run unit tests with coverage report
+npm run test:watch    # Run unit tests in watch mode
 ```
 
 Unit tests use Vitest. Test files are colocated with source (e.g. `src/utils/foo.test.ts`). The goal is broad unit test coverage: pure utility functions in `src/utils/`, React components (using `@testing-library/react`), and any other logic where automated testing adds value. Firebase-dependent code at the API boundary (`src/api/`) is verified manually against real Firebase; everything above that layer (hooks, components) should be tested with Firebase mocked out.
