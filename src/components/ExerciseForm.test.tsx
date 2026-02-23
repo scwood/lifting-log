@@ -124,8 +124,7 @@ describe("ExerciseForm", () => {
 
     it("saves minimumWeightIncrement of 2.5 when One set of plates is selected", async () => {
       const exercise = makeExercise();
-      const onSave = vi.fn();
-      const { user } = renderExerciseForm({ defaultValues: exercise, onSave });
+      const { user, onSave } = renderExerciseForm({ defaultValues: exercise });
       await user.click(
         screen.getByRole("radio", { name: "One set of plates" }),
       );
@@ -172,8 +171,7 @@ describe("ExerciseForm", () => {
 
   describe("onSave", () => {
     it("creates a new exercise with a generated id when no defaultValues", async () => {
-      const onSave = vi.fn();
-      const { user } = renderExerciseForm({ onSave });
+      const { user, onSave } = renderExerciseForm();
       await user.type(screen.getByRole("textbox", { name: "Name" }), "Squat");
       await user.type(screen.getByRole("textbox", { name: "Weight" }), "135");
       await user.type(screen.getByRole("textbox", { name: "Sets" }), "3");
@@ -195,8 +193,7 @@ describe("ExerciseForm", () => {
 
     it("merges updates into defaultValues when editing", async () => {
       const exercise = makeExercise({ name: "Squat" });
-      const onSave = vi.fn();
-      const { user } = renderExerciseForm({ defaultValues: exercise, onSave });
+      const { user, onSave } = renderExerciseForm({ defaultValues: exercise });
       const nameInput = screen.getByRole("textbox", { name: "Name" });
       await user.clear(nameInput);
       await user.type(nameInput, "Bench Press");

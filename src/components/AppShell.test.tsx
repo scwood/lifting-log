@@ -15,7 +15,7 @@ const mockUseAuth = vi.mocked(useAuth);
 
 function renderAppShell(initialPath = "/") {
   const user = userEvent.setup();
-  const result = render(
+  render(
     <MantineProvider theme={testTheme}>
       <MemoryRouter initialEntries={[initialPath]}>
         <Routes>
@@ -24,7 +24,7 @@ function renderAppShell(initialPath = "/") {
       </MemoryRouter>
     </MantineProvider>,
   );
-  return { user, ...result };
+  return { user };
 }
 
 describe("AppShell", () => {

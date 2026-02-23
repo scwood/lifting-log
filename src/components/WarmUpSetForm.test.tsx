@@ -134,8 +134,7 @@ describe("WarmUpSetForm", () => {
 
   describe("onSave", () => {
     it("creates a new WarmUpSet with a generated id when no defaultValues", async () => {
-      const onSave = vi.fn();
-      const { user } = renderWarmUpSetForm({ onSave });
+      const { user, onSave } = renderWarmUpSetForm();
       await user.type(screen.getByRole("textbox", { name: "Reps" }), "5");
       await user.type(
         screen.getByRole("textbox", { name: "Percentage" }),
@@ -152,10 +151,8 @@ describe("WarmUpSetForm", () => {
 
     it("merges updates into defaultValues when editing", async () => {
       const warmUpSet = makeWarmUpSet({ reps: 5, value: 60 });
-      const onSave = vi.fn();
-      const { user } = renderWarmUpSetForm({
+      const { user, onSave } = renderWarmUpSetForm({
         defaultValues: warmUpSet,
-        onSave,
       });
       const repsInput = screen.getByRole("textbox", { name: "Reps" });
       await user.clear(repsInput);

@@ -87,17 +87,14 @@ describe("ExerciseCompleteForm", () => {
 
   describe("onSave", () => {
     it("saves an empty plan when Do nothing is selected", async () => {
-      const onSave = vi.fn();
-      const { user } = renderExerciseCompleteForm({ onSave });
+      const { user, onSave } = renderExerciseCompleteForm();
       await user.click(screen.getByRole("button", { name: "Save" }));
       expect(onSave).toHaveBeenCalledWith({});
     });
 
     it("saves reps + 1 when Add a rep is selected", async () => {
-      const onSave = vi.fn();
-      const { user } = renderExerciseCompleteForm({
+      const { user, onSave } = renderExerciseCompleteForm({
         defaultValues: makeExercise({ reps: 5 }),
-        onSave,
       });
       await user.click(screen.getByRole("radio", { name: "Add a rep" }));
       await user.click(screen.getByRole("button", { name: "Save" }));
@@ -105,14 +102,12 @@ describe("ExerciseCompleteForm", () => {
     });
 
     it("saves weight + increment and current reps when Add weight is selected", async () => {
-      const onSave = vi.fn();
-      const { user } = renderExerciseCompleteForm({
+      const { user, onSave } = renderExerciseCompleteForm({
         defaultValues: makeExercise({
           weight: 135,
           minimumWeightIncrement: 5,
           reps: 5,
         }),
-        onSave,
       });
       await user.click(screen.getByRole("radio", { name: "Add weight" }));
       await user.click(screen.getByRole("button", { name: "Save" }));
@@ -120,8 +115,7 @@ describe("ExerciseCompleteForm", () => {
     });
 
     it("saves entered weight, sets, and reps when Custom is selected", async () => {
-      const onSave = vi.fn();
-      const { user } = renderExerciseCompleteForm({ onSave });
+      const { user, onSave } = renderExerciseCompleteForm();
       await user.click(screen.getByRole("radio", { name: "Custom" }));
       const weightInput = screen.getByRole("textbox", { name: "Weight" });
       const setsInput = screen.getByRole("textbox", { name: "Sets" });

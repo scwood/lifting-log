@@ -72,8 +72,7 @@ describe("DayForm", () => {
 
   describe("onSave", () => {
     it("creates a new Day with a generated id when no defaultValues", async () => {
-      const onSave = vi.fn();
-      const { user } = renderDayForm({ onSave });
+      const { user, onSave } = renderDayForm();
       await user.type(screen.getByRole("textbox", { name: "Name" }), "Monday");
       await user.click(screen.getByRole("button", { name: "Save" }));
       expect(onSave).toHaveBeenCalledWith({
@@ -85,8 +84,7 @@ describe("DayForm", () => {
 
     it("merges the updated name into defaultValues when editing", async () => {
       const day = makeDay({ id: "day1", name: "Monday" });
-      const onSave = vi.fn();
-      const { user } = renderDayForm({ defaultValues: day, onSave });
+      const { user, onSave } = renderDayForm({ defaultValues: day });
       const nameInput = screen.getByRole("textbox", { name: "Name" });
       await user.clear(nameInput);
       await user.type(nameInput, "Tuesday");

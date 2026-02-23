@@ -106,10 +106,8 @@ describe("WorkingSetTableRow", () => {
 
   describe("onChange", () => {
     it("calls onChange with updated reps when the reps input changes", async () => {
-      const onChange = vi.fn();
-      const { user } = renderRow({
+      const { user, onChange } = renderRow({
         workingSet: { reps: 5, isLogged: false },
-        onChange,
       });
       const repsInput = screen.getByRole("textbox");
       await user.clear(repsInput);
@@ -118,10 +116,8 @@ describe("WorkingSetTableRow", () => {
     });
 
     it("calls onChange with reps: null and isLogged: false when reps are cleared", async () => {
-      const onChange = vi.fn();
-      const { user } = renderRow({
+      const { user, onChange } = renderRow({
         workingSet: { reps: 5, isLogged: true },
-        onChange,
       });
       await user.clear(screen.getByRole("textbox"));
       expect(onChange).toHaveBeenLastCalledWith({
@@ -131,20 +127,16 @@ describe("WorkingSetTableRow", () => {
     });
 
     it("calls onChange with isLogged: true when the checkbox is checked", async () => {
-      const onChange = vi.fn();
-      const { user } = renderRow({
+      const { user, onChange } = renderRow({
         workingSet: { reps: 5, isLogged: false },
-        onChange,
       });
       await user.click(screen.getByRole("checkbox"));
       expect(onChange).toHaveBeenCalledWith({ reps: 5, isLogged: true });
     });
 
     it("calls onChange with isLogged: false when the checkbox is unchecked", async () => {
-      const onChange = vi.fn();
-      const { user } = renderRow({
+      const { user, onChange } = renderRow({
         workingSet: { reps: 5, isLogged: true },
-        onChange,
       });
       await user.click(screen.getByRole("checkbox"));
       expect(onChange).toHaveBeenCalledWith({ reps: 5, isLogged: false });
