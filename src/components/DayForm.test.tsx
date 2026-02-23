@@ -9,15 +9,18 @@ import { DayForm, DayFormProps } from "./DayForm";
 const testUuid = "test-uuid";
 vi.mock("uuid", () => ({ v4: () => testUuid }));
 
-function renderDayForm(props: Partial<DayFormProps> = {}) {
+function renderDayForm(propsOverrides: Partial<DayFormProps> = {}) {
   const user = userEvent.setup();
-  const onSave = props.onSave ?? vi.fn();
+  const props: DayFormProps = {
+    onSave: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider>
-      <DayForm onSave={onSave} defaultValues={props.defaultValues} />
+      <DayForm {...props} />
     </MantineProvider>,
   );
-  return { user, onSave };
+  return { user, ...props };
 }
 
 describe("DayForm", () => {

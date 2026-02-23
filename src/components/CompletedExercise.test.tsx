@@ -19,16 +19,21 @@ const defaultExercise = makeExercise({
   nextSession: {},
 });
 
-function renderCompletedExercise(props: Partial<CompletedExerciseProps> = {}) {
+function renderCompletedExercise(
+  propsOverrides: Partial<CompletedExerciseProps> = {},
+) {
   const user = userEvent.setup();
-  const exercise = props.exercise ?? defaultExercise;
-  const onUndo = props.onUndo ?? vi.fn();
+  const props: CompletedExerciseProps = {
+    exercise: defaultExercise,
+    onUndo: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider>
-      <CompletedExercise exercise={exercise} onUndo={onUndo} />
+      <CompletedExercise {...props} />
     </MantineProvider>,
   );
-  return { user, exercise, onUndo };
+  return { user, ...props };
 }
 
 describe("CompletedExercise", () => {

@@ -9,21 +9,23 @@ import {
   DeleteConfirmationModalProps,
 } from "./DeleteConfirmationModal";
 
-function renderModal(props: Partial<DeleteConfirmationModalProps> = {}) {
+function renderModal(
+  propsOverrides: Partial<DeleteConfirmationModalProps> = {},
+) {
   const user = userEvent.setup();
-  const onClose = props.onClose ?? vi.fn();
-  const onDelete = props.onDelete ?? vi.fn();
+  const props: DeleteConfirmationModalProps = {
+    opened: true,
+    itemName: "workout",
+    onClose: vi.fn(),
+    onDelete: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider theme={testTheme}>
-      <DeleteConfirmationModal
-        opened={props.opened ?? true}
-        itemName={props.itemName ?? "workout"}
-        onClose={onClose}
-        onDelete={onDelete}
-      />
+      <DeleteConfirmationModal {...props} />
     </MantineProvider>,
   );
-  return { user, onClose, onDelete };
+  return { user, ...props };
 }
 
 describe("DeleteConfirmationModal", () => {

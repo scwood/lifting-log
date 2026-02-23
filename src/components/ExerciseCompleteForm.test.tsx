@@ -10,19 +10,20 @@ import {
 } from "./ExerciseCompleteForm";
 
 function renderExerciseCompleteForm(
-  props: Partial<ExerciseCompleteFormProps> = {},
+  propsOverrides: Partial<ExerciseCompleteFormProps> = {},
 ) {
   const user = userEvent.setup();
-  const onSave = props.onSave ?? vi.fn();
+  const props: ExerciseCompleteFormProps = {
+    defaultValues: makeExercise(),
+    onSave: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider>
-      <ExerciseCompleteForm
-        defaultValues={props.defaultValues ?? makeExercise()}
-        onSave={onSave}
-      />
+      <ExerciseCompleteForm {...props} />
     </MantineProvider>,
   );
-  return { user, onSave };
+  return { user, ...props };
 }
 
 describe("ExerciseCompleteForm", () => {

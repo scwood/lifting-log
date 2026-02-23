@@ -5,34 +5,29 @@ import { describe, expect, it, vi } from "vitest";
 
 import { makeExercise } from "../test-utils/factories";
 import { ExerciseType } from "../types/ExerciseType";
-import { WorkingSet } from "../types/WorkingSet";
 import {
   WorkingSetTableRow,
   WorkingSetTableRowProps,
 } from "./WorkingSetTableRow";
 
-function renderRow(props: Partial<WorkingSetTableRowProps> = {}) {
+function renderRow(propsOverrides: Partial<WorkingSetTableRowProps> = {}) {
   const user = userEvent.setup();
-  const exercise = props.exercise ?? makeExercise({ weight: 135, reps: 5 });
-  const workingSet: WorkingSet = props.workingSet ?? {
-    reps: 5,
-    isLogged: false,
+  const props: WorkingSetTableRowProps = {
+    exercise: makeExercise({ weight: 135, reps: 5 }),
+    workingSet: { reps: 5, isLogged: false },
+    onChange: vi.fn(),
+    ...propsOverrides,
   };
-  const onChange = props.onChange ?? vi.fn();
   render(
     <MantineProvider>
       <Table>
         <Table.Tbody>
-          <WorkingSetTableRow
-            exercise={exercise}
-            workingSet={workingSet}
-            onChange={onChange}
-          />
+          <WorkingSetTableRow {...props} />
         </Table.Tbody>
       </Table>
     </MantineProvider>,
   );
-  return { user, exercise, workingSet, onChange };
+  return { user, ...props };
 }
 
 describe("WorkingSetTableRow", () => {

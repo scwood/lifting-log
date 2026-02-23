@@ -10,15 +10,18 @@ import { WarmUpSetForm, WarmUpSetFormProps } from "./WarmUpSetForm";
 const testUuid = "test-uuid";
 vi.mock("uuid", () => ({ v4: () => testUuid }));
 
-function renderWarmUpSetForm(props: Partial<WarmUpSetFormProps> = {}) {
+function renderWarmUpSetForm(propsOverrides: Partial<WarmUpSetFormProps> = {}) {
   const user = userEvent.setup();
-  const onSave = props.onSave ?? vi.fn();
+  const props: WarmUpSetFormProps = {
+    onSave: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider>
-      <WarmUpSetForm onSave={onSave} defaultValues={props.defaultValues} />
+      <WarmUpSetForm {...props} />
     </MantineProvider>,
   );
-  return { user, onSave };
+  return { user, ...props };
 }
 
 describe("WarmUpSetForm", () => {

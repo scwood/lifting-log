@@ -11,15 +11,18 @@ import { ExerciseForm, ExerciseModalProps } from "./ExerciseForm";
 const testUuid = "test-uuid";
 vi.mock("uuid", () => ({ v4: () => testUuid }));
 
-function renderExerciseForm(props: Partial<ExerciseModalProps> = {}) {
+function renderExerciseForm(propsOverrides: Partial<ExerciseModalProps> = {}) {
   const user = userEvent.setup();
-  const onSave = props.onSave ?? vi.fn();
+  const props: ExerciseModalProps = {
+    onSave: vi.fn(),
+    ...propsOverrides,
+  };
   render(
     <MantineProvider theme={testTheme}>
-      <ExerciseForm onSave={onSave} defaultValues={props.defaultValues} />
+      <ExerciseForm {...props} />
     </MantineProvider>,
   );
-  return { user, onSave };
+  return { user, ...props };
 }
 
 describe("ExerciseForm", () => {
