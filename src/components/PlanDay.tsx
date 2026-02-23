@@ -55,7 +55,11 @@ export function PlanDay(props: PlanDayProps) {
           <span>Day: {day.name}</span>
           <Menu>
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                aria-label={`${day.name} menu`}
+              >
                 <IconDots />
               </ActionIcon>
             </Menu.Target>
