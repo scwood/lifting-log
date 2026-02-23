@@ -9,7 +9,7 @@ export function HistoryPage() {
   if (isLoading) {
     return (
       <Center>
-        <Loader />
+        <Loader aria-label="Loading history" />
       </Center>
     );
   }
