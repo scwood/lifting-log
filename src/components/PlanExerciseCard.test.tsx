@@ -31,8 +31,9 @@ function renderPlanExerciseCard(
 
 describe("PlanExerciseCard", () => {
   it("renders the exercise name", () => {
-    renderPlanExerciseCard({ exercise: makeExercise({ name: "Deadlift" }) });
-    expect(screen.getByText("Deadlift")).toBeInTheDocument();
+    const name = "Deadlift";
+    renderPlanExerciseCard({ exercise: makeExercise({ name }) });
+    expect(screen.getByText(name)).toBeInTheDocument();
   });
 
   it("renders the volume load and warm-up set count", () => {
@@ -56,64 +57,83 @@ describe("PlanExerciseCard", () => {
 
   describe("menu", () => {
     it("calls onEdit with the exercise when Edit is clicked", async () => {
-      const exercise = makeExercise({ name: "Bench Press" });
-      const { user, onEdit } = renderPlanExerciseCard({ exercise });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise, onEdit } = renderPlanExerciseCard();
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       await user.click(screen.getByText("Edit"));
       expect(onEdit).toHaveBeenCalledWith(exercise);
     });
 
     it("calls onDelete with the exercise when Delete is clicked", async () => {
-      const exercise = makeExercise({ name: "Squat" });
-      const { user, onDelete } = renderPlanExerciseCard({ exercise });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise, onDelete } = renderPlanExerciseCard();
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       await user.click(screen.getByText("Delete"));
       expect(onDelete).toHaveBeenCalledWith(exercise);
     });
 
     it("calls onMoveUp with the exercise when Move up is clicked", async () => {
-      const exercise = makeExercise();
-      const { user, onMoveUp } = renderPlanExerciseCard({
-        exercise,
+      const { user, exercise, onMoveUp } = renderPlanExerciseCard({
         moveUpDisabled: false,
       });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       await user.click(screen.getByText("Move up"));
       expect(onMoveUp).toHaveBeenCalledWith(exercise);
     });
 
     it("calls onMoveDown with the exercise when Move down is clicked", async () => {
-      const exercise = makeExercise();
-      const { user, onMoveDown } = renderPlanExerciseCard({
-        exercise,
+      const { user, exercise, onMoveDown } = renderPlanExerciseCard({
         moveDownDisabled: false,
       });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       await user.click(screen.getByText("Move down"));
       expect(onMoveDown).toHaveBeenCalledWith(exercise);
     });
 
     it("disables Move up when moveUpDisabled is true", async () => {
-      const { user } = renderPlanExerciseCard({ moveUpDisabled: true });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise } = renderPlanExerciseCard({
+        moveUpDisabled: true,
+      });
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       expect(screen.getByText("Move up").closest("button")).toBeDisabled();
     });
 
     it("disables Move down when moveDownDisabled is true", async () => {
-      const { user } = renderPlanExerciseCard({ moveDownDisabled: true });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise } = renderPlanExerciseCard({
+        moveDownDisabled: true,
+      });
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       expect(screen.getByText("Move down").closest("button")).toBeDisabled();
     });
 
     it("does not disable Move up when moveUpDisabled is false", async () => {
-      const { user } = renderPlanExerciseCard({ moveUpDisabled: false });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise } = renderPlanExerciseCard({
+        moveUpDisabled: false,
+      });
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       expect(screen.getByText("Move up").closest("button")).not.toBeDisabled();
     });
 
     it("does not disable Move down when moveDownDisabled is false", async () => {
-      const { user } = renderPlanExerciseCard({ moveDownDisabled: false });
-      await user.click(screen.getByRole("button", { name: "Exercise menu" }));
+      const { user, exercise } = renderPlanExerciseCard({
+        moveDownDisabled: false,
+      });
+      await user.click(
+        screen.getByRole("button", { name: `${exercise.name} menu` }),
+      );
       expect(
         screen.getByText("Move down").closest("button"),
       ).not.toBeDisabled();

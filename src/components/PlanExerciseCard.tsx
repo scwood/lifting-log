@@ -34,7 +34,7 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
             <ActionIcon
               variant="subtle"
               color="gray"
-              aria-label="Exercise menu"
+              aria-label={`${exercise.name} menu`}
             >
               <IconDots />
             </ActionIcon>
