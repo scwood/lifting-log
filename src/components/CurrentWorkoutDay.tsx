@@ -57,7 +57,11 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
               <Title order={4}>{exercise.name}:</Title>
               <Menu>
                 <Menu.Target>
-                  <ActionIcon variant="subtle" color="gray">
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    aria-label={`${exercise.name} menu`}
+                  >
                     <IconDots />
                   </ActionIcon>
                 </Menu.Target>
