@@ -61,7 +61,7 @@ function renderPlanDay(propsOverrides: Partial<PlanDayProps> = {}) {
 
 describe("PlanDay", () => {
   beforeEach(() => {
-    mockUpdateWorkout.mockReset();
+    vi.resetAllMocks();
     mockUpdateWorkout.mockResolvedValue(undefined);
   });
 

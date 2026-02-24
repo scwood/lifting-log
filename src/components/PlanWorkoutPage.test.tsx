@@ -47,9 +47,7 @@ function renderPlanWorkoutPage() {
 
 describe("PlanWorkoutPage", () => {
   beforeEach(() => {
-    mockGetCurrentWorkout.mockReset();
-    mockCreateWorkout.mockReset();
-    mockUpdateWorkout.mockReset();
+    vi.resetAllMocks();
 
     mockCreateWorkout.mockResolvedValue(undefined);
     mockUpdateWorkout.mockResolvedValue(undefined);

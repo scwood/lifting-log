@@ -41,7 +41,7 @@ export function CurrentWorkoutPage() {
   if (isLoading) {
     return (
       <Center>
-        <Loader />
+        <Loader aria-label="Loading current workout..." />
       </Center>
     );
   }

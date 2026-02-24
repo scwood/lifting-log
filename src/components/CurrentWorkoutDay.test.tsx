@@ -65,7 +65,7 @@ function renderCurrentWorkoutDay(
 
 describe("CurrentWorkoutDay", () => {
   beforeEach(() => {
-    mockUpdateWorkout.mockReset();
+    vi.resetAllMocks();
     mockUpdateWorkout.mockResolvedValue(undefined);
   });
 
