@@ -15,7 +15,9 @@ Guidance for coding agents working in this repository.
 ## Quick Start
 
 - Install: `npm install`
+- Firebase emulators (required for local dev server): `npm run emulators`
 - Dev server: `npm run dev`
+- Dev server (production Firebase): `npm run dev:prod`
 - Build: `npm run build`
 - Type check: `npm run check`
 - Lint: `npm run lint`
@@ -71,6 +73,9 @@ Run these commands and fix failures before handing off:
 - Do not introduce secret material; existing Firebase config is public client config.
 - Preserve workout document compatibility when changing persisted shapes.
 - If changing Firestore data shape, update all dependent readers/writers and tests in the same change.
+- Default local development to Firebase emulators (Auth + Firestore), not production.
+- Treat production Firebase usage as explicit opt-in for targeted checks only.
+- Avoid manual test-data writes in production during normal development.
 
 ## Deployment Notes
 

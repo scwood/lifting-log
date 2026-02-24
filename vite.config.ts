@@ -11,4 +11,7 @@ export default defineConfig({
     }),
   ],
   base: "/lifting-log/",
+  // A fix to allow firebase emulators to properly export their data on exit
+  // Source: https://github.com/firebase/firebase-tools/issues/3092#issuecomment-1491220706
+  server: { watch: { usePolling: true } },
 });

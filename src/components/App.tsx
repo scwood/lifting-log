@@ -2,8 +2,12 @@ import { MantineProvider, createTheme } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import {
+  connectFirestoreEmulator,
+  initializeFirestore,
+  persistentLocalCache,
+} from "firebase/firestore";
 
 import { AppRouter } from "./AppRouter";
 import { AuthProvider } from "./AuthProvider";
@@ -18,8 +22,15 @@ const firebaseApp = initializeApp({
   measurementId: "G-WE0QE376H5",
 });
 
-getAuth(firebaseApp);
-initializeFirestore(firebaseApp, { localCache: persistentLocalCache() });
+const auth = getAuth(firebaseApp);
+const firestore = initializeFirestore(firebaseApp, {
+  localCache: persistentLocalCache(),
+});
+
+if (import.meta.env.VITE_USE_FIREBASE_EMULATORS === "true") {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099");
+  connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
+}
 
 const theme = createTheme({ headings: { fontWeight: "600" } });
 const queryClient = new QueryClient();
