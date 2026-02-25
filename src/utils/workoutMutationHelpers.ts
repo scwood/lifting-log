@@ -247,7 +247,7 @@ export function undoWorkoutDayEntry(
   });
 }
 
-export function buildUndoWorkoutUpdates(
+export function undoWorkoutDayEntryCompletion(
   workout: Workout,
   dayId: string,
   entryId: string,
@@ -258,7 +258,7 @@ export function buildUndoWorkoutUpdates(
   };
 }
 
-export function buildNextWorkoutDays(workout: Workout): Day[] {
+export function deriveNextWorkoutDays(workout: Workout): Day[] {
   return workout.days.map((day) => {
     return {
       ...day,

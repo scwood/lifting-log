@@ -18,9 +18,9 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import {
-  buildNextWorkoutDays,
-  buildUndoWorkoutUpdates,
+  deriveNextWorkoutDays,
   sanitizeWorkoutNotes,
+  undoWorkoutDayEntryCompletion,
 } from "../utils/workoutMutationHelpers";
 import {
   selectCompletedDayExercises,
@@ -202,7 +202,7 @@ export function CurrentWorkoutPage() {
     }
     updateWorkout({
       workoutId: currentWorkout.id,
-      updates: buildUndoWorkoutUpdates(currentWorkout, day.id, exercise.id),
+      updates: undoWorkoutDayEntryCompletion(currentWorkout, day.id, exercise.id),
     });
   }
 
@@ -214,7 +214,7 @@ export function CurrentWorkoutPage() {
       workoutId: currentWorkout.id,
       updates: { completedTimestamp: Date.now() },
     });
-    const newDays = buildNextWorkoutDays(currentWorkout);
+    const newDays = deriveNextWorkoutDays(currentWorkout);
     createWorkout({ days: newDays });
   }
 

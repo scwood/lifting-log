@@ -3,16 +3,16 @@ import { describe, expect, it } from "vitest";
 import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
 import { Direction } from "./arrayUtils";
 import {
-  buildNextWorkoutDays,
-  buildUndoWorkoutUpdates,
   completeWorkoutDayEntry,
   deleteWorkoutDay,
   deleteWorkoutDayEntry,
+  deriveNextWorkoutDays,
   reorderWorkoutDay,
   reorderWorkoutDayEntry,
   sanitizeWorkoutNotes,
   setWorkoutDayEntryWorkingSet,
   skipWorkoutDayEntry,
+  undoWorkoutDayEntryCompletion,
   undoWorkoutDayEntry,
   upsertWorkoutDay,
   upsertWorkoutDayEntry,
@@ -336,7 +336,7 @@ describe("undoWorkoutDayEntry", () => {
   });
 });
 
-describe("buildUndoWorkoutUpdates", () => {
+describe("undoWorkoutDayEntryCompletion", () => {
   it("includes completedTimestamp reset and undo entry changes", () => {
     const completedExercise = makeExercise({
       id: "ex1",
@@ -350,7 +350,7 @@ describe("buildUndoWorkoutUpdates", () => {
       days: [makeDay({ id: "day1", exercises: [completedExercise] })],
     });
 
-    const updates = buildUndoWorkoutUpdates(workout, "day1", "ex1");
+    const updates = undoWorkoutDayEntryCompletion(workout, "day1", "ex1");
 
     expect(updates.completedTimestamp).toBeNull();
     expect(updates.days[0].exercises[0].workingSets).toEqual({
@@ -360,7 +360,7 @@ describe("buildUndoWorkoutUpdates", () => {
   });
 });
 
-describe("buildNextWorkoutDays", () => {
+describe("deriveNextWorkoutDays", () => {
   it("applies nextSession and resets runtime fields", () => {
     const exercise = makeExercise({
       id: "ex1",
@@ -373,7 +373,7 @@ describe("buildNextWorkoutDays", () => {
       days: [makeDay({ id: "day1", exercises: [exercise] })],
     });
 
-    expect(buildNextWorkoutDays(workout)).toEqual([
+    expect(deriveNextWorkoutDays(workout)).toEqual([
       makeDay({
         id: "day1",
         exercises: [
