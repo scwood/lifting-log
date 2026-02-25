@@ -2,7 +2,7 @@ import { ActionIcon, Card, Flex, Menu, Text, Title } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
 import { Exercise } from "../types/Exercise";
-import { getVolumeLoad } from "../utils/workoutUtils";
+import { getVolumeLoad } from "../utils/workoutFormattingUtils";
 
 export interface PlanExerciseCardProps {
   exercise: Exercise;

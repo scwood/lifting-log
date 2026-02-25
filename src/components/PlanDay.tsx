@@ -15,7 +15,15 @@ import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import { Workout } from "../types/Workout";
 import { Direction } from "../utils/arrayUtils";
-import { moveExercise } from "../utils/workoutUtils";
+import {
+  deleteWorkoutDayEntry,
+  reorderWorkoutDayEntry,
+  upsertWorkoutDayEntry,
+} from "../utils/workoutMutationHelpers";
+import {
+  selectDayExercises,
+  selectWorkoutDays,
+} from "../utils/workoutSelectors";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ExerciseForm } from "./ExerciseForm";
 import { PlanExerciseCard } from "./PlanExerciseCard";
@@ -46,7 +54,9 @@ export function PlanDay(props: PlanDayProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
-  const dayIndex = workout.days.findIndex((d) => d.id === day.id);
+  const workoutDays = selectWorkoutDays(workout);
+  const dayExercises = selectDayExercises(day);
+  const dayIndex = workoutDays.findIndex((d) => d.id === day.id);
 
   return (
     <div>
@@ -86,21 +96,21 @@ export function PlanDay(props: PlanDayProps) {
       </Title>
       <Divider mt={4} mb="md" />
       <Flex direction="column" gap="md">
-        {day.exercises.length === 0 && (
+        {dayExercises.length === 0 && (
           <div>
             Your plan has no exercises for this day. Click the button below to
             add an exercise.
           </div>
         )}
-        {day.exercises.map((exercise, index) => {
+        {dayExercises.map((exercise, index) => {
           return (
             <PlanExerciseCard
               key={exercise.id}
               exercise={exercise}
               moveUpDisabled={index === 0 && dayIndex === 0}
               moveDownDisabled={
-                index === day.exercises.length - 1 &&
-                dayIndex === workout.days.length - 1
+                index === dayExercises.length - 1 &&
+                dayIndex === workoutDays.length - 1
               }
               onEdit={handleEditExercise}
               onDelete={handleConfirmDeleteExercise}
@@ -144,15 +154,15 @@ export function PlanDay(props: PlanDayProps) {
 
   async function handleSaveExercise(exercise: Exercise) {
     setIsExerciseModalOpen(false);
-    let exercises: Exercise[];
-    if (exerciseToEdit) {
-      exercises = day.exercises.map((e) => {
-        return e.id === exerciseToEdit.id ? exercise : e;
-      });
-    } else {
-      exercises = [...day.exercises, exercise];
-    }
-    await updateExercises(exercises);
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: upsertWorkoutDayEntry(
+        workout,
+        day.id,
+        exercise,
+        exerciseToEdit?.id,
+      ),
+    });
   }
 
   function handleConfirmDeleteExercise(exercise: Exercise) {
@@ -164,32 +174,16 @@ export function PlanDay(props: PlanDayProps) {
     if (!exerciseToEdit) {
       return;
     }
-    const exercises = day.exercises.filter((e) => e.id !== exerciseToEdit.id);
-    await updateExercises(exercises);
-  }
-
-  async function handleMoveExercise(exercise: Exercise, direction: Direction) {
-    const updatedWorkout = moveExercise(
-      workout,
-      day.id,
-      exercise.id,
-      direction,
-    );
-
     await updateWorkout({
       workoutId: workout.id,
-      updates: updatedWorkout,
+      updates: deleteWorkoutDayEntry(workout, day.id, exerciseToEdit.id),
     });
   }
 
-  async function updateExercises(exercises: Exercise[]) {
+  async function handleMoveExercise(exercise: Exercise, direction: Direction) {
     await updateWorkout({
       workoutId: workout.id,
-      updates: {
-        days: workout.days.map((d) =>
-          d.id === day.id ? { ...d, exercises } : d,
-        ),
-      },
+      updates: reorderWorkoutDayEntry(workout, day.id, exercise.id, direction),
     });
   }
 }

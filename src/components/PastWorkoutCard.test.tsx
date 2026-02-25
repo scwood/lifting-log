@@ -48,9 +48,9 @@ describe("PastWorkoutCard", () => {
       reps: 5,
       weight: 135,
       workingSets: {
-        0: { reps: 5, isLogged: true },
-        1: { reps: 5, isLogged: true },
-        2: { reps: 4, isLogged: true },
+        0: { reps: 5, isLogged: true, weight: 135 },
+        1: { reps: 5, isLogged: true, weight: 135 },
+        2: { reps: 4, isLogged: true, weight: 130 },
       },
     });
     const workout = makeWorkout({
@@ -58,7 +58,9 @@ describe("PastWorkoutCard", () => {
     });
     renderPastWorkoutCard({ workout });
     expect(
-      screen.getByText(/Bench Press: 3x5x135/, { selector: "span" }),
+      screen.getByText(/Bench Press: 3x5x135 \(5x135,5x135,4x130\)/, {
+        selector: "span",
+      }),
     ).toBeInTheDocument();
   });
 

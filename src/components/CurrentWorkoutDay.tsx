@@ -16,12 +16,18 @@ import { Exercise } from "../types/Exercise";
 import { NextSessionPlan } from "../types/NextSessionPlan";
 import { WorkingSet } from "../types/WorkingSet";
 import { Workout } from "../types/Workout";
+import { calculatePlates } from "../utils/weightUtils";
 import {
-  calculatePlates,
-  getWarmUpWeight,
-  isExerciseComplete,
-  isPlateExercise,
-} from "../utils/workoutUtils";
+  completeWorkoutDayEntry,
+  setWorkoutDayEntryWorkingSet,
+  skipWorkoutDayEntry,
+} from "../utils/workoutMutationHelpers";
+import {
+  selectExerciseIsComplete,
+  selectExerciseUsesPlates,
+  selectIncompleteDayExercises,
+  selectWarmUpSetWeight,
+} from "../utils/workoutSelectors";
 import { ExerciseCompleteForm } from "./ExerciseCompleteForm";
 import { WorkingSetTableRow } from "./WorkingSetTableRow";
 
@@ -42,9 +48,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   const [lastWorkingSetIndex, setLastWorkingSetIndex] = useState<number | null>(
     null,
   );
-  const incompleteExercises = day.exercises.filter((exercise) => {
-    return !isExerciseComplete(exercise);
-  });
+  const incompleteExercises = selectIncompleteDayExercises(day);
 
   return (
     <>
@@ -76,18 +80,23 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Weight</Table.Th>
-                  {isPlateExercise(exercise) && <Table.Th>Plates</Table.Th>}
+                  {selectExerciseUsesPlates(exercise) && (
+                    <Table.Th>Plates</Table.Th>
+                  )}
                   <Table.Th>Reps</Table.Th>
                   <Table.Th>Log</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {exercise.warmUpSets.map((warmUpSet) => {
-                  const warmUpWeight = getWarmUpWeight(exercise, warmUpSet);
+                  const warmUpWeight = selectWarmUpSetWeight(
+                    exercise,
+                    warmUpSet,
+                  );
                   return (
                     <Table.Tr key={warmUpSet.id}>
                       <Table.Td>{warmUpWeight}</Table.Td>
-                      {isPlateExercise(exercise) && (
+                      {selectExerciseUsesPlates(exercise) && (
                         <Table.Td>
                           {calculatePlates(warmUpWeight, exercise.type)}
                         </Table.Td>
@@ -101,6 +110,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
                   const workingSet = exercise.workingSets[setNumber] ?? {
                     isLogged: false,
                     reps: null,
+                    weight: null,
                   };
                   return (
                     <WorkingSetTableRow
@@ -147,13 +157,22 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
         [setNumber]: workingSet,
       },
     };
-    if (isExerciseComplete(exerciseCopy)) {
+    if (selectExerciseIsComplete(exerciseCopy)) {
       setCompletedExercise(exercise);
       setLastWorkingSet(workingSet);
       setLastWorkingSetIndex(setNumber);
       setIsExerciseCompleteModalOpen(true);
     } else {
-      await updateExercise(exerciseCopy);
+      await updateWorkout({
+        workoutId: workout.id,
+        updates: setWorkoutDayEntryWorkingSet(
+          workout,
+          day.id,
+          exercise.id,
+          setNumber,
+          workingSet,
+        ),
+      });
     }
   }
 
@@ -166,48 +185,22 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
       return;
     }
     setIsExerciseCompleteModalOpen(false);
-    const exerciseCopy = {
-      ...completedExercise,
-      workingSets: {
-        ...completedExercise.workingSets,
-        [lastWorkingSetIndex]: lastWorkingSet,
-      },
-      nextSession,
-    };
-    await updateExercise(exerciseCopy);
-  }
-
-  async function updateExercise(exercise: Exercise) {
     await updateWorkout({
       workoutId: workout.id,
-      updates: {
-        days: workout.days.map((d) => {
-          return d.id === day.id
-            ? {
-                ...day,
-                exercises: day.exercises.map((e) => {
-                  return e.id === exercise.id ? exercise : e;
-                }),
-              }
-            : d;
-        }),
-      },
+      updates: completeWorkoutDayEntry(workout, {
+        dayId: day.id,
+        entryId: completedExercise.id,
+        setNumber: lastWorkingSetIndex,
+        workingSet: lastWorkingSet,
+        nextSession,
+      }),
     });
   }
 
   async function handleSkipExercise(exercise: Exercise) {
-    const exerciseCopy: Exercise = {
-      ...exercise,
-      workingSets: {},
-      nextSession: {
-        weight: exercise.weight,
-        reps: exercise.reps,
-        sets: exercise.sets,
-      },
-    };
-    for (let i = 0; i < exercise.sets; i++) {
-      exerciseCopy.workingSets[i] = { isLogged: true, reps: 0 };
-    }
-    await updateExercise(exerciseCopy);
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: skipWorkoutDayEntry(workout, day.id, exercise.id),
+    });
   }
 }

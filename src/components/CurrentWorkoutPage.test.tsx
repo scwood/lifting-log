@@ -204,15 +204,15 @@ describe("CurrentWorkoutPage", () => {
       name: "Bench Press",
       sets: 2,
       workingSets: {
-        0: { isLogged: true, reps: 5 },
-        1: { isLogged: true, reps: 5 },
+        0: { isLogged: true, reps: 5, weight: 135 },
+        1: { isLogged: true, reps: 5, weight: 135 },
       },
     });
     const incompleteExercise = makeExercise({
       id: "ex-incomplete",
       name: "Squat",
       sets: 2,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const workout = makeWorkout({
       id: "w1",
@@ -234,8 +234,8 @@ describe("CurrentWorkoutPage", () => {
     expect(workoutId).toBe("w1");
     expect(updates.completedTimestamp).toBeNull();
     expect(updates.days?.[0].exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
-      1: { isLogged: false, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 135 },
+      1: { isLogged: false, reps: 5, weight: 135 },
     });
   });
 
@@ -247,9 +247,9 @@ describe("CurrentWorkoutPage", () => {
       reps: 5,
       weight: 135,
       workingSets: {
-        0: { isLogged: true, reps: 5 },
-        1: { isLogged: true, reps: 5 },
-        2: { isLogged: true, reps: 5 },
+        0: { isLogged: true, reps: 5, weight: 135 },
+        1: { isLogged: true, reps: 5, weight: 135 },
+        2: { isLogged: true, reps: 5, weight: 135 },
       },
       nextSession: { reps: 6, weight: 140 },
     });

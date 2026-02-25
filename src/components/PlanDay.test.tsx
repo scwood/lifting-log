@@ -8,7 +8,7 @@ import { updateWorkout } from "../api/workoutsApi";
 import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
-import { moveExercise } from "../utils/workoutUtils";
+import { reorderWorkoutDayEntry } from "../utils/workoutMutationHelpers";
 import { CurrentUserProvider } from "./CurrentUserProvider";
 import { PlanDay, PlanDayProps } from "./PlanDay";
 
@@ -192,7 +192,12 @@ describe("PlanDay", () => {
 
   it("moves an exercise and sends moveExercise result to updateWorkout", async () => {
     const { user, workout, day } = renderPlanDay();
-    const expectedUpdates = moveExercise(workout, day.id, "ex2", Direction.Up);
+    const expectedUpdates = reorderWorkoutDayEntry(
+      workout,
+      day.id,
+      "ex2",
+      Direction.Up,
+    );
 
     await user.click(screen.getByRole("button", { name: "Bench Press menu" }));
     await user.click(screen.getByText("Move up"));
