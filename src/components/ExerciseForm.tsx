@@ -115,6 +115,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
                 placeholder="150"
                 allowNegative={false}
                 allowDecimal
+                inputMode="decimal"
+                hideControls
               />
             );
           }}
@@ -129,6 +131,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
                 description="Number of working sets you aim to complete currently"
                 allowNegative={false}
                 allowDecimal={false}
+                inputMode="numeric"
+                hideControls
               />
             );
           }}
@@ -143,6 +147,8 @@ export function ExerciseForm(props: ExerciseModalProps) {
                 description="Number of reps you aim to complete currently"
                 allowNegative={false}
                 allowDecimal={false}
+                inputMode="numeric"
+                hideControls
               />
             );
           }}
@@ -198,11 +204,13 @@ export function ExerciseForm(props: ExerciseModalProps) {
                       <field.AppNumberInput
                         withAsterisk
                         allowDecimal
+                        inputMode="decimal"
                         ml="xl"
                         allowNegative={false}
                         placeholder="5"
                         label="Minimum weight increment"
                         description="The smallest weight increment for the exercise (might be 5 for a dumbbell exercise, 2.5 for a certain machine, etc.)"
+                        hideControls
                       />
                     );
                   }}

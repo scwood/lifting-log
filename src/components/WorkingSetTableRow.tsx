@@ -25,6 +25,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
       )}
       <Table.Td>
         <NumberInput
+          inputMode="numeric"
           styles={{ input: { width: 42 } }}
           allowDecimal={false}
           max={99}

@@ -122,7 +122,9 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                       withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
                       allowDecimal
+                      inputMode="decimal"
                       allowNegative={false}
+                      hideControls
                     />
                   );
                 }}
@@ -134,8 +136,10 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                       label="Sets"
                       withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
-                      allowDecimal={false}
                       allowNegative={false}
+                      allowDecimal={false}
+                      inputMode="numeric"
+                      hideControls
                     />
                   );
                 }}
@@ -147,8 +151,10 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                       label="Reps"
                       withAsterisk
                       disabled={nextSessionAction !== NextSessionAction.Custom}
-                      allowDecimal={false}
                       allowNegative={false}
+                      allowDecimal={false}
+                      inputMode="numeric"
+                      hideControls
                     />
                   );
                 }}

@@ -87,11 +87,13 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                     return (
                       <field.AppNumberInput
                         withAsterisk
-                        allowDecimal={false}
                         allowNegative={false}
+                        allowDecimal={false}
+                        inputMode="numeric"
                         label="Reps"
                         description="Number of reps for the set"
                         placeholder="5"
+                        hideControls
                       />
                     );
                   }}
@@ -101,8 +103,16 @@ export function WarmUpSetForm(props: WarmUpSetFormProps) {
                     return (
                       <field.AppNumberInput
                         withAsterisk
-                        allowDecimal={false}
+                        hideControls
                         allowNegative={false}
+                        allowDecimal={
+                          warmUpType === WarmUpType.Percentage ? false : true
+                        }
+                        inputMode={
+                          warmUpType === WarmUpType.Percentage
+                            ? "numeric"
+                            : "decimal"
+                        }
                         max={
                           warmUpType === WarmUpType.Percentage ? 100 : undefined
                         }
