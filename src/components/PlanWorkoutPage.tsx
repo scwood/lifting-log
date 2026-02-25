@@ -14,6 +14,7 @@ import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Direction, moveItem } from "../utils/arrayUtils";
+import { CreateWorkoutEmptyState } from "./CreateWorkoutEmptyState";
 import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { PlanDay } from "./PlanDay";
@@ -42,16 +43,10 @@ export function PlanWorkoutPage() {
 
   if (!workout) {
     return (
-      <Flex direction="column" align="center" gap="sm">
-        <div>Press the button below to create a workout plan</div>
-        <Button
-          color="green"
-          loading={isPendingCreate}
-          onClick={() => createWorkout({})}
-        >
-          Create workout plan
-        </Button>
-      </Flex>
+      <CreateWorkoutEmptyState
+        isPending={isPendingCreate}
+        onCreate={() => createWorkout({})}
+      />
     );
   }
 
