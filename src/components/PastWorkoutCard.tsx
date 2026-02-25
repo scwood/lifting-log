@@ -1,7 +1,7 @@
 import { Box, Card, Flex, Text } from "@mantine/core";
 
 import { Workout } from "../types/Workout";
-import { getVolumeLoad } from "../utils/workoutUtils";
+import { getVolumeLoad } from "../utils/workoutFormattingUtils";
 
 export interface PastWorkoutCardProps {
   workout: Workout;

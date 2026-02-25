@@ -1,7 +1,7 @@
 import { Button, Card, Text, Title } from "@mantine/core";
 
 import { Exercise } from "../types/Exercise";
-import { getVolumeLoad } from "../utils/workoutUtils";
+import { getVolumeLoad } from "../utils/workoutFormattingUtils";
 
 export interface CompletedExerciseProps {
   exercise: Exercise;

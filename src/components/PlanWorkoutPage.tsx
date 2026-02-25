@@ -13,7 +13,13 @@ import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
-import { Direction, moveItem } from "../utils/arrayUtils";
+import { Direction } from "../utils/arrayUtils";
+import {
+  deleteWorkoutDay,
+  reorderWorkoutDay,
+  upsertWorkoutDay,
+} from "../utils/workoutMutationHelpers";
+import { selectWorkoutDays } from "../utils/workoutSelectors";
 import { CreateWorkoutEmptyState } from "./CreateWorkoutEmptyState";
 import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
@@ -50,25 +56,27 @@ export function PlanWorkoutPage() {
     );
   }
 
+  const workoutDays = selectWorkoutDays(workout);
+
   return (
     <>
       <Title mb="sm" order={3}>
         Workout plan
       </Title>
       <Flex direction="column" gap="lg">
-        {workout.days.length === 0 && (
+        {workoutDays.length === 0 && (
           <div>
             Your plan has no days. Click the button below to add your first day.
           </div>
         )}
-        {workout.days.map((day, index) => {
+        {workoutDays.map((day, index) => {
           return (
             <PlanDay
               key={day.id}
               day={day}
               workout={workout}
               moveUpDisabled={index === 0}
-              moveDownDisabled={index === workout.days.length - 1}
+              moveDownDisabled={index === workoutDays.length - 1}
               onEdit={handleEditDay}
               onDelete={handleConfirmDeleteDay}
               onMoveUp={() => handleMoveDay(index, Direction.Up)}
@@ -104,31 +112,30 @@ export function PlanWorkoutPage() {
       return;
     }
     setIsDayModalOpen(false);
-    let days: Day[];
-    if (dayToEdit) {
-      days = workout.days.map((d) => {
-        return d.id === dayToEdit.id ? { ...day } : d;
-      });
-    } else {
-      days = [...workout.days, day];
-    }
-    await updateWorkout({ workoutId: workout.id, updates: { days } });
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: upsertWorkoutDay(workout, day, dayToEdit?.id),
+    });
   }
 
   async function handleDeleteDay() {
     if (!workout || !dayToEdit) {
       return;
     }
-    const days = workout.days.filter((d) => d.id !== dayToEdit.id);
-    await updateWorkout({ workoutId: workout.id, updates: { days } });
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: deleteWorkoutDay(workout, dayToEdit.id),
+    });
   }
 
   async function handleMoveDay(index: number, direction: Direction) {
     if (!workout) {
       return;
     }
-    const days = moveItem(workout.days, index, direction);
-    await updateWorkout({ workoutId: workout.id, updates: { days } });
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: reorderWorkoutDay(workout, index, direction),
+    });
   }
 
   function handleEditDay(day: Day) {

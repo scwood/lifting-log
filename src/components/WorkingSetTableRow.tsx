@@ -3,7 +3,8 @@ import { useState } from "react";
 
 import { Exercise } from "../types/Exercise";
 import { WorkingSet } from "../types/WorkingSet";
-import { calculatePlates, isPlateExercise } from "../utils/workoutUtils";
+import { calculatePlates } from "../utils/weightUtils";
+import { selectExerciseUsesPlates } from "../utils/workoutSelectors";
 
 export interface WorkingSetTableRowProps {
   exercise: Exercise;
@@ -20,7 +21,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   return (
     <Table.Tr>
       <Table.Td>{exercise.weight}</Table.Td>
-      {isPlateExercise(exercise) && (
+      {selectExerciseUsesPlates(exercise) && (
         <Table.Td>{calculatePlates(exercise.weight, exercise.type)}</Table.Td>
       )}
       <Table.Td>

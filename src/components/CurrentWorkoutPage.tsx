@@ -18,10 +18,18 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { Exercise } from "../types/Exercise";
 import {
-  isAnyExerciseComplete,
-  isEveryDayComplete,
-  isExerciseComplete,
-} from "../utils/workoutUtils";
+  buildNextWorkoutDays,
+  buildUndoWorkoutUpdates,
+  sanitizeWorkoutNotes,
+} from "../utils/workoutMutationHelpers";
+import {
+  selectCompletedDayExercises,
+  selectIncompleteWorkoutDays,
+  selectWorkoutDaysWithCompletedExercises,
+  selectWorkoutHasNoDays,
+  selectWorkoutHasNoExercises,
+  selectWorkoutIsComplete,
+} from "../utils/workoutSelectors";
 import { CompletedExercise } from "./CompletedExercise";
 import { CreateWorkoutEmptyState } from "./CreateWorkoutEmptyState";
 import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
@@ -65,11 +73,8 @@ export function CurrentWorkoutPage() {
     );
   }
 
-  const hasNoDays = currentWorkout.days.length === 0;
-
-  const hasNoExercises = currentWorkout.days.every((day) => {
-    return day.exercises.length === 0;
-  });
+  const hasNoDays = selectWorkoutHasNoDays(currentWorkout);
+  const hasNoExercises = selectWorkoutHasNoExercises(currentWorkout);
 
   if (hasNoDays || hasNoExercises) {
     return (
@@ -82,7 +87,7 @@ export function CurrentWorkoutPage() {
     );
   }
 
-  if (isEveryDayComplete(currentWorkout)) {
+  if (selectWorkoutIsComplete(currentWorkout)) {
     return (
       <>
         <Title order={3} mb="md">
@@ -101,9 +106,7 @@ export function CurrentWorkoutPage() {
     );
   }
 
-  const incompleteDays = currentWorkout.days.filter((day) => {
-    return day.exercises.some((exercise) => !isExerciseComplete(exercise));
-  });
+  const incompleteDays = selectIncompleteWorkoutDays(currentWorkout);
 
   return (
     <>
@@ -145,9 +148,8 @@ export function CurrentWorkoutPage() {
     if (!currentWorkout) {
       return null;
     }
-    const daysWithCompletedExercises = currentWorkout.days.filter(
-      isAnyExerciseComplete,
-    );
+    const daysWithCompletedExercises =
+      selectWorkoutDaysWithCompletedExercises(currentWorkout);
     if (daysWithCompletedExercises.length === 0) {
       return null;
     }
@@ -158,7 +160,7 @@ export function CurrentWorkoutPage() {
         </Title>
         <Flex direction="column" gap="md">
           {daysWithCompletedExercises.map((day) => {
-            const completedExercises = day.exercises.filter(isExerciseComplete);
+            const completedExercises = selectCompletedDayExercises(day);
             return (
               <div key={day.id}>
                 <div>
@@ -188,11 +190,9 @@ export function CurrentWorkoutPage() {
     if (!currentWorkout) {
       return;
     }
-    const trimmedNotes = notes.trim();
-    const notesUpdate = notes.trim().length > 0 ? trimmedNotes : null;
     updateWorkout({
       workoutId: currentWorkout.id,
-      updates: { notes: notesUpdate },
+      updates: { notes: sanitizeWorkoutNotes(notes) },
     });
   }
 
@@ -202,27 +202,7 @@ export function CurrentWorkoutPage() {
     }
     updateWorkout({
       workoutId: currentWorkout.id,
-      updates: {
-        completedTimestamp: null,
-        days: currentWorkout.days.map((d) => {
-          return d.id === day.id
-            ? {
-                ...d,
-                exercises: d.exercises.map((e) => {
-                  if (e.id !== exercise.id) {
-                    return e;
-                  }
-                  const workingSetsCopy = { ...e.workingSets };
-                  const finalSet = workingSetsCopy[e.sets - 1];
-                  if (finalSet) {
-                    finalSet.isLogged = false;
-                  }
-                  return { ...e, workingSets: workingSetsCopy };
-                }),
-              }
-            : d;
-        }),
-      },
+      updates: buildUndoWorkoutUpdates(currentWorkout, day.id, exercise.id),
     });
   }
 
@@ -234,19 +214,7 @@ export function CurrentWorkoutPage() {
       workoutId: currentWorkout.id,
       updates: { completedTimestamp: Date.now() },
     });
-    const newDays = currentWorkout.days.map((day) => {
-      return {
-        ...day,
-        exercises: day.exercises.map((exercise) => {
-          return {
-            ...exercise,
-            ...exercise.nextSession,
-            workingSets: {},
-            nextSession: {},
-          };
-        }),
-      };
-    });
+    const newDays = buildNextWorkoutDays(currentWorkout);
     createWorkout({ days: newDays });
   }
 
