@@ -10,7 +10,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { useCreateWorkoutMutation } from "../hooks/useCreateWorkoutMutation";
 import { useCurrentWorkoutQuery } from "../hooks/useCurrentWorkoutQuery";
@@ -23,11 +23,17 @@ import {
   isExerciseComplete,
 } from "../utils/workoutUtils";
 import { CompletedExercise } from "./CompletedExercise";
+import { CreateWorkoutEmptyState } from "./CreateWorkoutEmptyState";
 import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 
 export function CurrentWorkoutPage() {
   const { isLoading, isError, data: currentWorkout } = useCurrentWorkoutQuery();
-  const { mutate: createWorkout } = useCreateWorkoutMutation();
+  const navigate = useNavigate();
+  const {
+    mutate: createWorkout,
+    mutateAsync: createWorkoutAsync,
+    isPending: isPendingCreateWorkout,
+  } = useCreateWorkoutMutation();
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
   const [notes, setNotes] = useState(currentWorkout?.notes ?? "");
 
@@ -50,15 +56,29 @@ export function CurrentWorkoutPage() {
     return <Center>Failed to load workout</Center>;
   }
 
-  if (!currentWorkout || currentWorkout.days.length === 0) {
+  if (!currentWorkout) {
     return (
-      <Center>
-        To get started,&nbsp;
+      <CreateWorkoutEmptyState
+        isPending={isPendingCreateWorkout}
+        onCreate={handleCreateWorkoutFromHome}
+      />
+    );
+  }
+
+  const hasNoDays = currentWorkout.days.length === 0;
+
+  const hasNoExercises = currentWorkout.days.every((day) => {
+    return day.exercises.length === 0;
+  });
+
+  if (hasNoDays || hasNoExercises) {
+    return (
+      <>
+        Your workout plan is incomplete.&nbsp;
         <Anchor to="/plan" component={Link}>
-          create a workout plan
+          Go to your plan to finish setup.
         </Anchor>
-        .
-      </Center>
+      </>
     );
   }
 
@@ -228,5 +248,10 @@ export function CurrentWorkoutPage() {
       };
     });
     createWorkout({ days: newDays });
+  }
+
+  async function handleCreateWorkoutFromHome() {
+    await createWorkoutAsync({});
+    navigate("/plan");
   }
 }

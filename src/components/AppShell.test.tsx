@@ -49,9 +49,7 @@ describe("AppShell", () => {
       expect(
         screen.getByRole("tab", { name: "Current workout" }),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("tab", { name: "Workout plan" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Plan" })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: "History" })).toBeInTheDocument();
     });
 
@@ -59,7 +57,7 @@ describe("AppShell", () => {
       mockUseAuth.mockReturnValue(makeAuthContext({ userId: "user-123" }));
       renderAppShell("/plan");
       expect(
-        screen.getByRole("tab", { name: "Workout plan", selected: true }),
+        screen.getByRole("tab", { name: "Plan", selected: true }),
       ).toBeInTheDocument();
     });
 

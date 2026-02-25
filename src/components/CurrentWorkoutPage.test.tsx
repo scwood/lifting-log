@@ -2,7 +2,7 @@ import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { RouterProvider, createMemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -28,20 +28,25 @@ function renderCurrentWorkoutPage() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
+  const router = createMemoryRouter(
+    [
+      { path: "/", element: <CurrentWorkoutPage /> },
+      { path: "/plan", element: <div>Plan page</div> },
+    ],
+    { initialEntries: ["/"] },
+  );
 
   render(
     <QueryClientProvider client={queryClient}>
       <CurrentUserProvider userId="u1">
         <MantineProvider theme={testTheme}>
-          <MemoryRouter>
-            <CurrentWorkoutPage />
-          </MemoryRouter>
+          <RouterProvider router={router} />
         </MantineProvider>
       </CurrentUserProvider>
     </QueryClientProvider>,
   );
 
-  return { user };
+  return { user, router };
 }
 
 describe("CurrentWorkoutPage", () => {
@@ -91,14 +96,57 @@ describe("CurrentWorkoutPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("prompts the user to create a workout plan when there are no days", async () => {
+  it("shows a create button when there is no workout yet", async () => {
+    mockGetCurrentWorkout.mockResolvedValue(null);
+
+    renderCurrentWorkoutPage();
+
+    expect(
+      await screen.findByRole("button", { name: "Create workout plan" }),
+    ).toBeInTheDocument();
+  });
+
+  it("creates a workout and navigates to /plan from home", async () => {
+    mockGetCurrentWorkout.mockResolvedValue(null);
+
+    const { user, router } = renderCurrentWorkoutPage();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Create workout plan" }),
+    );
+
+    await waitFor(() => expect(mockCreateWorkout).toHaveBeenCalledTimes(1));
+    expect(mockCreateWorkout).toHaveBeenCalledWith({ userId: "u1" });
+    await waitFor(() => expect(router.state.location.pathname).toBe("/plan"));
+  });
+
+  it("shows a link to /plan when workout has no days", async () => {
     mockGetCurrentWorkout.mockResolvedValue(makeWorkout({ days: [] }));
 
     renderCurrentWorkoutPage();
 
-    expect(await screen.findByText(/To get started,/)).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "create a workout plan" }),
+      await screen.findByText(/Your workout plan is incomplete./),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Go to your plan to finish setup." }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a link to /plan when workout has days but no exercises", async () => {
+    mockGetCurrentWorkout.mockResolvedValue(
+      makeWorkout({
+        days: [makeDay({ id: "day1", exercises: [] }), makeDay({ id: "day2" })],
+      }),
+    );
+
+    renderCurrentWorkoutPage();
+
+    expect(
+      await screen.findByText(/Your workout plan is incomplete./),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Go to your plan to finish setup." }),
     ).toBeInTheDocument();
   });
 
