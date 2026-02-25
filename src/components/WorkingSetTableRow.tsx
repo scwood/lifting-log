@@ -19,6 +19,8 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   const [localWeight, setLocalWeight] = useState(
     workingSet.weight ?? exercise.weight,
   );
+  const weightInputWidth = getDynamicInputWidth(localWeight);
+  const repsInputWidth = getDynamicInputWidth(localReps);
   const isLocalRepsValid = localReps >= 0;
   const isLocalWeightValid = localWeight >= 0;
   const isSetValid = isLocalRepsValid && isLocalWeightValid;
@@ -28,7 +30,12 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
       <Table.Td>
         <NumberInput
           inputMode="decimal"
-          styles={{ input: { width: 50 } }}
+          styles={{
+            input: {
+              width: `${weightInputWidth}ch`,
+              textAlign: "center",
+            },
+          }}
           allowDecimal
           min={0}
           placeholder={String(exercise.weight)}
@@ -49,7 +56,12 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
       <Table.Td>
         <NumberInput
           inputMode="numeric"
-          styles={{ input: { width: 42 } }}
+          styles={{
+            input: {
+              width: `${repsInputWidth}ch`,
+              textAlign: "center",
+            },
+          }}
           allowDecimal={false}
           max={99}
           min={0}
@@ -117,4 +129,10 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   function handleOnFocusWeight(event: React.FocusEvent<HTMLInputElement>) {
     event.currentTarget.select();
   }
+}
+
+function getDynamicInputWidth(value: number): number {
+  const valueText = Number.isFinite(value) ? String(value) : "";
+  const buffer = 4;
+  return valueText.length + buffer;
 }
