@@ -7,12 +7,13 @@ import { calculatePlates, isPlateExercise } from "../utils/workoutUtils";
 
 export interface WorkingSetTableRowProps {
   exercise: Exercise;
+  setNumber: number;
   workingSet: WorkingSet;
   onChange: (workingSet: WorkingSet) => void;
 }
 
 export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
-  const { exercise, workingSet, onChange } = props;
+  const { exercise, setNumber, workingSet, onChange } = props;
   const [localReps, setLocalReps] = useState(workingSet.reps ?? exercise.reps);
   const isLocalRepsValid = localReps >= 0;
 
@@ -29,8 +30,10 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
           max={99}
           min={0}
           placeholder={String(exercise.reps)}
+          aria-label={`Reps for set ${setNumber}`}
           value={localReps}
           onChange={handleOnChangeReps}
+          onFocus={handleOnFocusReps}
           hideControls
         />
       </Table.Td>
@@ -68,5 +71,9 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
       isLogged: event.target.checked,
       reps: localReps,
     });
+  }
+
+  function handleOnFocusReps(event: React.FocusEvent<HTMLInputElement>) {
+    event.currentTarget.select();
   }
 }

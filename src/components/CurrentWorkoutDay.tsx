@@ -106,6 +106,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
                     <WorkingSetTableRow
                       key={setNumber}
                       exercise={exercise}
+                      setNumber={setNumber + 1}
                       workingSet={workingSet}
                       onChange={(workingSet) => {
                         updateWorkingSet(exercise, setNumber, workingSet);

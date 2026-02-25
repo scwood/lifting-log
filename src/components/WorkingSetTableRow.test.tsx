@@ -14,6 +14,7 @@ function renderRow(propsOverrides: Partial<WorkingSetTableRowProps> = {}) {
   const user = userEvent.setup();
   const props: WorkingSetTableRowProps = {
     exercise: makeExercise({ weight: 135, reps: 5 }),
+    setNumber: 1,
     workingSet: { reps: 5, isLogged: false },
     onChange: vi.fn(),
     ...propsOverrides,
@@ -78,6 +79,24 @@ describe("WorkingSetTableRow", () => {
       const exercise = makeExercise({ reps: 5 });
       renderRow({ exercise, workingSet: { reps: null, isLogged: false } });
       expect(screen.getByDisplayValue("5")).toBeInTheDocument();
+    });
+
+    it("has an accessible name with the set number", () => {
+      renderRow({ setNumber: 2 });
+      expect(
+        screen.getByRole("textbox", { name: "Reps for set 2" }),
+      ).toBeInTheDocument();
+    });
+
+    it("selects the full reps value when focused", async () => {
+      const { user } = renderRow({ workingSet: { reps: 12, isLogged: false } });
+      const repsInput = screen.getByRole("textbox", { name: "Reps for set 1" });
+
+      await user.click(repsInput);
+
+      expect(repsInput).toHaveFocus();
+      expect(repsInput).toHaveProperty("selectionStart", 0);
+      expect(repsInput).toHaveProperty("selectionEnd", 2);
     });
   });
 
