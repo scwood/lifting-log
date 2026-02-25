@@ -73,13 +73,12 @@ export function CurrentWorkoutPage() {
 
   if (hasNoDays || hasNoExercises) {
     return (
-      <Center>
-        Your workout plan has no exercises yet.
+      <>
+        Your workout plan is incomplete.&nbsp;
         <Anchor to="/plan" component={Link}>
-          Go to your plan to add some.
+          Go to your plan to finish setup.
         </Anchor>
-        .
-      </Center>
+      </>
     );
   }
 

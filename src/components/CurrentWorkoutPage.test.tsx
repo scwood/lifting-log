@@ -126,10 +126,10 @@ describe("CurrentWorkoutPage", () => {
     renderCurrentWorkoutPage();
 
     expect(
-      await screen.findByText(/Your workout plan has no exercises yet./),
+      await screen.findByText(/Your workout plan is incomplete./),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Go to your plan to add some." }),
+      screen.getByRole("link", { name: "Go to your plan to finish setup." }),
     ).toBeInTheDocument();
   });
 
@@ -143,10 +143,10 @@ describe("CurrentWorkoutPage", () => {
     renderCurrentWorkoutPage();
 
     expect(
-      await screen.findByText(/Your workout plan has no exercises yet./),
+      await screen.findByText(/Your workout plan is incomplete./),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Go to your plan to add some." }),
+      screen.getByRole("link", { name: "Go to your plan to finish setup." }),
     ).toBeInTheDocument();
   });
 

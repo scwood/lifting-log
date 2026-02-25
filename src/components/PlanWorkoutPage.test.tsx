@@ -94,6 +94,20 @@ describe("PlanWorkoutPage", () => {
     expect(mockCreateWorkout).toHaveBeenCalledWith({ userId: "u1" });
   });
 
+  it("shows a no-days callout when workout has no days", async () => {
+    mockGetCurrentWorkout.mockResolvedValue(
+      makeWorkout({ id: "w1", days: [] }),
+    );
+
+    renderPlanWorkoutPage();
+
+    expect(
+      await screen.findByText(
+        "Your plan has no days. Click the button below to add your first day.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("adds a day and sends the updated days to updateWorkout", async () => {
     const day1 = makeDay({ id: "day1", name: "Day 1" });
     const workout = makeWorkout({ id: "w1", days: [day1] });

@@ -1,7 +1,9 @@
+import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { testTheme } from "../test-utils/testTheme";
 import {
   CreateWorkoutEmptyState,
   CreateWorkoutEmptyStateProps,
@@ -17,7 +19,11 @@ function renderCreateWorkoutEmptyState(
     ...propsOverrides,
   };
 
-  render(<CreateWorkoutEmptyState {...props} />);
+  render(
+    <MantineProvider theme={testTheme}>
+      <CreateWorkoutEmptyState {...props} />
+    </MantineProvider>,
+  );
 
   return { ...props, user };
 }

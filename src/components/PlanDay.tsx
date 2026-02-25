@@ -86,6 +86,12 @@ export function PlanDay(props: PlanDayProps) {
       </Title>
       <Divider mt={4} mb="md" />
       <Flex direction="column" gap="md">
+        {day.exercises.length === 0 && (
+          <div>
+            Your plan has no exercises for this day. Click the button below to
+            add an exercise.
+          </div>
+        )}
         {day.exercises.map((exercise, index) => {
           return (
             <PlanExerciseCard

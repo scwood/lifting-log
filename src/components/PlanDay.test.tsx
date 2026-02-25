@@ -77,6 +77,19 @@ describe("PlanDay", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows a no-exercises callout when the day has no exercises", () => {
+    const day = makeDay({ id: "day1", name: "Day 1", exercises: [] });
+    const workout = makeWorkout({ id: "w1", days: [day] });
+
+    renderPlanDay({ day, workout });
+
+    expect(
+      screen.getByText(
+        "Your plan has no exercises for this day. Click the button below to add an exercise.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("calls day-level callbacks from the day menu", async () => {
     const { user, day, onMoveUp, onMoveDown, onEdit, onDelete } =
       renderPlanDay();

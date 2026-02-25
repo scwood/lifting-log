@@ -62,7 +62,7 @@ export function AppShell() {
         <Tabs mb="md" value={location.pathname} onChange={handleTabChange}>
           <Tabs.List>
             <Tabs.Tab value="/">Current workout</Tabs.Tab>
-            <Tabs.Tab value="/plan">Workout plan</Tabs.Tab>
+            <Tabs.Tab value="/plan">Plan</Tabs.Tab>
             <Tabs.Tab value="/history">History</Tabs.Tab>
           </Tabs.List>
         </Tabs>

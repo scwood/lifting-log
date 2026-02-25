@@ -56,6 +56,11 @@ export function PlanWorkoutPage() {
         Workout plan
       </Title>
       <Flex direction="column" gap="lg">
+        {workout.days.length === 0 && (
+          <div>
+            Your plan has no days. Click the button below to add your first day.
+          </div>
+        )}
         {workout.days.map((day, index) => {
           return (
             <PlanDay
