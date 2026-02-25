@@ -16,13 +16,35 @@ export interface WorkingSetTableRowProps {
 export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
   const { exercise, setNumber, workingSet, onChange } = props;
   const [localReps, setLocalReps] = useState(workingSet.reps ?? exercise.reps);
+  const [localWeight, setLocalWeight] = useState(
+    workingSet.weight ?? exercise.weight,
+  );
   const isLocalRepsValid = localReps >= 0;
+  const isLocalWeightValid = localWeight >= 0;
+  const isSetValid = isLocalRepsValid && isLocalWeightValid;
 
   return (
     <Table.Tr>
-      <Table.Td>{exercise.weight}</Table.Td>
+      <Table.Td>
+        <NumberInput
+          inputMode="decimal"
+          styles={{ input: { width: 50 } }}
+          allowDecimal
+          min={0}
+          placeholder={String(exercise.weight)}
+          aria-label={`Weight for set ${setNumber}`}
+          value={localWeight}
+          onChange={handleOnChangeWeight}
+          onFocus={handleOnFocusWeight}
+          hideControls
+        />
+      </Table.Td>
       {selectExerciseUsesPlates(exercise) && (
-        <Table.Td>{calculatePlates(exercise.weight, exercise.type)}</Table.Td>
+        <Table.Td>
+          {isLocalWeightValid
+            ? calculatePlates(localWeight, exercise.type)
+            : ""}
+        </Table.Td>
       )}
       <Table.Td>
         <NumberInput
@@ -41,16 +63,16 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
       </Table.Td>
       <Table.Td>
         <Tooltip
-          label="Enter reps to log"
+          label="Enter weight and reps to log"
           withArrow
-          disabled={isLocalRepsValid}
+          disabled={isSetValid}
           events={{ hover: true, touch: true, focus: false }}
         >
           <Checkbox
             size="md"
             color="green"
             onChange={handleOnChangeIsLogged}
-            disabled={!isLocalRepsValid}
+            disabled={!isSetValid}
             checked={workingSet.isLogged}
           />
         </Tooltip>
@@ -63,19 +85,36 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
     const isValid = parsedValue >= 0;
     setLocalReps(parsedValue);
     onChange({
-      isLogged: isValid ? workingSet.isLogged : false,
+      isLogged: isValid && isLocalWeightValid ? workingSet.isLogged : false,
       reps: isValid ? parsedValue : null,
+      weight: isLocalWeightValid ? localWeight : null,
     });
   }
 
   function handleOnChangeIsLogged(event: React.ChangeEvent<HTMLInputElement>) {
     onChange({
       isLogged: event.target.checked,
-      reps: localReps,
+      reps: isLocalRepsValid ? localReps : null,
+      weight: isLocalWeightValid ? localWeight : null,
+    });
+  }
+
+  function handleOnChangeWeight(value: string | number) {
+    const parsedValue = parseFloat(String(value));
+    const isValid = parsedValue >= 0;
+    setLocalWeight(parsedValue);
+    onChange({
+      isLogged: isValid && isLocalRepsValid ? workingSet.isLogged : false,
+      reps: isLocalRepsValid ? localReps : null,
+      weight: isValid ? parsedValue : null,
     });
   }
 
   function handleOnFocusReps(event: React.FocusEvent<HTMLInputElement>) {
+    event.currentTarget.select();
+  }
+
+  function handleOnFocusWeight(event: React.FocusEvent<HTMLInputElement>) {
     event.currentTarget.select();
   }
 }

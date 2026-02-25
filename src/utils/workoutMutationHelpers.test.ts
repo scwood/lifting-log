@@ -248,10 +248,11 @@ describe("setWorkoutDayEntryWorkingSet", () => {
     const updates = setWorkoutDayEntryWorkingSet(workout, "day1", "ex1", 0, {
       isLogged: true,
       reps: 5,
+      weight: 140,
     });
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 140 },
     });
   });
 });
@@ -273,12 +274,12 @@ describe("completeWorkoutDayEntry", () => {
       dayId: "day1",
       entryId: "ex1",
       setNumber: 1,
-      workingSet: { isLogged: true, reps: 5 },
+      workingSet: { isLogged: true, reps: 5, weight: 135 },
       nextSession: { reps: 6 },
     });
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
-      1: { isLogged: true, reps: 5 },
+      1: { isLogged: true, reps: 5, weight: 135 },
     });
     expect(updates.days[0].exercises[0].nextSession).toEqual({
       reps: 6,
@@ -302,8 +303,8 @@ describe("skipWorkoutDayEntry", () => {
     const updates = skipWorkoutDayEntry(workout, "day1", "ex1");
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 0 },
-      1: { isLogged: true, reps: 0 },
+      0: { isLogged: true, reps: 0, weight: 135 },
+      1: { isLogged: true, reps: 0, weight: 135 },
     });
     expect(updates.days[0].exercises[0].nextSession).toEqual({
       weight: 135,
@@ -319,8 +320,8 @@ describe("undoWorkoutDayEntry", () => {
       id: "ex1",
       sets: 2,
       workingSets: {
-        0: { isLogged: true, reps: 5 },
-        1: { isLogged: true, reps: 5 },
+        0: { isLogged: true, reps: 5, weight: 135 },
+        1: { isLogged: true, reps: 5, weight: 135 },
       },
     });
     const workout = makeWorkout({
@@ -330,8 +331,8 @@ describe("undoWorkoutDayEntry", () => {
     const updates = undoWorkoutDayEntry(workout, "day1", "ex1");
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
-      1: { isLogged: false, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 135 },
+      1: { isLogged: false, reps: 5, weight: 135 },
     });
   });
 });
@@ -342,8 +343,8 @@ describe("undoWorkoutDayEntryCompletion", () => {
       id: "ex1",
       sets: 2,
       workingSets: {
-        0: { isLogged: true, reps: 5 },
-        1: { isLogged: true, reps: 5 },
+        0: { isLogged: true, reps: 5, weight: 135 },
+        1: { isLogged: true, reps: 5, weight: 135 },
       },
     });
     const workout = makeWorkout({
@@ -354,8 +355,8 @@ describe("undoWorkoutDayEntryCompletion", () => {
 
     expect(updates.completedTimestamp).toBeNull();
     expect(updates.days[0].exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
-      1: { isLogged: false, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 135 },
+      1: { isLogged: false, reps: 5, weight: 135 },
     });
   });
 });
@@ -366,7 +367,7 @@ describe("deriveNextWorkoutDays", () => {
       id: "ex1",
       reps: 5,
       weight: 135,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
       nextSession: { reps: 6, weight: 140 },
     });
     const workout = makeWorkout({

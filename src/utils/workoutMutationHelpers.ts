@@ -208,7 +208,7 @@ export function skipWorkoutDayEntry(
   return updateWorkoutDayEntry(workout, dayId, entryId, (exercise) => {
     const workingSets: Exercise["workingSets"] = {};
     for (let i = 0; i < exercise.sets; i++) {
-      workingSets[i] = { isLogged: true, reps: 0 };
+      workingSets[i] = { isLogged: true, reps: 0, weight: exercise.weight };
     }
 
     return {

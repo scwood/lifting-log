@@ -30,7 +30,7 @@ function renderCurrentWorkoutDay(
     name: "Bench Press",
     sets: 1,
     reps: 8,
-    workingSets: { 0: { isLogged: true, reps: 8 } },
+    workingSets: { 0: { isLogged: true, reps: 8, weight: 135 } },
   });
   const day = makeDay({
     id: "day1",
@@ -87,7 +87,7 @@ describe("CurrentWorkoutDay", () => {
       name: "Squat",
       sets: 3,
       reps: 5,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const day = makeDay({ id: "day1", exercises: [exercise] });
     const workout = makeWorkout({ id: "w1", days: [day] });
@@ -105,8 +105,8 @@ describe("CurrentWorkoutDay", () => {
     expect(workoutId).toBe(workout.id);
     const updatedDay = updates.days?.find((d) => d.id === day.id);
     expect(updatedDay?.exercises[0].workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
-      1: { isLogged: true, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 135 },
+      1: { isLogged: true, reps: 5, weight: 135 },
     });
     expect(
       screen.queryByRole("dialog", { name: "Exercise complete" }),
@@ -140,7 +140,7 @@ describe("CurrentWorkoutDay", () => {
     expect(workoutId).toBe(workout.id);
     const updatedExercise = updates.days?.[0].exercises[0];
     expect(updatedExercise?.workingSets).toEqual({
-      0: { isLogged: true, reps: 5 },
+      0: { isLogged: true, reps: 5, weight: 135 },
     });
     expect(updatedExercise?.nextSession).toEqual({ reps: 6 });
   });
@@ -167,8 +167,8 @@ describe("CurrentWorkoutDay", () => {
     expect(workoutId).toBe(workout.id);
     const updatedExercise = updates.days?.[0].exercises[0];
     expect(updatedExercise?.workingSets).toEqual({
-      0: { isLogged: true, reps: 0 },
-      1: { isLogged: true, reps: 0 },
+      0: { isLogged: true, reps: 0, weight: 135 },
+      1: { isLogged: true, reps: 0, weight: 135 },
     });
     expect(updatedExercise?.nextSession).toEqual({
       weight: 135,

@@ -42,7 +42,7 @@ describe("selectExerciseIsComplete", () => {
   it("returns true when all working sets are logged", () => {
     const exercise = makeExercise({
       sets: 1,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
 
     expect(selectExerciseIsComplete(exercise)).toBe(true);
@@ -51,7 +51,7 @@ describe("selectExerciseIsComplete", () => {
   it("returns false when not all working sets are logged", () => {
     const exercise = makeExercise({
       sets: 2,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
 
     expect(selectExerciseIsComplete(exercise)).toBe(false);
@@ -65,7 +65,7 @@ describe("selectDayHasCompletedExercises", () => {
         makeExercise({
           id: "ex1",
           sets: 1,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
         makeExercise({ id: "ex2", sets: 1, workingSets: {} }),
       ],
@@ -90,7 +90,7 @@ describe("selectDayIsComplete", () => {
         makeExercise({
           id: "ex1",
           sets: 1,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
       ],
     });
@@ -113,7 +113,7 @@ describe("selectWorkoutIsComplete", () => {
       exercises: [
         makeExercise({
           sets: 1,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
       ],
     });
@@ -167,12 +167,12 @@ describe("selectIncompleteDayExercises", () => {
     const completeExercise = makeExercise({
       id: "complete",
       sets: 1,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const incompleteExercise = makeExercise({
       id: "incomplete",
       sets: 2,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const day = makeDay({ exercises: [completeExercise, incompleteExercise] });
 
@@ -185,12 +185,12 @@ describe("selectCompletedDayExercises", () => {
     const completeExercise = makeExercise({
       id: "complete",
       sets: 1,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const incompleteExercise = makeExercise({
       id: "incomplete",
       sets: 2,
-      workingSets: { 0: { isLogged: true, reps: 5 } },
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const day = makeDay({ exercises: [completeExercise, incompleteExercise] });
 
@@ -206,12 +206,12 @@ describe("selectIncompleteWorkoutDays", () => {
         makeExercise({
           id: "ex1",
           sets: 1,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
         makeExercise({
           id: "ex2",
           sets: 2,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
       ],
     });
@@ -236,7 +236,7 @@ describe("selectWorkoutDaysWithCompletedExercises", () => {
         makeExercise({
           id: "ex1",
           sets: 1,
-          workingSets: { 0: { isLogged: true, reps: 5 } },
+          workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
         }),
         makeExercise({ id: "ex2", sets: 1, workingSets: {} }),
       ],

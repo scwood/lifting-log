@@ -110,6 +110,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
                   const workingSet = exercise.workingSets[setNumber] ?? {
                     isLogged: false,
                     reps: null,
+                    weight: null,
                   };
                   return (
                     <WorkingSetTableRow

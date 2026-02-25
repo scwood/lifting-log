@@ -1,7 +1,10 @@
 import { Button, Card, Text, Title } from "@mantine/core";
 
 import { Exercise } from "../types/Exercise";
-import { getVolumeLoad } from "../utils/workoutFormattingUtils";
+import {
+  getLoggedSetBreakdown,
+  getVolumeLoad,
+} from "../utils/workoutFormattingUtils";
 
 export interface CompletedExerciseProps {
   exercise: Exercise;
@@ -18,11 +21,8 @@ export function CompletedExercise(props: CompletedExerciseProps) {
           {exercise.name}
         </Title>
         <Text size="sm" c="dimmed">
-          This session: {getVolumeLoad(exercise)} (
-          {Object.values(exercise.workingSets)
-            .map((workingSet) => workingSet.reps)
-            .join(",")}
-          )
+          This session:{" "}
+          {getLoggedSetBreakdown(exercise.workingSets, exercise.weight)}
           <br />
           Next session:{" "}
           {getVolumeLoad({ ...exercise, ...exercise.nextSession })}

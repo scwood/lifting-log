@@ -12,9 +12,9 @@ const defaultExercise = makeExercise({
   reps: 5,
   weight: 135,
   workingSets: {
-    0: { reps: 5, isLogged: true },
-    1: { reps: 5, isLogged: true },
-    2: { reps: 5, isLogged: true },
+    0: { reps: 5, isLogged: true, weight: 135 },
+    1: { reps: 5, isLogged: true, weight: 135 },
+    2: { reps: 5, isLogged: true, weight: 140 },
   },
   nextSession: {},
 });
@@ -42,12 +42,10 @@ describe("CompletedExercise", () => {
     expect(screen.getByRole("heading", { name: "Squat" })).toBeInTheDocument();
   });
 
-  it("renders the this-session volume load and reps", () => {
+  it("renders the this-session reps x weight values", () => {
     renderCompletedExercise();
-    // Mantine <Text> renders as <p>; selector scopes the match to avoid
-    // parent containers that also contain this substring
     expect(
-      screen.getByText(/This session: 3x5x135 \(5,5,5\)/, { selector: "p" }),
+      screen.getByText(/This session: 5x135,5x135,5x140/, { selector: "p" }),
     ).toBeInTheDocument();
   });
 
@@ -57,7 +55,7 @@ describe("CompletedExercise", () => {
         sets: 3,
         reps: 5,
         weight: 135,
-        workingSets: { 0: { reps: 5, isLogged: true } },
+        workingSets: { 0: { reps: 5, isLogged: true, weight: 140 } },
         nextSession: { weight: 140 },
       });
       renderCompletedExercise({ exercise });

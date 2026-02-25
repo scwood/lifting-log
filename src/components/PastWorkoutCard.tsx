@@ -1,7 +1,10 @@
 import { Box, Card, Flex, Text } from "@mantine/core";
 
 import { Workout } from "../types/Workout";
-import { getVolumeLoad } from "../utils/workoutFormattingUtils";
+import {
+  getLoggedSetBreakdown,
+  getVolumeLoad,
+} from "../utils/workoutFormattingUtils";
 
 export interface PastWorkoutCardProps {
   workout: Workout;
@@ -31,11 +34,7 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
                   return (
                     <span key={exercise.id}>
                       {exercise.name}: {getVolumeLoad(exercise)} (
-                      {Object.values(exercise.workingSets)
-                        .map((workingSet) => {
-                          return workingSet.reps;
-                        })
-                        .join(",")}
+                      {getLoggedSetBreakdown(exercise.workingSets, exercise.weight)}
                       )
                     </span>
                   );
