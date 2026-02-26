@@ -19,6 +19,7 @@ import {
   deleteWorkoutDayEntry,
   reorderWorkoutDayEntry,
   upsertWorkoutDayEntry,
+  upsertWorkoutExerciseDefinition,
 } from "../utils/workoutMutationHelpers";
 import {
   selectDayExercises,
@@ -156,12 +157,10 @@ export function PlanDay(props: PlanDayProps) {
     setIsExerciseModalOpen(false);
     await updateWorkout({
       workoutId: workout.id,
-      updates: upsertWorkoutDayEntry(
-        workout,
-        day.id,
-        exercise,
-        exerciseToEdit?.id,
-      ),
+      updates: {
+        ...upsertWorkoutDayEntry(workout, day.id, exercise, exerciseToEdit?.id),
+        ...upsertWorkoutExerciseDefinition(workout, exercise),
+      },
     });
   }
 

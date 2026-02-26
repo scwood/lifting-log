@@ -70,6 +70,29 @@ export function upsertWorkoutDayEntry(
   };
 }
 
+export function upsertWorkoutExerciseDefinition(
+  workout: Workout,
+  exercise: Exercise,
+): Pick<Workout, "exerciseDefinitionsById"> {
+  return {
+    exerciseDefinitionsById: {
+      ...workout.exerciseDefinitionsById,
+      [exercise.id]: {
+        id: exercise.id,
+        name: exercise.name,
+        type: exercise.type,
+        minimumWeightIncrement: exercise.minimumWeightIncrement,
+        warmUpSets: exercise.warmUpSets,
+        trainingLoad: {
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight: exercise.weight,
+        },
+      },
+    },
+  };
+}
+
 export function deleteWorkoutDayEntry(
   workout: Workout,
   dayId: string,

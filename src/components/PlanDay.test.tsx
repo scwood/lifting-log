@@ -8,7 +8,10 @@ import { updateWorkout } from "../api/workoutsApi";
 import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
-import { reorderWorkoutDayEntry } from "../utils/workoutMutationHelpers";
+import {
+  reorderWorkoutDayEntry,
+  upsertWorkoutExerciseDefinition,
+} from "../utils/workoutMutationHelpers";
 import { CurrentUserProvider } from "./CurrentUserProvider";
 import { PlanDay, PlanDayProps } from "./PlanDay";
 
@@ -151,6 +154,12 @@ describe("PlanDay", () => {
         reps: 8,
       }),
     );
+    expect(updates.exerciseDefinitionsById).toEqual(
+      expect.objectContaining(
+        upsertWorkoutExerciseDefinition(workout, createdExercise!)
+          .exerciseDefinitionsById,
+      ),
+    );
   });
 
   it("edits an exercise and calls updateWorkout with replaced exercise", async () => {
@@ -173,6 +182,19 @@ describe("PlanDay", () => {
       expect.objectContaining({ id: "ex1", name: "Front Squat" }),
     );
     expect(updatedDay?.exercises[1]).toEqual(workout.days[0].exercises[1]);
+    expect(updates.exerciseDefinitionsById?.ex1).toEqual({
+      id: "ex1",
+      name: "Front Squat",
+      type: workout.days[0].exercises[0].type,
+      minimumWeightIncrement:
+        workout.days[0].exercises[0].minimumWeightIncrement,
+      warmUpSets: workout.days[0].exercises[0].warmUpSets,
+      trainingLoad: {
+        sets: workout.days[0].exercises[0].sets,
+        reps: workout.days[0].exercises[0].reps,
+        weight: workout.days[0].exercises[0].weight,
+      },
+    });
   });
 
   it("deletes an exercise after confirmation and calls updateWorkout", async () => {

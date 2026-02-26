@@ -12,10 +12,11 @@ import {
   sanitizeWorkoutNotes,
   setWorkoutDayEntryWorkingSet,
   skipWorkoutDayEntry,
-  undoWorkoutDayEntryCompletion,
   undoWorkoutDayEntry,
+  undoWorkoutDayEntryCompletion,
   upsertWorkoutDay,
   upsertWorkoutDayEntry,
+  upsertWorkoutExerciseDefinition,
 } from "./workoutMutationHelpers";
 
 describe("upsertWorkoutDay", () => {
@@ -103,6 +104,30 @@ describe("upsertWorkoutDayEntry", () => {
     );
 
     expect(updates.days[0].exercises[0].name).toBe("Front Squat");
+  });
+});
+
+describe("upsertWorkoutExerciseDefinition", () => {
+  it("adds or replaces an exercise definition based on exercise id", () => {
+    const workout = makeWorkout();
+    const exercise = makeExercise({
+      id: "ex1",
+      name: "Squat",
+      sets: 3,
+      reps: 5,
+      weight: 135,
+    });
+
+    const updates = upsertWorkoutExerciseDefinition(workout, exercise);
+
+    expect(updates.exerciseDefinitionsById.ex1).toEqual({
+      id: "ex1",
+      name: "Squat",
+      type: exercise.type,
+      minimumWeightIncrement: exercise.minimumWeightIncrement,
+      warmUpSets: exercise.warmUpSets,
+      trainingLoad: { sets: 3, reps: 5, weight: 135 },
+    });
   });
 });
 
