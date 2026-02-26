@@ -66,12 +66,14 @@ export function makeDay(overrides: Partial<Day> = {}): Day {
 
 export function makeWorkout(overrides: Partial<Workout> = {}): Workout {
   return {
+    schemaVersion: 2,
     id: "w1",
     userId: "u1",
     createdTimestamp: 0,
     completedTimestamp: null,
     notes: null,
     days: [],
+    exerciseDefinitionsById: {},
     ...overrides,
   };
 }

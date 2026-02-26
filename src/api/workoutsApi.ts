@@ -23,12 +23,14 @@ export async function createWorkout({
 } & Partial<Workout>) {
   const workoutRef = doc(getWorkOutCollection());
   const workout: Workout = {
+    schemaVersion: 2,
     id: workoutRef.id,
     userId,
     createdTimestamp: Date.now(),
     completedTimestamp: null,
     notes: null,
     days: [],
+    exerciseDefinitionsById: {},
     ...optionalFields,
   };
   await setDoc(workoutRef, workout);
