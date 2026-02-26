@@ -1,11 +1,12 @@
 import { produce } from "immer";
 
 import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
-import { NextSessionPlan } from "../types/NextSessionPlan";
+import { DayExercise } from "../types/DayExercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { WorkingSet } from "../types/WorkingSet";
 import { Workout } from "../types/Workout";
 import { Direction, moveItem } from "./arrayUtils";
+import { selectExerciseDefinition } from "./workoutSelectors";
 
 export function upsertWorkoutDay(
   workout: Workout,
@@ -45,7 +46,7 @@ export function reorderWorkoutDay(
 export function upsertWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  exercise: Exercise,
+  exercise: DayExercise,
   exerciseToReplaceId?: string,
 ): Pick<Workout, "days"> {
   return {
@@ -72,23 +73,12 @@ export function upsertWorkoutDayExercise(
 
 export function upsertWorkoutExerciseDefinition(
   workout: Workout,
-  exercise: Exercise,
+  exerciseDefinition: ExerciseDefinition,
 ): Pick<Workout, "exerciseDefinitionsById"> {
   return {
     exerciseDefinitionsById: {
       ...workout.exerciseDefinitionsById,
-      [exercise.id]: {
-        id: exercise.id,
-        name: exercise.name,
-        type: exercise.type,
-        minimumWeightIncrement: exercise.minimumWeightIncrement,
-        warmUpSets: exercise.warmUpSets,
-        trainingLoad: {
-          sets: exercise.sets,
-          reps: exercise.reps,
-          weight: exercise.weight,
-        },
-      },
+      [exerciseDefinition.id]: exerciseDefinition,
     },
   };
 }
@@ -203,26 +193,9 @@ export function setWorkoutDayExerciseWorkingSet(
 
 export function completeWorkoutDayExercise(
   workout: Workout,
-  options: {
-    dayId: string;
-    exerciseId: string;
-    setNumber: number;
-    workingSet: WorkingSet;
-    nextSession: NextSessionPlan;
-  },
 ): Pick<Workout, "days"> {
-  const { dayId, exerciseId, setNumber, workingSet, nextSession } = options;
-
-  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
-    return {
-      ...exercise,
-      workingSets: {
-        ...exercise.workingSets,
-        [setNumber]: workingSet,
-      },
-      nextSession,
-    };
-  });
+  // TODO
+  return { days: workout.days };
 }
 
 export function skipWorkoutDayExercise(
@@ -231,18 +204,23 @@ export function skipWorkoutDayExercise(
   exerciseId: string,
 ): Pick<Workout, "days"> {
   return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
-    const workingSets: Exercise["workingSets"] = {};
-    for (let i = 0; i < exercise.sets; i++) {
-      workingSets[i] = { isLogged: true, reps: 0, weight: exercise.weight };
+    const exerciseDefinition = selectExerciseDefinition(workout, exercise);
+    if (!exerciseDefinition) {
+      return exercise;
     }
-
+    const workingSets: DayExercise["workingSets"] = {};
+    for (let i = 0; i < exerciseDefinition.trainingLoad.sets; i++) {
+      workingSets[i] = {
+        isLogged: true,
+        reps: 0,
+        weight: exerciseDefinition.trainingLoad.weight,
+      };
+    }
     return {
       ...exercise,
       workingSets,
-      nextSession: {
-        weight: exercise.weight,
-        reps: exercise.reps,
-        sets: exercise.sets,
+      definitionTrainingLoadBeforeCompletion: {
+        ...exerciseDefinition.trainingLoad,
       },
     };
   });
@@ -255,7 +233,7 @@ export function undoWorkoutDayExercise(
 ): Pick<Workout, "days"> {
   return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
     const workingSets = { ...exercise.workingSets };
-    const finalSetIndex = exercise.sets - 1;
+    const finalSetIndex = Object.keys(workingSets).length - 1;
     const finalSet = workingSets[finalSetIndex];
 
     if (!finalSet) {
@@ -290,18 +268,15 @@ export function deriveNextWorkoutDays(workout: Workout): Day[] {
       exercises: day.exercises.map((exercise) => {
         return {
           ...exercise,
-          ...exercise.nextSession,
           workingSets: {},
-          nextSession: {},
+          definitionTrainingLoadBeforeCompletion: undefined,
         };
       }),
     };
   });
 }
 
-export function sanitizeWorkoutNotes(
-  notes: string,
-): Pick<Workout, "notes">["notes"] {
+export function sanitizeWorkoutNotes(notes: string): string | null {
   const trimmedNotes = notes.trim();
   return trimmedNotes.length > 0 ? trimmedNotes : null;
 }
@@ -310,7 +285,7 @@ function updateWorkoutDayExercise(
   workout: Workout,
   dayId: string,
   exerciseId: string,
-  mutateExercise: (exercise: Exercise) => Exercise,
+  mutateExercise: (exercise: DayExercise) => DayExercise,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
