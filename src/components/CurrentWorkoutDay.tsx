@@ -18,9 +18,9 @@ import { WorkingSet } from "../types/WorkingSet";
 import { Workout } from "../types/Workout";
 import { calculatePlates } from "../utils/weightUtils";
 import {
-  completeWorkoutDayEntry,
-  setWorkoutDayEntryWorkingSet,
-  skipWorkoutDayEntry,
+  completeWorkoutDayExercise,
+  setWorkoutDayExerciseWorkingSet,
+  skipWorkoutDayExercise,
 } from "../utils/workoutMutationHelpers";
 import {
   selectExerciseIsComplete,
@@ -165,7 +165,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
     } else {
       await updateWorkout({
         workoutId: workout.id,
-        updates: setWorkoutDayEntryWorkingSet(
+        updates: setWorkoutDayExerciseWorkingSet(
           workout,
           day.id,
           exercise.id,
@@ -187,9 +187,9 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
     setIsExerciseCompleteModalOpen(false);
     await updateWorkout({
       workoutId: workout.id,
-      updates: completeWorkoutDayEntry(workout, {
+      updates: completeWorkoutDayExercise(workout, {
         dayId: day.id,
-        entryId: completedExercise.id,
+        exerciseId: completedExercise.id,
         setNumber: lastWorkingSetIndex,
         workingSet: lastWorkingSet,
         nextSession,
@@ -200,7 +200,7 @@ export function CurrentWorkoutDay(props: CurrentWorkoutDayProps) {
   async function handleSkipExercise(exercise: Exercise) {
     await updateWorkout({
       workoutId: workout.id,
-      updates: skipWorkoutDayEntry(workout, day.id, exercise.id),
+      updates: skipWorkoutDayExercise(workout, day.id, exercise.id),
     });
   }
 }

@@ -9,7 +9,7 @@ import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
 import {
-  reorderWorkoutDayEntry,
+  reorderWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
 } from "../utils/workoutMutationHelpers";
 import { CurrentUserProvider } from "./CurrentUserProvider";
@@ -214,7 +214,7 @@ describe("PlanDay", () => {
 
   it("moves an exercise and sends moveExercise result to updateWorkout", async () => {
     const { user, workout, day } = renderPlanDay();
-    const expectedUpdates = reorderWorkoutDayEntry(
+    const expectedUpdates = reorderWorkoutDayExercise(
       workout,
       day.id,
       "ex2",

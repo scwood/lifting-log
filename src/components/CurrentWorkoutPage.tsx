@@ -20,7 +20,7 @@ import { Exercise } from "../types/Exercise";
 import {
   deriveNextWorkoutDays,
   sanitizeWorkoutNotes,
-  undoWorkoutDayEntryCompletion,
+  undoWorkoutDayExerciseCompletion,
 } from "../utils/workoutMutationHelpers";
 import {
   selectCompletedDayExercises,
@@ -202,7 +202,11 @@ export function CurrentWorkoutPage() {
     }
     updateWorkout({
       workoutId: currentWorkout.id,
-      updates: undoWorkoutDayEntryCompletion(currentWorkout, day.id, exercise.id),
+      updates: undoWorkoutDayExerciseCompletion(
+        currentWorkout,
+        day.id,
+        exercise.id,
+      ),
     });
   }
 

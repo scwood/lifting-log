@@ -16,9 +16,9 @@ import { Exercise } from "../types/Exercise";
 import { Workout } from "../types/Workout";
 import { Direction } from "../utils/arrayUtils";
 import {
-  deleteWorkoutDayEntry,
-  reorderWorkoutDayEntry,
-  upsertWorkoutDayEntry,
+  deleteWorkoutDayExercise,
+  reorderWorkoutDayExercise,
+  upsertWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
 } from "../utils/workoutMutationHelpers";
 import {
@@ -158,7 +158,12 @@ export function PlanDay(props: PlanDayProps) {
     await updateWorkout({
       workoutId: workout.id,
       updates: {
-        ...upsertWorkoutDayEntry(workout, day.id, exercise, exerciseToEdit?.id),
+        ...upsertWorkoutDayExercise(
+          workout,
+          day.id,
+          exercise,
+          exerciseToEdit?.id,
+        ),
         ...upsertWorkoutExerciseDefinition(workout, exercise),
       },
     });
@@ -175,14 +180,19 @@ export function PlanDay(props: PlanDayProps) {
     }
     await updateWorkout({
       workoutId: workout.id,
-      updates: deleteWorkoutDayEntry(workout, day.id, exerciseToEdit.id),
+      updates: deleteWorkoutDayExercise(workout, day.id, exerciseToEdit.id),
     });
   }
 
   async function handleMoveExercise(exercise: Exercise, direction: Direction) {
     await updateWorkout({
       workoutId: workout.id,
-      updates: reorderWorkoutDayEntry(workout, day.id, exercise.id, direction),
+      updates: reorderWorkoutDayExercise(
+        workout,
+        day.id,
+        exercise.id,
+        direction,
+      ),
     });
   }
 }
