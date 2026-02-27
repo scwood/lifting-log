@@ -1,20 +1,16 @@
+import { TrainingLoad } from "../types/TrainingLoad";
 import { WorkingSet } from "../types/WorkingSet";
 
-export function getVolumeLoad(values: {
-  sets: number;
-  reps: number;
-  weight: number;
-}): string {
-  return `${values.sets}x${values.reps}x${values.weight}`;
+export function getTrainingLoadString(trainingLoad: TrainingLoad): string {
+  return `${trainingLoad.sets}x${trainingLoad.reps}x${trainingLoad.weight}`;
 }
 
 export function getLoggedSetBreakdown(
   workingSets: Record<number, WorkingSet>,
-  defaultWeight: number,
 ): string {
   return Object.values(workingSets)
     .map((workingSet) => {
-      return `${workingSet.reps ?? "-"}x${workingSet.weight ?? defaultWeight}`;
+      return `${workingSet.reps}x${workingSet.weight}`;
     })
-    .join(",");
+    .join(", ");
 }
