@@ -1,21 +1,25 @@
 import { ActionIcon, Card, Flex, Menu, Text, Title } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 
-import { Exercise } from "../types/Exercise";
-import { getVolumeLoad } from "../utils/workoutFormattingUtils";
+import { DayExercise } from "../types/DayExercise";
+import { Workout } from "../types/Workout";
+import { getTrainingLoadString } from "../utils/workoutFormattingUtils";
+import { selectExerciseDefinition } from "../utils/workoutSelectors";
 
 export interface PlanExerciseCardProps {
-  exercise: Exercise;
+  workout: Workout;
+  exercise: DayExercise;
   moveUpDisabled: boolean;
   moveDownDisabled: boolean;
-  onEdit: (exercise: Exercise) => void;
-  onDelete: (exercise: Exercise) => void;
-  onMoveUp: (exercise: Exercise) => void;
-  onMoveDown: (exercise: Exercise) => void;
+  onEdit: (exercise: DayExercise) => void;
+  onDelete: (exercise: DayExercise) => void;
+  onMoveUp: (exercise: DayExercise) => void;
+  onMoveDown: (exercise: DayExercise) => void;
 }
 
 export function PlanExerciseCard(props: PlanExerciseCardProps) {
   const {
+    workout,
     exercise,
     moveDownDisabled,
     moveUpDisabled,
@@ -25,16 +29,21 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
     onMoveUp,
   } = props;
 
+  const exerciseDefinition = selectExerciseDefinition(workout, exercise);
+  if (!exerciseDefinition) {
+    return null;
+  }
+
   return (
     <Card withBorder>
       <Flex justify="space-between" align="center">
-        <Title order={4}>{exercise.name}</Title>
+        <Title order={4}>{exerciseDefinition.name}</Title>
         <Menu>
           <Menu.Target>
             <ActionIcon
               variant="subtle"
               color="gray"
-              aria-label={`${exercise.name} menu`}
+              aria-label={`${exerciseDefinition.name} menu`}
             >
               <IconDots />
             </ActionIcon>
@@ -60,8 +69,8 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
         </Menu>
       </Flex>
       <Text c="dimmed" size="sm">
-        {getVolumeLoad(exercise)} with {exercise.warmUpSets.length} warm-up
-        sets.
+        {getTrainingLoadString(exerciseDefinition.trainingLoad)} with{" "}
+        {exerciseDefinition.warmUpSets.length} warm-up sets.
       </Text>
     </Card>
   );

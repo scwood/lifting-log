@@ -9,10 +9,12 @@ import {
 } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 import { useState } from "react";
+import { v4 as uuidV4 } from "uuid";
 
 import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
+import { DayExercise } from "../types/DayExercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { Workout } from "../types/Workout";
 import { Direction } from "../utils/arrayUtils";
 import {
@@ -23,6 +25,7 @@ import {
 } from "../utils/workoutMutationHelpers";
 import {
   selectDayExercises,
+  selectExerciseDefinition,
   selectWorkoutDays,
 } from "../utils/workoutSelectors";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
@@ -53,11 +56,17 @@ export function PlanDay(props: PlanDayProps) {
   } = props;
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [exerciseToEdit, setExerciseToEdit] = useState<Exercise | null>(null);
+  const [exerciseToEdit, setExerciseToEdit] = useState<DayExercise | null>(
+    null,
+  );
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
   const workoutDays = selectWorkoutDays(workout);
   const dayExercises = selectDayExercises(day);
   const dayIndex = workoutDays.findIndex((d) => d.id === day.id);
+
+  const exerciseDefinitionToEdit = exerciseToEdit
+    ? selectExerciseDefinition(workout, exerciseToEdit)
+    : undefined;
 
   return (
     <div>
@@ -107,6 +116,7 @@ export function PlanDay(props: PlanDayProps) {
           return (
             <PlanExerciseCard
               key={exercise.id}
+              workout={workout}
               exercise={exercise}
               moveUpDisabled={index === 0 && dayIndex === 0}
               moveDownDisabled={
@@ -129,8 +139,8 @@ export function PlanDay(props: PlanDayProps) {
         title={`${exerciseToEdit ? "Edit" : "Create"} exercise`}
       >
         <ExerciseForm
-          key={exerciseToEdit?.id}
-          defaultValues={exerciseToEdit ?? undefined}
+          key={exerciseDefinitionToEdit?.id}
+          defaultValues={exerciseDefinitionToEdit}
           onSave={handleSaveExercise}
         />
       </Modal>
@@ -143,7 +153,7 @@ export function PlanDay(props: PlanDayProps) {
     </div>
   );
 
-  function handleEditExercise(exercise: Exercise) {
+  function handleEditExercise(exercise: DayExercise) {
     setExerciseToEdit(exercise);
     setIsExerciseModalOpen(true);
   }
@@ -153,7 +163,7 @@ export function PlanDay(props: PlanDayProps) {
     setIsExerciseModalOpen(true);
   }
 
-  async function handleSaveExercise(exercise: Exercise) {
+  async function handleSaveExercise(exerciseDefinition: ExerciseDefinition) {
     setIsExerciseModalOpen(false);
     await updateWorkout({
       workoutId: workout.id,
@@ -161,15 +171,20 @@ export function PlanDay(props: PlanDayProps) {
         ...upsertWorkoutDayExercise(
           workout,
           day.id,
-          exercise,
+          exerciseToEdit || {
+            id: uuidV4(),
+            workingSets: {},
+            exerciseDefinitionId: exerciseDefinition.id,
+            definitionTrainingLoadBeforeCompletion: null,
+          },
           exerciseToEdit?.id,
         ),
-        ...upsertWorkoutExerciseDefinition(workout, exercise),
+        ...upsertWorkoutExerciseDefinition(workout, exerciseDefinition),
       },
     });
   }
 
-  function handleConfirmDeleteExercise(exercise: Exercise) {
+  function handleConfirmDeleteExercise(exercise: DayExercise) {
     setExerciseToEdit(exercise);
     setIsDeleteModalOpen(true);
   }
@@ -184,7 +199,10 @@ export function PlanDay(props: PlanDayProps) {
     });
   }
 
-  async function handleMoveExercise(exercise: Exercise, direction: Direction) {
+  async function handleMoveExercise(
+    exercise: DayExercise,
+    direction: Direction,
+  ) {
     await updateWorkout({
       workoutId: workout.id,
       updates: reorderWorkoutDayExercise(
