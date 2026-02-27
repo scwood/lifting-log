@@ -28,4 +28,12 @@ describe("getLoggedSetBreakdown", () => {
       }),
     ).toBe("5x135, 4x130");
   });
+
+  it("preserves null values when set weight is missing", () => {
+    expect(
+      getLoggedSetBreakdown({
+        0: { isLogged: true, reps: 5, weight: null },
+      }),
+    ).toBe("5xnull");
+  });
 });

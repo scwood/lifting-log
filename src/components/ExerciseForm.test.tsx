@@ -3,17 +3,17 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { makeExercise, makeWarmUpSet } from "../test-utils/factories";
+import { makeExerciseDefinition, makeWarmUpSet } from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { ExerciseType } from "../types/ExerciseType";
-import { ExerciseForm, ExerciseModalProps } from "./ExerciseForm";
+import { ExerciseForm, ExerciseFormProps } from "./ExerciseForm";
 
 const testUuid = "test-uuid";
 vi.mock("uuid", () => ({ v4: () => testUuid }));
 
-function renderExerciseForm(propsOverrides: Partial<ExerciseModalProps> = {}) {
+function renderExerciseForm(propsOverrides: Partial<ExerciseFormProps> = {}) {
   const user = userEvent.setup();
-  const props: ExerciseModalProps = {
+  const props: ExerciseFormProps = {
     onSave: vi.fn(),
     ...propsOverrides,
   };
@@ -58,11 +58,13 @@ describe("ExerciseForm", () => {
   describe("with defaultValues", () => {
     it("pre-fills the Name, Weight, Sets, and Reps fields", () => {
       renderExerciseForm({
-        defaultValues: makeExercise({
+        defaultValues: makeExerciseDefinition({
           name: "Squat",
-          weight: 135,
-          sets: 3,
-          reps: 5,
+          trainingLoad: {
+            weight: 135,
+            sets: 3,
+            reps: 5,
+          },
         }),
       });
       expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue(
@@ -77,7 +79,9 @@ describe("ExerciseForm", () => {
 
     it("selects the correct type radio", () => {
       renderExerciseForm({
-        defaultValues: makeExercise({ type: ExerciseType.SinglePlate }),
+        defaultValues: makeExerciseDefinition({
+          type: ExerciseType.SinglePlate,
+        }),
       });
       expect(
         screen.getByRole("radio", { name: "One set of plates" }),
@@ -86,7 +90,7 @@ describe("ExerciseForm", () => {
 
     it("renders warm-up set cards from defaultValues", () => {
       renderExerciseForm({
-        defaultValues: makeExercise({
+        defaultValues: makeExerciseDefinition({
           warmUpSets: [makeWarmUpSet({ reps: 5, value: 60 })],
         }),
       });
@@ -96,7 +100,7 @@ describe("ExerciseForm", () => {
     });
 
     it("enables the Save button", () => {
-      renderExerciseForm({ defaultValues: makeExercise() });
+      renderExerciseForm({ defaultValues: makeExerciseDefinition() });
       expect(screen.getByRole("button", { name: "Save" })).not.toBeDisabled();
     });
   });
@@ -112,7 +116,7 @@ describe("ExerciseForm", () => {
 
     it("hides the Minimum weight increment field when a plate type is selected", async () => {
       const { user } = renderExerciseForm({
-        defaultValues: makeExercise({ type: ExerciseType.Other }),
+        defaultValues: makeExerciseDefinition({ type: ExerciseType.Other }),
       });
       await user.click(
         screen.getByRole("radio", { name: "Two sets of plates" }),
@@ -123,7 +127,7 @@ describe("ExerciseForm", () => {
     });
 
     it("saves minimumWeightIncrement of 2.5 when One set of plates is selected", async () => {
-      const exercise = makeExercise();
+      const exercise = makeExerciseDefinition();
       const { user, onSave } = renderExerciseForm({ defaultValues: exercise });
       await user.click(
         screen.getByRole("radio", { name: "One set of plates" }),
@@ -163,7 +167,9 @@ describe("ExerciseForm", () => {
     });
 
     it("disables the Save button when Name is cleared", async () => {
-      const { user } = renderExerciseForm({ defaultValues: makeExercise() });
+      const { user } = renderExerciseForm({
+        defaultValues: makeExerciseDefinition(),
+      });
       await user.clear(screen.getByRole("textbox", { name: "Name" }));
       expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
     });
@@ -180,19 +186,19 @@ describe("ExerciseForm", () => {
       expect(onSave).toHaveBeenCalledWith({
         id: testUuid,
         name: "Squat",
-        weight: 135,
-        sets: 3,
-        reps: 5,
         type: ExerciseType.DoublePlate,
         minimumWeightIncrement: 5,
         warmUpSets: [],
-        workingSets: {},
-        nextSession: {},
+        trainingLoad: {
+          weight: 135,
+          sets: 3,
+          reps: 5,
+        },
       });
     });
 
     it("merges updates into defaultValues when editing", async () => {
-      const exercise = makeExercise({ name: "Squat" });
+      const exercise = makeExerciseDefinition({ name: "Squat" });
       const { user, onSave } = renderExerciseForm({ defaultValues: exercise });
       const nameInput = screen.getByRole("textbox", { name: "Name" });
       await user.clear(nameInput);
@@ -201,7 +207,6 @@ describe("ExerciseForm", () => {
       expect(onSave).toHaveBeenCalledWith({
         ...exercise,
         name: "Bench Press",
-        warmUpSets: [],
       });
     });
   });
