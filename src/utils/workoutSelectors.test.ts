@@ -447,14 +447,8 @@ describe("selectExerciseUsesPlates", () => {
       id: "def1",
       type: ExerciseType.DoublePlate,
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectExerciseUsesPlates(workout, exercise)).toBe(true);
+    expect(selectExerciseUsesPlates(exerciseDefinition)).toBe(true);
   });
 
   it("returns true for SinglePlate exercises", () => {
@@ -462,14 +456,8 @@ describe("selectExerciseUsesPlates", () => {
       id: "def1",
       type: ExerciseType.SinglePlate,
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectExerciseUsesPlates(workout, exercise)).toBe(true);
+    expect(selectExerciseUsesPlates(exerciseDefinition)).toBe(true);
   });
 
   it("returns false for Other exercises", () => {
@@ -477,14 +465,8 @@ describe("selectExerciseUsesPlates", () => {
       id: "def1",
       type: ExerciseType.Other,
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectExerciseUsesPlates(workout, exercise)).toBe(false);
+    expect(selectExerciseUsesPlates(exerciseDefinition)).toBe(false);
   });
 });
 
@@ -494,19 +476,13 @@ describe("selectWarmUpSetWeight", () => {
       id: "def1",
       trainingLoad: { sets: 3, reps: 5, weight: 200 },
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
     const warmUpSet = makeWarmUpSet({
       id: "w1",
       type: WarmUpType.Weight,
       value: 30,
     });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectWarmUpSetWeight(workout, exercise, warmUpSet)).toBe(30);
+    expect(selectWarmUpSetWeight(exerciseDefinition, warmUpSet)).toBe(30);
   });
 
   it("calculates percentage-based warm-up for DoublePlate", () => {
@@ -516,19 +492,13 @@ describe("selectWarmUpSetWeight", () => {
       minimumWeightIncrement: 5,
       trainingLoad: { sets: 3, reps: 5, weight: 200 },
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
     const warmUpSet = makeWarmUpSet({
       id: "w2",
       type: WarmUpType.Percentage,
       value: 50,
     });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectWarmUpSetWeight(workout, exercise, warmUpSet)).toBe(100);
+    expect(selectWarmUpSetWeight(exerciseDefinition, warmUpSet)).toBe(100);
   });
 
   it("clamps DoublePlate warm-up to bar weight minimum", () => {
@@ -538,19 +508,13 @@ describe("selectWarmUpSetWeight", () => {
       minimumWeightIncrement: 5,
       trainingLoad: { sets: 3, reps: 5, weight: 45 },
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
     const warmUpSet = makeWarmUpSet({
       id: "w3",
       type: WarmUpType.Percentage,
       value: 50,
     });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectWarmUpSetWeight(workout, exercise, warmUpSet)).toBe(45);
+    expect(selectWarmUpSetWeight(exerciseDefinition, warmUpSet)).toBe(45);
   });
 
   it("clamps non-plate warm-up to minimumWeightIncrement", () => {
@@ -560,18 +524,12 @@ describe("selectWarmUpSetWeight", () => {
       minimumWeightIncrement: 10,
       trainingLoad: { sets: 3, reps: 5, weight: 10 },
     });
-    const exercise = makeDayExercise({
-      exerciseDefinitionId: exerciseDefinition.id,
-    });
     const warmUpSet = makeWarmUpSet({
       id: "w4",
       type: WarmUpType.Percentage,
       value: 10,
     });
-    const workout = makeWorkout({
-      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
-    });
 
-    expect(selectWarmUpSetWeight(workout, exercise, warmUpSet)).toBe(10);
+    expect(selectWarmUpSetWeight(exerciseDefinition, warmUpSet)).toBe(10);
   });
 });

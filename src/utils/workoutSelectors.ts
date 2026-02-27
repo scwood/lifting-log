@@ -2,6 +2,7 @@ import { Day } from "../types/Day";
 import { DayExercise } from "../types/DayExercise";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { ExerciseType } from "../types/ExerciseType";
+import { TrainingLoad } from "../types/TrainingLoad";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpType } from "../types/WarmUpType";
 import { Workout } from "../types/Workout";
@@ -20,6 +21,12 @@ export function selectExerciseDefinition(
   exercise: DayExercise,
 ): ExerciseDefinition | undefined {
   return workout.exerciseDefinitionsById[exercise.exerciseDefinitionId];
+}
+
+export function selectExerciseTrainingLoad(
+  exerciseDefinition: ExerciseDefinition,
+): TrainingLoad {
+  return exerciseDefinition.trainingLoad;
 }
 
 export function selectExerciseIsComplete(
@@ -101,13 +108,8 @@ export function selectWorkoutDaysWithCompletedExercises(
 }
 
 export function selectExerciseUsesPlates(
-  workout: Workout,
-  exercise: DayExercise,
+  exerciseDefinition: ExerciseDefinition,
 ): boolean {
-  const exerciseDefinition = selectExerciseDefinition(workout, exercise);
-  if (!exerciseDefinition) {
-    return false;
-  }
   return (
     exerciseDefinition.type === ExerciseType.DoublePlate ||
     exerciseDefinition.type === ExerciseType.SinglePlate
@@ -115,17 +117,11 @@ export function selectExerciseUsesPlates(
 }
 
 export function selectWarmUpSetWeight(
-  workout: Workout,
-  exercise: DayExercise,
+  exerciseDefinition: ExerciseDefinition,
   warmUpSet: WarmUpSet,
 ): number {
   if (warmUpSet.type === WarmUpType.Weight) {
     return warmUpSet.value;
-  }
-
-  const exerciseDefinition = selectExerciseDefinition(workout, exercise);
-  if (!exerciseDefinition) {
-    return 0;
   }
 
   const minimumWeight =
