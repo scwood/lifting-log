@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { Day } from "../types/Day";
 import { DayExercise } from "../types/DayExercise";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
+import { TrainingLoad } from "../types/TrainingLoad";
 import { WorkingSet } from "../types/WorkingSet";
 import { Workout } from "../types/Workout";
 import { Direction, moveItem } from "./arrayUtils";
@@ -193,9 +194,36 @@ export function setWorkoutDayExerciseWorkingSet(
 
 export function completeWorkoutDayExercise(
   workout: Workout,
+  dayId: string,
+  exerciseId: string,
+  setNumber: number,
+  workingSet: WorkingSet,
+  definitionTrainingLoadBeforeCompletion: TrainingLoad,
 ): Pick<Workout, "days"> {
-  // TODO
-  return { days: workout.days };
+  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
+    return {
+      ...exercise,
+      definitionTrainingLoadBeforeCompletion,
+      workingSets: {
+        ...exercise.workingSets,
+        [setNumber]: workingSet,
+      },
+    };
+  });
+}
+
+export function setExerciseDefinitionTrainingLoad(
+  workout: Workout,
+  exerciseDefinition: ExerciseDefinition,
+  trainingLoad: Partial<TrainingLoad>,
+): Pick<Workout, "exerciseDefinitionsById"> {
+  return upsertWorkoutExerciseDefinition(workout, {
+    ...exerciseDefinition,
+    trainingLoad: {
+      ...exerciseDefinition.trainingLoad,
+      ...trainingLoad,
+    },
+  });
 }
 
 export function skipWorkoutDayExercise(
@@ -269,7 +297,7 @@ export function deriveNextWorkoutDays(workout: Workout): Day[] {
         return {
           ...exercise,
           workingSets: {},
-          definitionTrainingLoadBeforeCompletion: undefined,
+          definitionTrainingLoadBeforeCompletion: null,
         };
       }),
     };

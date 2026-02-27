@@ -284,18 +284,54 @@ describe("setWorkoutDayExerciseWorkingSet", () => {
   });
 });
 
-// TODO
-describe.skip("completeWorkoutDayExercise", () => {
-  it("stores the final working set and next session plan", () => {
+describe("completeWorkoutDayExercise", () => {
+  it("stores the final working set and definition training load snapshot", () => {
+    const targetExercise = makeDayExercise({
+      id: "ex1",
+      workingSets: {
+        0: { isLogged: true, reps: 5, weight: 130 },
+      },
+    });
+    const untouchedExercise = makeDayExercise({
+      id: "ex2",
+      workingSets: {
+        0: { isLogged: false, reps: 5, weight: 95 },
+      },
+    });
     const workout = makeWorkout({
       days: [
-        makeDay({ id: "day1", exercises: [makeDayExercise({ id: "ex1" })] }),
+        makeDay({ id: "day1", exercises: [targetExercise, untouchedExercise] }),
       ],
     });
+    const finalWorkingSet = { isLogged: true, reps: 6, weight: 140 };
+    const definitionTrainingLoadBeforeCompletion = {
+      sets: 3,
+      reps: 5,
+      weight: 135,
+    };
 
-    const updates = completeWorkoutDayExercise(workout);
+    const updates = completeWorkoutDayExercise(
+      workout,
+      "day1",
+      "ex1",
+      1,
+      finalWorkingSet,
+      definitionTrainingLoadBeforeCompletion,
+    );
 
-    expect(updates.days).toBeDefined();
+    expect(updates.days[0].exercises[0]).toEqual({
+      ...targetExercise,
+      definitionTrainingLoadBeforeCompletion,
+      workingSets: {
+        ...targetExercise.workingSets,
+        1: finalWorkingSet,
+      },
+    });
+    expect(updates.days[0].exercises[1]).toEqual(untouchedExercise);
+    expect(workout.days[0].exercises[0].workingSets[1]).toBeUndefined();
+    expect(
+      workout.days[0].exercises[0].definitionTrainingLoadBeforeCompletion,
+    ).toBeNull();
   });
 });
 
@@ -400,7 +436,7 @@ describe("deriveNextWorkoutDays", () => {
             id: "ex1",
             exerciseDefinitionId: "def1",
             workingSets: {},
-            definitionTrainingLoadBeforeCompletion: undefined,
+            definitionTrainingLoadBeforeCompletion: null,
           }),
         ],
       }),
