@@ -3,7 +3,8 @@ import { vi } from "vitest";
 import { AuthContext } from "../contexts/authContext";
 import { CurrentUserContext } from "../contexts/currentUserContext";
 import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
+import { DayExercise } from "../types/DayExercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpType } from "../types/WarmUpType";
@@ -29,18 +30,32 @@ export function makeCurrentUserContext(
   return { userId: "u1", ...overrides };
 }
 
-export function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
+export function makeDayExercise(
+  overrides: Partial<DayExercise> = {},
+): DayExercise {
   return {
     id: "ex1",
+    exerciseDefinitionId: "def1",
+    workingSets: {},
+    definitionTrainingLoadBeforeCompletion: null,
+    ...overrides,
+  };
+}
+
+export function makeExerciseDefinition(
+  overrides: Partial<ExerciseDefinition> = {},
+): ExerciseDefinition {
+  return {
+    id: "def1",
     name: "Squat",
-    sets: 3,
-    reps: 5,
-    weight: 135,
     type: ExerciseType.DoublePlate,
     minimumWeightIncrement: 5,
     warmUpSets: [],
-    workingSets: {},
-    nextSession: {},
+    trainingLoad: {
+      sets: 3,
+      reps: 5,
+      weight: 135,
+    },
     ...overrides,
   };
 }
@@ -66,12 +81,14 @@ export function makeDay(overrides: Partial<Day> = {}): Day {
 
 export function makeWorkout(overrides: Partial<Workout> = {}): Workout {
   return {
+    schemaVersion: 2,
     id: "w1",
     userId: "u1",
     createdTimestamp: 0,
     completedTimestamp: null,
     notes: null,
     days: [],
+    exerciseDefinitionsById: {},
     ...overrides,
   };
 }

@@ -3,20 +3,28 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { makeExercise } from "../test-utils/factories";
-import { CompletedExercise, CompletedExerciseProps } from "./CompletedExercise";
+import {
+  makeDayExercise,
+  makeExerciseDefinition,
+} from "../test-utils/factories";
+import { CompletedExercise } from "./CompletedExercise";
+import type { CompletedExerciseProps } from "./CompletedExercise";
 
-const defaultExercise = makeExercise({
-  name: "Squat",
-  sets: 3,
-  reps: 5,
-  weight: 135,
+const defaultExercise = makeDayExercise({
   workingSets: {
     0: { reps: 5, isLogged: true, weight: 135 },
     1: { reps: 5, isLogged: true, weight: 135 },
     2: { reps: 5, isLogged: true, weight: 140 },
   },
-  nextSession: {},
+});
+
+const defaultExerciseDefinition = makeExerciseDefinition({
+  name: "Squat",
+  trainingLoad: {
+    sets: 3,
+    reps: 5,
+    weight: 135,
+  },
 });
 
 function renderCompletedExercise(
@@ -25,6 +33,7 @@ function renderCompletedExercise(
   const user = userEvent.setup();
   const props: CompletedExerciseProps = {
     exercise: defaultExercise,
+    exerciseDefinition: defaultExerciseDefinition,
     onUndo: vi.fn(),
     ...propsOverrides,
   };
@@ -45,26 +54,28 @@ describe("CompletedExercise", () => {
   it("renders the this-session reps x weight values", () => {
     renderCompletedExercise();
     expect(
-      screen.getByText(/This session: 5x135,5x135,5x140/, { selector: "p" }),
+      screen.getByText(/This session:\s*5x135,\s*5x135,\s*5x140/, {
+        selector: "p",
+      }),
     ).toBeInTheDocument();
   });
 
   describe("next session volume load", () => {
-    it("uses nextSession overrides when set", () => {
-      const exercise = makeExercise({
-        sets: 3,
-        reps: 5,
-        weight: 135,
-        workingSets: { 0: { reps: 5, isLogged: true, weight: 140 } },
-        nextSession: { weight: 140 },
+    it("uses the exercise definition training load", () => {
+      const exerciseDefinition = makeExerciseDefinition({
+        trainingLoad: {
+          sets: 3,
+          reps: 5,
+          weight: 140,
+        },
       });
-      renderCompletedExercise({ exercise });
+      renderCompletedExercise({ exerciseDefinition });
       expect(
         screen.getByText(/Next session: 3x5x140/, { selector: "p" }),
       ).toBeInTheDocument();
     });
 
-    it("falls back to exercise values when nextSession is empty", () => {
+    it("renders the default exercise definition training load", () => {
       renderCompletedExercise();
       expect(
         screen.getByText(/Next session: 3x5x135/, { selector: "p" }),

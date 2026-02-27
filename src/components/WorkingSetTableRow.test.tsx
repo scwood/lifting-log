@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { makeExercise } from "../test-utils/factories";
+import { makeExerciseDefinition } from "../test-utils/factories";
 import { ExerciseType } from "../types/ExerciseType";
 import {
   WorkingSetTableRow,
@@ -13,7 +13,9 @@ import {
 function renderRow(propsOverrides: Partial<WorkingSetTableRowProps> = {}) {
   const user = userEvent.setup();
   const props: WorkingSetTableRowProps = {
-    exercise: makeExercise({ weight: 135, reps: 5 }),
+    exerciseDefinition: makeExerciseDefinition({
+      trainingLoad: { sets: 3, reps: 5, weight: 135 },
+    }),
     setNumber: 1,
     workingSet: { reps: 5, weight: 135, isLogged: false },
     onChange: vi.fn(),
@@ -41,31 +43,40 @@ describe("WorkingSetTableRow", () => {
 
   describe("plate column", () => {
     it("shows plate breakdown for DoublePlate exercises", () => {
-      const exercise = makeExercise({
-        weight: 135,
+      const exerciseDefinition = makeExerciseDefinition({
         type: ExerciseType.DoublePlate,
+        trainingLoad: { sets: 3, reps: 5, weight: 135 },
       });
-      renderRow({ exercise, workingSet: { reps: 5, weight: 135, isLogged: false } });
+      renderRow({
+        exerciseDefinition,
+        workingSet: { reps: 5, weight: 135, isLogged: false },
+      });
       // (135 - 45) / 2 = 45 per side -> "45"
       expect(screen.getByText("45")).toBeInTheDocument();
     });
 
     it("shows plate breakdown for SinglePlate exercises", () => {
-      const exercise = makeExercise({
-        weight: 35,
+      const exerciseDefinition = makeExerciseDefinition({
         type: ExerciseType.SinglePlate,
+        trainingLoad: { sets: 3, reps: 5, weight: 35 },
       });
-      renderRow({ exercise, workingSet: { reps: 5, weight: 35, isLogged: false } });
+      renderRow({
+        exerciseDefinition,
+        workingSet: { reps: 5, weight: 35, isLogged: false },
+      });
       // 35 -> 25 + 10 -> "25, 10"
       expect(screen.getByText("25, 10")).toBeInTheDocument();
     });
 
     it("does not show plate breakdown for Other exercises", () => {
-      const exercise = makeExercise({
-        weight: 100,
+      const exerciseDefinition = makeExerciseDefinition({
         type: ExerciseType.Other,
+        trainingLoad: { sets: 3, reps: 5, weight: 100 },
       });
-      renderRow({ exercise, workingSet: { reps: 5, weight: 100, isLogged: false } });
+      renderRow({
+        exerciseDefinition,
+        workingSet: { reps: 5, weight: 100, isLogged: false },
+      });
       // If the plate column were rendered it would show "45, 45, 10"
       expect(screen.queryByText("45, 45, 10")).toBeNull();
     });
@@ -74,20 +85,22 @@ describe("WorkingSetTableRow", () => {
   describe("reps input", () => {
     it("displays workingSet.reps as the current value", () => {
       renderRow({ workingSet: { reps: 8, weight: 135, isLogged: false } });
-      expect(screen.getByRole("textbox", { name: "Reps for set 1" })).toHaveValue(
-        "8",
-      );
+      expect(
+        screen.getByRole("textbox", { name: "Reps for set 1" }),
+      ).toHaveValue("8");
     });
 
-    it("falls back to exercise.reps when workingSet.reps is null", () => {
-      const exercise = makeExercise({ reps: 5 });
+    it("falls back to exerciseDefinition.trainingLoad.reps when workingSet.reps is null", () => {
+      const exerciseDefinition = makeExerciseDefinition({
+        trainingLoad: { sets: 3, reps: 5, weight: 135 },
+      });
       renderRow({
-        exercise,
+        exerciseDefinition,
         workingSet: { reps: null, weight: 135, isLogged: false },
       });
-      expect(screen.getByRole("textbox", { name: "Reps for set 1" })).toHaveValue(
-        "5",
-      );
+      expect(
+        screen.getByRole("textbox", { name: "Reps for set 1" }),
+      ).toHaveValue("5");
     });
 
     it("has an accessible name with the set number", () => {
@@ -98,7 +111,9 @@ describe("WorkingSetTableRow", () => {
     });
 
     it("selects the full reps value when focused", async () => {
-      const { user } = renderRow({ workingSet: { reps: 12, weight: 135, isLogged: false } });
+      const { user } = renderRow({
+        workingSet: { reps: 12, weight: 135, isLogged: false },
+      });
       const repsInput = screen.getByRole("textbox", { name: "Reps for set 1" });
 
       await user.click(repsInput);
@@ -137,7 +152,9 @@ describe("WorkingSetTableRow", () => {
       const { user } = renderRow({
         workingSet: { reps: 5, weight: 135, isLogged: false },
       });
-      await user.clear(screen.getByRole("textbox", { name: "Weight for set 1" }));
+      await user.clear(
+        screen.getByRole("textbox", { name: "Weight for set 1" }),
+      );
       expect(screen.getByRole("checkbox")).toBeDisabled();
     });
   });
@@ -173,7 +190,9 @@ describe("WorkingSetTableRow", () => {
       const { user, onChange } = renderRow({
         workingSet: { reps: 5, weight: 135, isLogged: false },
       });
-      const weightInput = screen.getByRole("textbox", { name: "Weight for set 1" });
+      const weightInput = screen.getByRole("textbox", {
+        name: "Weight for set 1",
+      });
       await user.clear(weightInput);
       await user.type(weightInput, "140");
       expect(onChange).toHaveBeenLastCalledWith({
@@ -187,7 +206,9 @@ describe("WorkingSetTableRow", () => {
       const { user, onChange } = renderRow({
         workingSet: { reps: 5, weight: 135, isLogged: true },
       });
-      await user.clear(screen.getByRole("textbox", { name: "Weight for set 1" }));
+      await user.clear(
+        screen.getByRole("textbox", { name: "Weight for set 1" }),
+      );
       expect(onChange).toHaveBeenLastCalledWith({
         reps: 5,
         weight: null,

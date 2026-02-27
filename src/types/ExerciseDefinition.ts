@@ -1,4 +1,5 @@
 import { ExerciseType } from "./ExerciseType";
+import { TrainingLoad } from "./TrainingLoad";
 import { WarmUpSet } from "./WarmUpSet";
 
 export interface ExerciseDefinition {
@@ -7,9 +8,5 @@ export interface ExerciseDefinition {
   type: ExerciseType;
   minimumWeightIncrement: number;
   warmUpSets: WarmUpSet[];
-  currentPlan: {
-    sets: number;
-    reps: number;
-    weight: number;
-  };
+  trainingLoad: TrainingLoad;
 }

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { makeExercise } from "../test-utils/factories";
+import { makeExerciseDefinition } from "../test-utils/factories";
 import {
   ExerciseCompleteForm,
   ExerciseCompleteFormProps,
@@ -14,7 +14,7 @@ function renderExerciseCompleteForm(
 ) {
   const user = userEvent.setup();
   const props: ExerciseCompleteFormProps = {
-    defaultValues: makeExercise(),
+    exerciseDefinition: makeExerciseDefinition(),
     onSave: vi.fn(),
     ...propsOverrides,
   };
@@ -35,7 +35,9 @@ describe("ExerciseCompleteForm", () => {
 
     it("pre-fills Weight, Sets, and Reps from the exercise", () => {
       renderExerciseCompleteForm({
-        defaultValues: makeExercise({ weight: 135, sets: 3, reps: 5 }),
+        exerciseDefinition: makeExerciseDefinition({
+          trainingLoad: { weight: 135, sets: 3, reps: 5 },
+        }),
       });
       expect(screen.getByRole("textbox", { name: "Weight" })).toHaveValue(
         "135",
@@ -94,7 +96,9 @@ describe("ExerciseCompleteForm", () => {
 
     it("saves reps + 1 when Add a rep is selected", async () => {
       const { user, onSave } = renderExerciseCompleteForm({
-        defaultValues: makeExercise({ reps: 5 }),
+        exerciseDefinition: makeExerciseDefinition({
+          trainingLoad: { weight: 135, sets: 3, reps: 5 },
+        }),
       });
       await user.click(screen.getByRole("radio", { name: "Add a rep" }));
       await user.click(screen.getByRole("button", { name: "Save" }));
@@ -103,10 +107,9 @@ describe("ExerciseCompleteForm", () => {
 
     it("saves weight + increment and current reps when Add weight is selected", async () => {
       const { user, onSave } = renderExerciseCompleteForm({
-        defaultValues: makeExercise({
-          weight: 135,
+        exerciseDefinition: makeExerciseDefinition({
           minimumWeightIncrement: 5,
-          reps: 5,
+          trainingLoad: { weight: 135, sets: 3, reps: 5 },
         }),
       });
       await user.click(screen.getByRole("radio", { name: "Add weight" }));

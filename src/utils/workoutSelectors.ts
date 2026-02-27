@@ -1,6 +1,8 @@
 import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
+import { DayExercise } from "../types/DayExercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { ExerciseType } from "../types/ExerciseType";
+import { TrainingLoad } from "../types/TrainingLoad";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpType } from "../types/WarmUpType";
 import { Workout } from "../types/Workout";
@@ -10,28 +12,57 @@ export function selectWorkoutDays(workout: Workout): Day[] {
   return workout.days;
 }
 
-export function selectDayExercises(day: Day): Exercise[] {
+export function selectDayExercises(day: Day): DayExercise[] {
   return day.exercises;
 }
 
-export function selectExerciseIsComplete(exercise: Exercise): boolean {
+export function selectExerciseDefinition(
+  workout: Workout,
+  exercise: DayExercise,
+): ExerciseDefinition | undefined {
+  return workout.exerciseDefinitionsById[exercise.exerciseDefinitionId];
+}
+
+export function selectExerciseTrainingLoad(
+  exerciseDefinition: ExerciseDefinition,
+): TrainingLoad {
+  return exerciseDefinition.trainingLoad;
+}
+
+export function selectExerciseIsComplete(
+  workout: Workout,
+  exercise: DayExercise,
+): boolean {
+  const exerciseDefinition = selectExerciseDefinition(workout, exercise);
+  if (!exerciseDefinition) {
+    return false;
+  }
   const workingSets = Object.values(exercise.workingSets);
   return (
-    workingSets.length === exercise.sets &&
+    workingSets.length === exerciseDefinition.trainingLoad.sets &&
     workingSets.every((workingSet) => workingSet.isLogged)
   );
 }
 
-export function selectDayHasCompletedExercises(day: Day): boolean {
-  return selectDayExercises(day).some(selectExerciseIsComplete);
+export function selectDayHasCompletedExercises(
+  workout: Workout,
+  day: Day,
+): boolean {
+  return selectDayExercises(day).some((exercise) => {
+    return selectExerciseIsComplete(workout, exercise);
+  });
 }
 
-export function selectDayIsComplete(day: Day): boolean {
-  return selectDayExercises(day).every(selectExerciseIsComplete);
+export function selectDayIsComplete(workout: Workout, day: Day): boolean {
+  return selectDayExercises(day).every((exercise) => {
+    return selectExerciseIsComplete(workout, exercise);
+  });
 }
 
 export function selectWorkoutIsComplete(workout: Workout): boolean {
-  return selectWorkoutDays(workout).every(selectDayIsComplete);
+  return selectWorkoutDays(workout).every((day) => {
+    return selectDayIsComplete(workout, day);
+  });
 }
 
 export function selectWorkoutHasNoDays(workout: Workout): boolean {
@@ -44,37 +75,49 @@ export function selectWorkoutHasNoExercises(workout: Workout): boolean {
   });
 }
 
-export function selectIncompleteDayExercises(day: Day): Exercise[] {
-  return selectDayExercises(day).filter(
-    (exercise) => !selectExerciseIsComplete(exercise),
-  );
+export function selectIncompleteDayExercises(
+  workout: Workout,
+  day: Day,
+): DayExercise[] {
+  return selectDayExercises(day).filter((exercise) => {
+    return !selectExerciseIsComplete(workout, exercise);
+  });
 }
 
-export function selectCompletedDayExercises(day: Day): Exercise[] {
-  return selectDayExercises(day).filter(selectExerciseIsComplete);
+export function selectCompletedDayExercises(
+  workout: Workout,
+  day: Day,
+): DayExercise[] {
+  return selectDayExercises(day).filter((exercise) => {
+    return selectExerciseIsComplete(workout, exercise);
+  });
 }
 
 export function selectIncompleteWorkoutDays(workout: Workout): Day[] {
   return selectWorkoutDays(workout).filter((day) => {
-    return selectIncompleteDayExercises(day).length > 0;
+    return selectIncompleteDayExercises(workout, day).length > 0;
   });
 }
 
 export function selectWorkoutDaysWithCompletedExercises(
   workout: Workout,
 ): Day[] {
-  return selectWorkoutDays(workout).filter(selectDayHasCompletedExercises);
+  return selectWorkoutDays(workout).filter((day) => {
+    return selectDayHasCompletedExercises(workout, day);
+  });
 }
 
-export function selectExerciseUsesPlates(exercise: Exercise): boolean {
+export function selectExerciseUsesPlates(
+  exerciseDefinition: ExerciseDefinition,
+): boolean {
   return (
-    exercise.type === ExerciseType.DoublePlate ||
-    exercise.type === ExerciseType.SinglePlate
+    exerciseDefinition.type === ExerciseType.DoublePlate ||
+    exerciseDefinition.type === ExerciseType.SinglePlate
   );
 }
 
 export function selectWarmUpSetWeight(
-  exercise: Exercise,
+  exerciseDefinition: ExerciseDefinition,
   warmUpSet: WarmUpSet,
 ): number {
   if (warmUpSet.type === WarmUpType.Weight) {
@@ -82,16 +125,16 @@ export function selectWarmUpSetWeight(
   }
 
   const minimumWeight =
-    exercise.type === ExerciseType.DoublePlate
+    exerciseDefinition.type === ExerciseType.DoublePlate
       ? weightOfBar
-      : exercise.minimumWeightIncrement;
+      : exerciseDefinition.minimumWeightIncrement;
   const percentage = warmUpSet.value / 100;
 
   return Math.max(
     minimumWeight,
     roundToIncrement(
-      exercise.weight * percentage,
-      exercise.minimumWeightIncrement,
+      exerciseDefinition.trainingLoad.weight * percentage,
+      exerciseDefinition.minimumWeightIncrement,
     ),
   );
 }

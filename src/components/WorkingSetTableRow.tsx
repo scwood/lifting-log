@@ -1,26 +1,31 @@
 import { Checkbox, NumberInput, Table, Tooltip } from "@mantine/core";
 import { useState } from "react";
 
-import { Exercise } from "../types/Exercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { WorkingSet } from "../types/WorkingSet";
 import { calculatePlates } from "../utils/weightUtils";
 import { selectExerciseUsesPlates } from "../utils/workoutSelectors";
 
 export interface WorkingSetTableRowProps {
-  exercise: Exercise;
+  exerciseDefinition: ExerciseDefinition;
   setNumber: number;
   workingSet: WorkingSet;
   onChange: (workingSet: WorkingSet) => void;
 }
 
 export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
-  const { exercise, setNumber, workingSet, onChange } = props;
-  const [localReps, setLocalReps] = useState(workingSet.reps ?? exercise.reps);
-  const [localWeight, setLocalWeight] = useState(
-    workingSet.weight ?? exercise.weight,
+  const { exerciseDefinition, setNumber, workingSet, onChange } = props;
+
+  const [localReps, setLocalReps] = useState(
+    workingSet.reps ?? exerciseDefinition.trainingLoad.reps,
   );
+  const [localWeight, setLocalWeight] = useState(
+    workingSet.weight ?? exerciseDefinition.trainingLoad.weight,
+  );
+
   const weightInputWidth = getDynamicInputWidth(localWeight);
   const repsInputWidth = getDynamicInputWidth(localReps);
+
   const isLocalRepsValid = localReps >= 0;
   const isLocalWeightValid = localWeight >= 0;
   const isSetValid = isLocalRepsValid && isLocalWeightValid;
@@ -38,7 +43,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
           }}
           allowDecimal
           min={0}
-          placeholder={String(exercise.weight)}
+          placeholder={String(exerciseDefinition.trainingLoad.weight)}
           aria-label={`Weight for set ${setNumber}`}
           value={localWeight}
           onChange={handleOnChangeWeight}
@@ -46,10 +51,10 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
           hideControls
         />
       </Table.Td>
-      {selectExerciseUsesPlates(exercise) && (
+      {selectExerciseUsesPlates(exerciseDefinition) && (
         <Table.Td>
           {isLocalWeightValid
-            ? calculatePlates(localWeight, exercise.type)
+            ? calculatePlates(localWeight, exerciseDefinition.type)
             : ""}
         </Table.Td>
       )}
@@ -65,7 +70,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
           allowDecimal={false}
           max={99}
           min={0}
-          placeholder={String(exercise.reps)}
+          placeholder={String(exerciseDefinition.trainingLoad.reps)}
           aria-label={`Reps for set ${setNumber}`}
           value={localReps}
           onChange={handleOnChangeReps}
@@ -132,7 +137,7 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
 }
 
 function getDynamicInputWidth(value: number): number {
-  const valueText = Number.isFinite(value) ? String(value) : "";
+  const valueText = Number.isFinite(value) ? String(value) : " ";
   const buffer = 4;
   return valueText.length + buffer;
 }

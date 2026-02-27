@@ -1,10 +1,8 @@
 import { Box, Card, Flex, Text } from "@mantine/core";
 
 import { Workout } from "../types/Workout";
-import {
-  getLoggedSetBreakdown,
-  getVolumeLoad,
-} from "../utils/workoutFormattingUtils";
+import { getLoggedSetBreakdown } from "../utils/workoutFormattingUtils";
+import { selectExerciseDefinition } from "../utils/workoutSelectors";
 
 export interface PastWorkoutCardProps {
   workout: Workout;
@@ -31,11 +29,17 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
               <u>{day.name}</u>
               <Flex direction="column">
                 {day.exercises.map((exercise) => {
+                  const exerciseDefinition = selectExerciseDefinition(
+                    workout,
+                    exercise,
+                  );
+                  if (!exerciseDefinition) {
+                    return null;
+                  }
                   return (
                     <span key={exercise.id}>
-                      {exercise.name}: {getVolumeLoad(exercise)} (
-                      {getLoggedSetBreakdown(exercise.workingSets, exercise.weight)}
-                      )
+                      {exerciseDefinition.name}:{" "}
+                      {getLoggedSetBreakdown(exercise.workingSets)}
                     </span>
                   );
                 })}

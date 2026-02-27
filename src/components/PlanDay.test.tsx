@@ -2,24 +2,55 @@ import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { v4 as uuidV4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { updateWorkout } from "../api/workoutsApi";
-import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
+import {
+  makeDay,
+  makeDayExercise,
+  makeExerciseDefinition,
+  makeWorkout,
+} from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
-import { reorderWorkoutDayEntry } from "../utils/workoutMutationHelpers";
+import {
+  reorderWorkoutDayExercise,
+  upsertWorkoutExerciseDefinition,
+} from "../utils/workoutMutationHelpers";
 import { CurrentUserProvider } from "./CurrentUserProvider";
 import { PlanDay, PlanDayProps } from "./PlanDay";
 
 vi.mock("../api/workoutsApi");
+vi.mock("uuid", () => ({ v4: vi.fn() }));
 
 const mockUpdateWorkout = vi.mocked(updateWorkout);
+const mockUuidV4 = vi.mocked(uuidV4);
+const createdDefinitionId = "created-definition-id";
+const createdDayExerciseId = "created-day-exercise-id";
 
 function renderPlanDay(propsOverrides: Partial<PlanDayProps> = {}) {
   const user = userEvent.setup();
-  const exercise1 = makeExercise({ id: "ex1", name: "Squat" });
-  const exercise2 = makeExercise({ id: "ex2", name: "Bench Press" });
+  const exerciseDefinition1 = makeExerciseDefinition({
+    id: "def1",
+    name: "Squat",
+  });
+  const exerciseDefinition2 = makeExerciseDefinition({
+    id: "def2",
+    name: "Bench Press",
+  });
+  const exerciseDefinition3 = makeExerciseDefinition({
+    id: "def3",
+    name: "Deadlift",
+  });
+  const exercise1 = makeDayExercise({
+    id: "ex1",
+    exerciseDefinitionId: exerciseDefinition1.id,
+  });
+  const exercise2 = makeDayExercise({
+    id: "ex2",
+    exerciseDefinitionId: exerciseDefinition2.id,
+  });
   const day = makeDay({
     id: "day1",
     name: "Day 1",
@@ -28,9 +59,22 @@ function renderPlanDay(propsOverrides: Partial<PlanDayProps> = {}) {
   const day2 = makeDay({
     id: "day2",
     name: "Day 2",
-    exercises: [makeExercise({ id: "ex3", name: "Deadlift" })],
+    exercises: [
+      makeDayExercise({
+        id: "ex3",
+        exerciseDefinitionId: exerciseDefinition3.id,
+      }),
+    ],
   });
-  const workout = makeWorkout({ id: "w1", days: [day, day2] });
+  const workout = makeWorkout({
+    id: "w1",
+    days: [day, day2],
+    exerciseDefinitionsById: {
+      [exerciseDefinition1.id]: exerciseDefinition1,
+      [exerciseDefinition2.id]: exerciseDefinition2,
+      [exerciseDefinition3.id]: exerciseDefinition3,
+    },
+  });
   const props: PlanDayProps = {
     day,
     workout,
@@ -63,6 +107,7 @@ describe("PlanDay", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockUpdateWorkout.mockResolvedValue(undefined);
+    mockUuidV4.mockReturnValue("test-uuid");
   });
 
   it("renders day title and exercise cards", () => {
@@ -120,6 +165,9 @@ describe("PlanDay", () => {
 
   it("adds an exercise and calls updateWorkout with updated days", async () => {
     const { user, workout } = renderPlanDay();
+    mockUuidV4
+      .mockReturnValueOnce(createdDefinitionId)
+      .mockReturnValueOnce(createdDayExerciseId);
 
     await user.click(screen.getByRole("button", { name: "Add exercise" }));
     const dialog = screen.getByRole("dialog");
@@ -143,13 +191,30 @@ describe("PlanDay", () => {
     expect(updatedDay?.exercises).toHaveLength(3);
     const createdExercise =
       updatedDay?.exercises[updatedDay.exercises.length - 1];
-    expect(createdExercise).toEqual(
+    expect(createdExercise).toEqual({
+      id: createdDayExerciseId,
+      exerciseDefinitionId: createdDefinitionId,
+      workingSets: {},
+      definitionTrainingLoadBeforeCompletion: null,
+    });
+    const createdExerciseDefinition =
+      updates.exerciseDefinitionsById?.[createdDefinitionId];
+    expect(createdExerciseDefinition).toEqual(
       expect.objectContaining({
+        id: createdDefinitionId,
         name: "Row",
-        weight: 95,
-        sets: 3,
-        reps: 8,
+        trainingLoad: {
+          sets: 3,
+          reps: 8,
+          weight: 95,
+        },
       }),
+    );
+    expect(updates.exerciseDefinitionsById).toEqual(
+      expect.objectContaining(
+        upsertWorkoutExerciseDefinition(workout, createdExerciseDefinition!)
+          .exerciseDefinitionsById,
+      ),
     );
   });
 
@@ -170,9 +235,14 @@ describe("PlanDay", () => {
     expect(workoutId).toBe(workout.id);
     const updatedDay = updates.days?.find((d) => d.id === "day1");
     expect(updatedDay?.exercises[0]).toEqual(
-      expect.objectContaining({ id: "ex1", name: "Front Squat" }),
+      expect.objectContaining({ id: "ex1", exerciseDefinitionId: "def1" }),
     );
     expect(updatedDay?.exercises[1]).toEqual(workout.days[0].exercises[1]);
+    expect(updates.exerciseDefinitionsById?.def1).toEqual({
+      ...workout.exerciseDefinitionsById.def1,
+      id: "def1",
+      name: "Front Squat",
+    });
   });
 
   it("deletes an exercise after confirmation and calls updateWorkout", async () => {
@@ -192,7 +262,7 @@ describe("PlanDay", () => {
 
   it("moves an exercise and sends moveExercise result to updateWorkout", async () => {
     const { user, workout, day } = renderPlanDay();
-    const expectedUpdates = reorderWorkoutDayEntry(
+    const expectedUpdates = reorderWorkoutDayExercise(
       workout,
       day.id,
       "ex2",

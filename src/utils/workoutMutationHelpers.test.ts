@@ -1,21 +1,27 @@
 import { describe, expect, it } from "vitest";
 
-import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
+import {
+  makeDay,
+  makeDayExercise,
+  makeExerciseDefinition,
+  makeWorkout,
+} from "../test-utils/factories";
 import { Direction } from "./arrayUtils";
 import {
-  completeWorkoutDayEntry,
+  completeWorkoutDayExercise,
   deleteWorkoutDay,
-  deleteWorkoutDayEntry,
+  deleteWorkoutDayExercise,
   deriveNextWorkoutDays,
   reorderWorkoutDay,
-  reorderWorkoutDayEntry,
+  reorderWorkoutDayExercise,
   sanitizeWorkoutNotes,
-  setWorkoutDayEntryWorkingSet,
-  skipWorkoutDayEntry,
-  undoWorkoutDayEntryCompletion,
-  undoWorkoutDayEntry,
+  setWorkoutDayExerciseWorkingSet,
+  skipWorkoutDayExercise,
+  undoWorkoutDayExercise,
+  undoWorkoutDayExerciseCompletion,
   upsertWorkoutDay,
-  upsertWorkoutDayEntry,
+  upsertWorkoutDayExercise,
+  upsertWorkoutExerciseDefinition,
 } from "./workoutMutationHelpers";
 
 describe("upsertWorkoutDay", () => {
@@ -68,18 +74,18 @@ describe("reorderWorkoutDay", () => {
   });
 });
 
-describe("upsertWorkoutDayEntry", () => {
-  it("adds an entry when entryToReplaceId is not provided", () => {
+describe("upsertWorkoutDayExercise", () => {
+  it("adds an exercise when exerciseToReplaceId is not provided", () => {
     const day = makeDay({
       id: "day1",
-      exercises: [makeExercise({ id: "ex1", name: "Squat" })],
+      exercises: [makeDayExercise({ id: "ex1", exerciseDefinitionId: "def1" })],
     });
     const workout = makeWorkout({ days: [day] });
 
-    const updates = upsertWorkoutDayEntry(
+    const updates = upsertWorkoutDayExercise(
       workout,
       "day1",
-      makeExercise({ id: "ex2", name: "Bench" }),
+      makeDayExercise({ id: "ex2", exerciseDefinitionId: "def2" }),
     );
 
     expect(updates.days[0].exercises.map((exercise) => exercise.id)).toEqual([
@@ -88,33 +94,54 @@ describe("upsertWorkoutDayEntry", () => {
     ]);
   });
 
-  it("replaces an existing entry when entryToReplaceId is provided", () => {
+  it("replaces an existing exercise when exerciseToReplaceId is provided", () => {
     const day = makeDay({
       id: "day1",
-      exercises: [makeExercise({ id: "ex1", name: "Squat" })],
+      exercises: [makeDayExercise({ id: "ex1", exerciseDefinitionId: "def1" })],
     });
     const workout = makeWorkout({ days: [day] });
 
-    const updates = upsertWorkoutDayEntry(
+    const updates = upsertWorkoutDayExercise(
       workout,
       "day1",
-      makeExercise({ id: "ex1", name: "Front Squat" }),
+      makeDayExercise({ id: "ex1", exerciseDefinitionId: "def2" }),
       "ex1",
     );
 
-    expect(updates.days[0].exercises[0].name).toBe("Front Squat");
+    expect(updates.days[0].exercises[0].exerciseDefinitionId).toBe("def2");
   });
 });
 
-describe("deleteWorkoutDayEntry", () => {
-  it("deletes an entry from the requested day", () => {
+describe("upsertWorkoutExerciseDefinition", () => {
+  it("adds or replaces an exercise definition based on exercise id", () => {
+    const workout = makeWorkout();
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "ex1",
+      name: "Squat",
+      trainingLoad: { sets: 3, reps: 5, weight: 135 },
+    });
+
+    const updates = upsertWorkoutExerciseDefinition(
+      workout,
+      exerciseDefinition,
+    );
+
+    expect(updates.exerciseDefinitionsById.ex1).toEqual(exerciseDefinition);
+  });
+});
+
+describe("deleteWorkoutDayExercise", () => {
+  it("deletes an exercise from the requested day", () => {
     const day = makeDay({
       id: "day1",
-      exercises: [makeExercise({ id: "ex1" }), makeExercise({ id: "ex2" })],
+      exercises: [
+        makeDayExercise({ id: "ex1" }),
+        makeDayExercise({ id: "ex2" }),
+      ],
     });
     const workout = makeWorkout({ days: [day] });
 
-    const updates = deleteWorkoutDayEntry(workout, "day1", "ex1");
+    const updates = deleteWorkoutDayExercise(workout, "day1", "ex1");
 
     expect(updates.days[0].exercises.map((exercise) => exercise.id)).toEqual([
       "ex2",
@@ -122,19 +149,19 @@ describe("deleteWorkoutDayEntry", () => {
   });
 });
 
-describe("reorderWorkoutDayEntry", () => {
+describe("reorderWorkoutDayExercise", () => {
   const dayA = makeDay({
     id: "dayA",
-    exercises: [makeExercise({ id: "ex1" }), makeExercise({ id: "ex2" })],
+    exercises: [makeDayExercise({ id: "ex1" }), makeDayExercise({ id: "ex2" })],
   });
   const dayB = makeDay({
     id: "dayB",
-    exercises: [makeExercise({ id: "ex3" }), makeExercise({ id: "ex4" })],
+    exercises: [makeDayExercise({ id: "ex3" }), makeDayExercise({ id: "ex4" })],
   });
   const workout = makeWorkout({ days: [dayA, dayB] });
 
   it("returns original days when day id is not found", () => {
-    const updates = reorderWorkoutDayEntry(
+    const updates = reorderWorkoutDayExercise(
       workout,
       "missing",
       "ex1",
@@ -143,8 +170,8 @@ describe("reorderWorkoutDayEntry", () => {
     expect(updates.days).toBe(workout.days);
   });
 
-  it("returns original days when entry id is not found", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("returns original days when exercise id is not found", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayA",
       "missing",
@@ -153,8 +180,8 @@ describe("reorderWorkoutDayEntry", () => {
     expect(updates.days).toBe(workout.days);
   });
 
-  it("returns original days when moving top-most entry up", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("returns original days when moving top-most exercise up", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayA",
       "ex1",
@@ -163,8 +190,8 @@ describe("reorderWorkoutDayEntry", () => {
     expect(updates.days).toBe(workout.days);
   });
 
-  it("returns original days when moving bottom-most entry down", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("returns original days when moving bottom-most exercise down", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayB",
       "ex4",
@@ -173,8 +200,8 @@ describe("reorderWorkoutDayEntry", () => {
     expect(updates.days).toBe(workout.days);
   });
 
-  it("moves an entry up within the same day", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("moves an exercise up within the same day", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayA",
       "ex2",
@@ -187,8 +214,8 @@ describe("reorderWorkoutDayEntry", () => {
     ]);
   });
 
-  it("moves an entry down within the same day", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("moves an exercise down within the same day", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayA",
       "ex1",
@@ -201,8 +228,8 @@ describe("reorderWorkoutDayEntry", () => {
     ]);
   });
 
-  it("moves the first entry of a day up to the previous day", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("moves the first exercise of a day up to the previous day", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayB",
       "ex3",
@@ -219,8 +246,8 @@ describe("reorderWorkoutDayEntry", () => {
     ]);
   });
 
-  it("moves the last entry of a day down to the next day", () => {
-    const updates = reorderWorkoutDayEntry(
+  it("moves the last exercise of a day down to the next day", () => {
+    const updates = reorderWorkoutDayExercise(
       workout,
       "dayA",
       "ex2",
@@ -238,14 +265,14 @@ describe("reorderWorkoutDayEntry", () => {
   });
 });
 
-describe("setWorkoutDayEntryWorkingSet", () => {
-  it("sets a specific working set on an entry", () => {
-    const exercise = makeExercise({ id: "ex1", workingSets: {} });
+describe("setWorkoutDayExerciseWorkingSet", () => {
+  it("sets a specific working set on an exercise", () => {
+    const exercise = makeDayExercise({ id: "ex1", workingSets: {} });
     const workout = makeWorkout({
       days: [makeDay({ id: "day1", exercises: [exercise] })],
     });
 
-    const updates = setWorkoutDayEntryWorkingSet(workout, "day1", "ex1", 0, {
+    const updates = setWorkoutDayExerciseWorkingSet(workout, "day1", "ex1", 0, {
       isLogged: true,
       reps: 5,
       weight: 140,
@@ -257,68 +284,93 @@ describe("setWorkoutDayEntryWorkingSet", () => {
   });
 });
 
-describe("completeWorkoutDayEntry", () => {
-  it("stores the final working set and next session plan", () => {
-    const exercise = makeExercise({
+describe("completeWorkoutDayExercise", () => {
+  it("stores the final working set and definition training load snapshot", () => {
+    const targetExercise = makeDayExercise({
       id: "ex1",
-      sets: 2,
-      reps: 5,
-      weight: 135,
-      workingSets: {},
+      workingSets: {
+        0: { isLogged: true, reps: 5, weight: 130 },
+      },
+    });
+    const untouchedExercise = makeDayExercise({
+      id: "ex2",
+      workingSets: {
+        0: { isLogged: false, reps: 5, weight: 95 },
+      },
     });
     const workout = makeWorkout({
-      days: [makeDay({ id: "day1", exercises: [exercise] })],
+      days: [
+        makeDay({ id: "day1", exercises: [targetExercise, untouchedExercise] }),
+      ],
     });
+    const finalWorkingSet = { isLogged: true, reps: 6, weight: 140 };
+    const definitionTrainingLoadBeforeCompletion = {
+      sets: 3,
+      reps: 5,
+      weight: 135,
+    };
 
-    const updates = completeWorkoutDayEntry(workout, {
-      dayId: "day1",
-      entryId: "ex1",
-      setNumber: 1,
-      workingSet: { isLogged: true, reps: 5, weight: 135 },
-      nextSession: { reps: 6 },
-    });
+    const updates = completeWorkoutDayExercise(
+      workout,
+      "day1",
+      "ex1",
+      1,
+      finalWorkingSet,
+      definitionTrainingLoadBeforeCompletion,
+    );
 
-    expect(updates.days[0].exercises[0].workingSets).toEqual({
-      1: { isLogged: true, reps: 5, weight: 135 },
+    expect(updates.days[0].exercises[0]).toEqual({
+      ...targetExercise,
+      definitionTrainingLoadBeforeCompletion,
+      workingSets: {
+        ...targetExercise.workingSets,
+        1: finalWorkingSet,
+      },
     });
-    expect(updates.days[0].exercises[0].nextSession).toEqual({
-      reps: 6,
-    });
+    expect(updates.days[0].exercises[1]).toEqual(untouchedExercise);
+    expect(workout.days[0].exercises[0].workingSets[1]).toBeUndefined();
+    expect(
+      workout.days[0].exercises[0].definitionTrainingLoadBeforeCompletion,
+    ).toBeNull();
   });
 });
 
-describe("skipWorkoutDayEntry", () => {
-  it("logs all sets as skipped and copies current plan to nextSession", () => {
-    const exercise = makeExercise({
+describe("skipWorkoutDayExercise", () => {
+  it("logs all sets as skipped and snapshots the definition training load", () => {
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
+      trainingLoad: { sets: 2, reps: 5, weight: 135 },
+    });
+    const exercise = makeDayExercise({
       id: "ex1",
-      sets: 2,
-      reps: 5,
-      weight: 135,
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: {},
     });
     const workout = makeWorkout({
       days: [makeDay({ id: "day1", exercises: [exercise] })],
+      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
     });
 
-    const updates = skipWorkoutDayEntry(workout, "day1", "ex1");
+    const updates = skipWorkoutDayExercise(workout, "day1", "ex1");
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
       0: { isLogged: true, reps: 0, weight: 135 },
       1: { isLogged: true, reps: 0, weight: 135 },
     });
-    expect(updates.days[0].exercises[0].nextSession).toEqual({
-      weight: 135,
-      reps: 5,
+    expect(
+      updates.days[0].exercises[0].definitionTrainingLoadBeforeCompletion,
+    ).toEqual({
       sets: 2,
+      reps: 5,
+      weight: 135,
     });
   });
 });
 
-describe("undoWorkoutDayEntry", () => {
+describe("undoWorkoutDayExercise", () => {
   it("unlogs the final working set", () => {
-    const completedExercise = makeExercise({
+    const completedExercise = makeDayExercise({
       id: "ex1",
-      sets: 2,
       workingSets: {
         0: { isLogged: true, reps: 5, weight: 135 },
         1: { isLogged: true, reps: 5, weight: 135 },
@@ -328,7 +380,7 @@ describe("undoWorkoutDayEntry", () => {
       days: [makeDay({ id: "day1", exercises: [completedExercise] })],
     });
 
-    const updates = undoWorkoutDayEntry(workout, "day1", "ex1");
+    const updates = undoWorkoutDayExercise(workout, "day1", "ex1");
 
     expect(updates.days[0].exercises[0].workingSets).toEqual({
       0: { isLogged: true, reps: 5, weight: 135 },
@@ -337,11 +389,10 @@ describe("undoWorkoutDayEntry", () => {
   });
 });
 
-describe("undoWorkoutDayEntryCompletion", () => {
-  it("includes completedTimestamp reset and undo entry changes", () => {
-    const completedExercise = makeExercise({
+describe("undoWorkoutDayExerciseCompletion", () => {
+  it("includes completedTimestamp reset and undo exercise changes", () => {
+    const completedExercise = makeDayExercise({
       id: "ex1",
-      sets: 2,
       workingSets: {
         0: { isLogged: true, reps: 5, weight: 135 },
         1: { isLogged: true, reps: 5, weight: 135 },
@@ -351,7 +402,7 @@ describe("undoWorkoutDayEntryCompletion", () => {
       days: [makeDay({ id: "day1", exercises: [completedExercise] })],
     });
 
-    const updates = undoWorkoutDayEntryCompletion(workout, "day1", "ex1");
+    const updates = undoWorkoutDayExerciseCompletion(workout, "day1", "ex1");
 
     expect(updates.completedTimestamp).toBeNull();
     expect(updates.days[0].exercises[0].workingSets).toEqual({
@@ -362,13 +413,16 @@ describe("undoWorkoutDayEntryCompletion", () => {
 });
 
 describe("deriveNextWorkoutDays", () => {
-  it("applies nextSession and resets runtime fields", () => {
-    const exercise = makeExercise({
+  it("resets runtime fields", () => {
+    const exercise = makeDayExercise({
       id: "ex1",
-      reps: 5,
-      weight: 135,
+      exerciseDefinitionId: "def1",
       workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
-      nextSession: { reps: 6, weight: 140 },
+      definitionTrainingLoadBeforeCompletion: {
+        sets: 3,
+        reps: 5,
+        weight: 135,
+      },
     });
     const workout = makeWorkout({
       days: [makeDay({ id: "day1", exercises: [exercise] })],
@@ -378,12 +432,11 @@ describe("deriveNextWorkoutDays", () => {
       makeDay({
         id: "day1",
         exercises: [
-          makeExercise({
+          makeDayExercise({
             id: "ex1",
-            reps: 6,
-            weight: 140,
+            exerciseDefinitionId: "def1",
             workingSets: {},
-            nextSession: {},
+            definitionTrainingLoadBeforeCompletion: null,
           }),
         ],
       }),

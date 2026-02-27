@@ -11,7 +11,7 @@ import { v4 as uuidV4 } from "uuid";
 import z from "zod";
 
 import { useAppForm } from "../hooks/useAppForm";
-import { Exercise } from "../types/Exercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { Direction, moveItem } from "../utils/arrayUtils";
@@ -36,12 +36,12 @@ const formSchema = z.object({
     .gt(0, "Minimum weight increment must be greater than 0"),
 });
 
-export interface ExerciseModalProps {
-  defaultValues?: Exercise;
-  onSave: (exercise: Exercise) => void;
+export interface ExerciseFormProps {
+  defaultValues?: ExerciseDefinition;
+  onSave: (exercise: ExerciseDefinition) => void;
 }
 
-export function ExerciseForm(props: ExerciseModalProps) {
+export function ExerciseForm(props: ExerciseFormProps) {
   const { defaultValues, onSave } = props;
 
   const [warmUpSets, setWarmUpSets] = useState(defaultValues?.warmUpSets ?? []);
@@ -54,9 +54,9 @@ export function ExerciseForm(props: ExerciseModalProps) {
   const form = useAppForm({
     defaultValues: {
       name: defaultValues?.name ?? "",
-      weight: defaultValues?.weight,
-      sets: defaultValues?.sets,
-      reps: defaultValues?.reps,
+      weight: defaultValues?.trainingLoad.weight,
+      sets: defaultValues?.trainingLoad.sets,
+      reps: defaultValues?.trainingLoad.reps,
       type: defaultValues?.type ?? ExerciseType.DoublePlate,
       minimumWeightIncrement: defaultValues?.minimumWeightIncrement ?? 5,
     },
@@ -69,16 +69,28 @@ export function ExerciseForm(props: ExerciseModalProps) {
       if (defaultValues) {
         onSave({
           ...defaultValues,
-          ...parsedValues,
+          type: parsedValues.type,
+          name: parsedValues.name,
+          minimumWeightIncrement: parsedValues.minimumWeightIncrement,
+          trainingLoad: {
+            sets: parsedValues.sets,
+            reps: parsedValues.reps,
+            weight: parsedValues.weight,
+          },
           warmUpSets,
         });
       } else {
         onSave({
-          ...parsedValues,
           id: uuidV4(),
+          type: parsedValues.type,
+          name: parsedValues.name,
+          minimumWeightIncrement: parsedValues.minimumWeightIncrement,
+          trainingLoad: {
+            sets: parsedValues.sets,
+            reps: parsedValues.reps,
+            weight: parsedValues.weight,
+          },
           warmUpSets,
-          workingSets: {},
-          nextSession: {},
         });
       }
     },

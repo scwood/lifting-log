@@ -1,11 +1,13 @@
 import { produce } from "immer";
 
 import { Day } from "../types/Day";
-import { Exercise } from "../types/Exercise";
-import { NextSessionPlan } from "../types/NextSessionPlan";
+import { DayExercise } from "../types/DayExercise";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
+import { TrainingLoad } from "../types/TrainingLoad";
 import { WorkingSet } from "../types/WorkingSet";
 import { Workout } from "../types/Workout";
 import { Direction, moveItem } from "./arrayUtils";
+import { selectExerciseDefinition } from "./workoutSelectors";
 
 export function upsertWorkoutDay(
   workout: Workout,
@@ -42,11 +44,11 @@ export function reorderWorkoutDay(
   };
 }
 
-export function upsertWorkoutDayEntry(
+export function upsertWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  exercise: Exercise,
-  entryToReplaceId?: string,
+  exercise: DayExercise,
+  exerciseToReplaceId?: string,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
@@ -54,14 +56,14 @@ export function upsertWorkoutDayEntry(
         return day;
       }
 
-      if (!entryToReplaceId) {
+      if (!exerciseToReplaceId) {
         return { ...day, exercises: [...day.exercises, exercise] };
       }
 
       return {
         ...day,
         exercises: day.exercises.map((existingExercise) => {
-          return existingExercise.id === entryToReplaceId
+          return existingExercise.id === exerciseToReplaceId
             ? exercise
             : existingExercise;
         }),
@@ -70,10 +72,22 @@ export function upsertWorkoutDayEntry(
   };
 }
 
-export function deleteWorkoutDayEntry(
+export function upsertWorkoutExerciseDefinition(
+  workout: Workout,
+  exerciseDefinition: ExerciseDefinition,
+): Pick<Workout, "exerciseDefinitionsById"> {
+  return {
+    exerciseDefinitionsById: {
+      ...workout.exerciseDefinitionsById,
+      [exerciseDefinition.id]: exerciseDefinition,
+    },
+  };
+}
+
+export function deleteWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
@@ -82,16 +96,18 @@ export function deleteWorkoutDayEntry(
       }
       return {
         ...day,
-        exercises: day.exercises.filter((exercise) => exercise.id !== entryId),
+        exercises: day.exercises.filter(
+          (exercise) => exercise.id !== exerciseId,
+        ),
       };
     }),
   };
 }
 
-export function reorderWorkoutDayEntry(
+export function reorderWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
   direction: Direction,
 ): Pick<Workout, "days"> {
   const originalDayIndex = workout.days.findIndex((day) => day.id === dayId);
@@ -101,56 +117,56 @@ export function reorderWorkoutDayEntry(
     return { days: workout.days };
   }
 
-  const originalEntryIndex = originalDay.exercises.findIndex(
-    (exercise) => exercise.id === entryId,
+  const originalExerciseIndex = originalDay.exercises.findIndex(
+    (exercise) => exercise.id === exerciseId,
   );
-  const originalEntry = originalDay.exercises[originalEntryIndex];
+  const originalExercise = originalDay.exercises[originalExerciseIndex];
 
-  if (!originalEntry) {
+  if (!originalExercise) {
     return { days: workout.days };
   }
 
   const cannotMoveUpFromTop =
     direction === Direction.Up &&
     originalDayIndex === 0 &&
-    originalEntryIndex === 0;
+    originalExerciseIndex === 0;
   const cannotMoveDownFromBottom =
     direction === Direction.Down &&
     originalDayIndex === workout.days.length - 1 &&
-    originalEntryIndex === originalDay.exercises.length - 1;
+    originalExerciseIndex === originalDay.exercises.length - 1;
   if (cannotMoveUpFromTop || cannotMoveDownFromBottom) {
     return { days: workout.days };
   }
 
   const isCrossDayMove =
-    (direction === Direction.Up && originalEntryIndex === 0) ||
+    (direction === Direction.Up && originalExerciseIndex === 0) ||
     (direction === Direction.Down &&
-      originalEntryIndex === originalDay.exercises.length - 1);
+      originalExerciseIndex === originalDay.exercises.length - 1);
 
   const days = produce(workout.days, (draftDays) => {
     if (!isCrossDayMove) {
       draftDays[originalDayIndex].exercises = moveItem(
         draftDays[originalDayIndex].exercises,
-        originalEntryIndex,
+        originalExerciseIndex,
         direction,
       );
       return;
     }
 
-    const [entry] = draftDays[originalDayIndex].exercises.splice(
-      originalEntryIndex,
+    const [exerciseToMove] = draftDays[originalDayIndex].exercises.splice(
+      originalExerciseIndex,
       1,
     );
-    if (!entry) {
+    if (!exerciseToMove) {
       return;
     }
 
     if (direction === Direction.Up) {
-      draftDays[originalDayIndex - 1].exercises.push(entry);
+      draftDays[originalDayIndex - 1].exercises.push(exerciseToMove);
       return;
     }
 
-    draftDays[originalDayIndex + 1].exercises.unshift(entry);
+    draftDays[originalDayIndex + 1].exercises.unshift(exerciseToMove);
   });
 
   return {
@@ -158,14 +174,14 @@ export function reorderWorkoutDayEntry(
   };
 }
 
-export function setWorkoutDayEntryWorkingSet(
+export function setWorkoutDayExerciseWorkingSet(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
   setNumber: number,
   workingSet: WorkingSet,
 ): Pick<Workout, "days"> {
-  return updateWorkoutDayEntry(workout, dayId, entryId, (exercise) => {
+  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
     return {
       ...exercise,
       workingSets: {
@@ -176,61 +192,76 @@ export function setWorkoutDayEntryWorkingSet(
   });
 }
 
-export function completeWorkoutDayEntry(
-  workout: Workout,
-  options: {
-    dayId: string;
-    entryId: string;
-    setNumber: number;
-    workingSet: WorkingSet;
-    nextSession: NextSessionPlan;
-  },
-): Pick<Workout, "days"> {
-  const { dayId, entryId, setNumber, workingSet, nextSession } = options;
-
-  return updateWorkoutDayEntry(workout, dayId, entryId, (exercise) => {
-    return {
-      ...exercise,
-      workingSets: {
-        ...exercise.workingSets,
-        [setNumber]: workingSet,
-      },
-      nextSession,
-    };
-  });
-}
-
-export function skipWorkoutDayEntry(
+export function completeWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
+  setNumber: number,
+  workingSet: WorkingSet,
+  definitionTrainingLoadBeforeCompletion: TrainingLoad,
 ): Pick<Workout, "days"> {
-  return updateWorkoutDayEntry(workout, dayId, entryId, (exercise) => {
-    const workingSets: Exercise["workingSets"] = {};
-    for (let i = 0; i < exercise.sets; i++) {
-      workingSets[i] = { isLogged: true, reps: 0, weight: exercise.weight };
-    }
+  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
+    return {
+      ...exercise,
+      definitionTrainingLoadBeforeCompletion,
+      workingSets: {
+        ...exercise.workingSets,
+        [setNumber]: workingSet,
+      },
+    };
+  });
+}
 
+export function setExerciseDefinitionTrainingLoad(
+  workout: Workout,
+  exerciseDefinition: ExerciseDefinition,
+  trainingLoad: Partial<TrainingLoad>,
+): Pick<Workout, "exerciseDefinitionsById"> {
+  return upsertWorkoutExerciseDefinition(workout, {
+    ...exerciseDefinition,
+    trainingLoad: {
+      ...exerciseDefinition.trainingLoad,
+      ...trainingLoad,
+    },
+  });
+}
+
+export function skipWorkoutDayExercise(
+  workout: Workout,
+  dayId: string,
+  exerciseId: string,
+): Pick<Workout, "days"> {
+  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
+    const exerciseDefinition = selectExerciseDefinition(workout, exercise);
+    if (!exerciseDefinition) {
+      return exercise;
+    }
+    const workingSets: DayExercise["workingSets"] = {};
+    for (let i = 0; i < exerciseDefinition.trainingLoad.sets; i++) {
+      workingSets[i] = {
+        isLogged: true,
+        reps: 0,
+        weight: exerciseDefinition.trainingLoad.weight,
+      };
+    }
     return {
       ...exercise,
       workingSets,
-      nextSession: {
-        weight: exercise.weight,
-        reps: exercise.reps,
-        sets: exercise.sets,
+      definitionTrainingLoadBeforeCompletion: {
+        ...exerciseDefinition.trainingLoad,
       },
     };
   });
 }
 
-export function undoWorkoutDayEntry(
+export function undoWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
 ): Pick<Workout, "days"> {
-  return updateWorkoutDayEntry(workout, dayId, entryId, (exercise) => {
+  return updateWorkoutDayExercise(workout, dayId, exerciseId, (exercise) => {
     const workingSets = { ...exercise.workingSets };
-    const finalSetIndex = exercise.sets - 1;
+    const finalSetIndex = Object.keys(workingSets).length - 1;
     const finalSet = workingSets[finalSetIndex];
 
     if (!finalSet) {
@@ -247,14 +278,14 @@ export function undoWorkoutDayEntry(
   });
 }
 
-export function undoWorkoutDayEntryCompletion(
+export function undoWorkoutDayExerciseCompletion(
   workout: Workout,
   dayId: string,
-  entryId: string,
+  exerciseId: string,
 ): Pick<Workout, "completedTimestamp" | "days"> {
   return {
     completedTimestamp: null,
-    ...undoWorkoutDayEntry(workout, dayId, entryId),
+    ...undoWorkoutDayExercise(workout, dayId, exerciseId),
   };
 }
 
@@ -265,27 +296,24 @@ export function deriveNextWorkoutDays(workout: Workout): Day[] {
       exercises: day.exercises.map((exercise) => {
         return {
           ...exercise,
-          ...exercise.nextSession,
           workingSets: {},
-          nextSession: {},
+          definitionTrainingLoadBeforeCompletion: null,
         };
       }),
     };
   });
 }
 
-export function sanitizeWorkoutNotes(
-  notes: string,
-): Pick<Workout, "notes">["notes"] {
+export function sanitizeWorkoutNotes(notes: string): string | null {
   const trimmedNotes = notes.trim();
   return trimmedNotes.length > 0 ? trimmedNotes : null;
 }
 
-function updateWorkoutDayEntry(
+function updateWorkoutDayExercise(
   workout: Workout,
   dayId: string,
-  entryId: string,
-  mutateExercise: (exercise: Exercise) => Exercise,
+  exerciseId: string,
+  mutateExercise: (exercise: DayExercise) => DayExercise,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
@@ -296,7 +324,9 @@ function updateWorkoutDayEntry(
       return {
         ...day,
         exercises: day.exercises.map((exercise) => {
-          return exercise.id === entryId ? mutateExercise(exercise) : exercise;
+          return exercise.id === exerciseId
+            ? mutateExercise(exercise)
+            : exercise;
         }),
       };
     }),

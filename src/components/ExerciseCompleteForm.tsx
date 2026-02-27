@@ -2,12 +2,13 @@ import { Flex, Radio } from "@mantine/core";
 import z from "zod";
 
 import { useAppForm } from "../hooks/useAppForm";
-import { Exercise } from "../types/Exercise";
-import { NextSessionPlan } from "../types/NextSessionPlan";
+import { ExerciseDefinition } from "../types/ExerciseDefinition";
+import { TrainingLoad } from "../types/TrainingLoad";
+import { selectExerciseTrainingLoad } from "../utils/workoutSelectors";
 
 export interface ExerciseCompleteFormProps {
-  defaultValues: Exercise;
-  onSave: (nextSessionPlan: NextSessionPlan) => void;
+  exerciseDefinition: ExerciseDefinition;
+  onSave: (nextTrainingLoad: Partial<TrainingLoad>) => void;
 }
 
 enum NextSessionAction {
@@ -31,40 +32,42 @@ const formSchema = z.object({
 });
 
 export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
-  const { defaultValues, onSave } = props;
+  const { exerciseDefinition, onSave } = props;
+  const currentTrainingLoad = selectExerciseTrainingLoad(exerciseDefinition);
 
   const form = useAppForm({
     defaultValues: {
       nextSessionAction: NextSessionAction.DoNothing,
-      weight: defaultValues.weight,
-      sets: defaultValues.sets,
-      reps: defaultValues.reps,
+      weight: currentTrainingLoad.weight,
+      sets: currentTrainingLoad.sets,
+      reps: currentTrainingLoad.reps,
     },
     validators: {
       onMount: formSchema,
       onChange: formSchema,
     },
     onSubmit: ({ value }) => {
-      const nextSessionPlan: NextSessionPlan = {};
+      const nextTrainingLoad: Partial<TrainingLoad> = {};
       const { nextSessionAction, reps, weight, sets } = value;
       switch (nextSessionAction) {
         case NextSessionAction.AddRep:
-          nextSessionPlan.reps = defaultValues.reps + 1;
+          nextTrainingLoad.reps = currentTrainingLoad.reps + 1;
           break;
         case NextSessionAction.AddWeight:
-          nextSessionPlan.weight =
-            defaultValues.weight + defaultValues.minimumWeightIncrement;
-          nextSessionPlan.reps = reps;
+          nextTrainingLoad.weight =
+            currentTrainingLoad.weight +
+            exerciseDefinition.minimumWeightIncrement;
+          nextTrainingLoad.reps = reps;
           break;
         case NextSessionAction.Custom:
-          nextSessionPlan.weight = weight;
-          nextSessionPlan.sets = sets;
-          nextSessionPlan.reps = reps;
+          nextTrainingLoad.weight = weight;
+          nextTrainingLoad.sets = sets;
+          nextTrainingLoad.reps = reps;
           break;
         case NextSessionAction.DoNothing:
         default:
       }
-      onSave(nextSessionPlan);
+      onSave(nextTrainingLoad);
     },
   });
 
