@@ -7,10 +7,11 @@ export function getTrainingLoadString(trainingLoad: TrainingLoad): string {
 
 export function getLoggedSetBreakdown(
   workingSets: Record<number, WorkingSet>,
+  fallbackWeight: number,
 ): string {
   return Object.values(workingSets)
     .map((workingSet) => {
-      return `${workingSet.reps}x${workingSet.weight}`;
+      return `${workingSet.reps}x${workingSet.weight ?? fallbackWeight}`;
     })
     .join(", ");
 }

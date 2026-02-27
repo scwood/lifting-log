@@ -39,7 +39,10 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
                   return (
                     <span key={exercise.id}>
                       {exerciseDefinition.name}:{" "}
-                      {getLoggedSetBreakdown(exercise.workingSets)}
+                      {getLoggedSetBreakdown(
+                        exercise.workingSets,
+                        exerciseDefinition.trainingLoad.weight,
+                      )}
                     </span>
                   );
                 })}

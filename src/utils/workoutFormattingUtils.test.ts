@@ -22,18 +22,24 @@ describe("getVolumeLoad", () => {
 describe("getLoggedSetBreakdown", () => {
   it("formats reps and logged weights per set with comma-space separation", () => {
     expect(
-      getLoggedSetBreakdown({
-        0: { isLogged: true, reps: 5, weight: 135 },
-        1: { isLogged: true, reps: 4, weight: 130 },
-      }),
+      getLoggedSetBreakdown(
+        {
+          0: { isLogged: true, reps: 5, weight: 135 },
+          1: { isLogged: true, reps: 4, weight: 130 },
+        },
+        125,
+      ),
     ).toBe("5x135, 4x130");
   });
 
-  it("preserves null values when set weight is missing", () => {
+  it("uses fallback value when weight is missing from logged set", () => {
     expect(
-      getLoggedSetBreakdown({
-        0: { isLogged: true, reps: 5, weight: null },
-      }),
-    ).toBe("5xnull");
+      getLoggedSetBreakdown(
+        {
+          0: { isLogged: true, reps: 5, weight: null },
+        },
+        150,
+      ),
+    ).toBe("5x150");
   });
 });
