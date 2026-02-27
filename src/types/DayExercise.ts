@@ -5,5 +5,5 @@ export interface DayExercise {
   id: string;
   exerciseDefinitionId: string;
   workingSets: Record<number, WorkingSet>;
-  definitionTrainingLoadBeforeCompletion?: TrainingLoad;
+  definitionTrainingLoadBeforeCompletion: TrainingLoad | null;
 }

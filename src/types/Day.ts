@@ -1,7 +1,7 @@
-import { Exercise } from "./Exercise";
+import { DayExercise } from "./DayExercise";
 
 export interface Day {
   id: string;
   name: string;
-  exercises: Exercise[];
+  exercises: DayExercise[];
 }
