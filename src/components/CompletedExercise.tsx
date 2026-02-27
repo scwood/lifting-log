@@ -23,7 +23,11 @@ export function CompletedExercise(props: CompletedExerciseProps) {
           {exerciseDefinition.name}
         </Title>
         <Text size="sm" c="dimmed">
-          This session: {getLoggedSetBreakdown(exercise.workingSets)}
+          This session:{" "}
+          {getLoggedSetBreakdown(
+            exercise.workingSets,
+            exerciseDefinition.trainingLoad.weight,
+          )}
           <br />
           Next session: {getTrainingLoadString(exerciseDefinition.trainingLoad)}
         </Text>
