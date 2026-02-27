@@ -2,7 +2,12 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
+import {
+  makeDay,
+  makeDayExercise,
+  makeExerciseDefinition,
+  makeWorkout,
+} from "../test-utils/factories";
 import { PastWorkoutCard, PastWorkoutCardProps } from "./PastWorkoutCard";
 
 function renderPastWorkoutCard(
@@ -42,11 +47,13 @@ describe("PastWorkoutCard", () => {
   });
 
   it("renders each exercise with name and volume load", () => {
-    const exercise = makeExercise({
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
       name: "Bench Press",
-      sets: 3,
-      reps: 5,
-      weight: 135,
+    });
+    const exercise = makeDayExercise({
+      id: "ex1",
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: {
         0: { reps: 5, isLogged: true, weight: 135 },
         1: { reps: 5, isLogged: true, weight: 135 },
@@ -55,10 +62,13 @@ describe("PastWorkoutCard", () => {
     });
     const workout = makeWorkout({
       days: [makeDay({ exercises: [exercise] })],
+      exerciseDefinitionsById: {
+        [exerciseDefinition.id]: exerciseDefinition,
+      },
     });
     renderPastWorkoutCard({ workout });
     expect(
-      screen.getByText(/Bench Press: 3x5x135 \(5x135,5x135,4x130\)/, {
+      screen.getByText(/Bench Press:\s*5x135,\s*5x135,\s*4x130/, {
         selector: "span",
       }),
     ).toBeInTheDocument();

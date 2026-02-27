@@ -10,7 +10,12 @@ import {
   getCurrentWorkout,
   updateWorkout,
 } from "../api/workoutsApi";
-import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
+import {
+  makeDay,
+  makeDayExercise,
+  makeExerciseDefinition,
+  makeWorkout,
+} from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { deferred } from "../test-utils/utils";
 import { Workout } from "../types/Workout";
@@ -61,6 +66,10 @@ describe("CurrentWorkoutPage", () => {
   });
 
   it("does not render the page title before the fetch completes", async () => {
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
+      trainingLoad: { sets: 1, reps: 5, weight: 135 },
+    });
     const workoutDeferred = deferred<Workout | null>();
     mockGetCurrentWorkout.mockReturnValue(workoutDeferred.promise);
 
@@ -76,8 +85,17 @@ describe("CurrentWorkoutPage", () => {
     workoutDeferred.resolve(
       makeWorkout({
         days: [
-          makeDay({ exercises: [makeExercise({ sets: 1, workingSets: {} })] }),
+          makeDay({
+            exercises: [
+              makeDayExercise({
+                exerciseDefinitionId: exerciseDefinition.id,
+              }),
+            ],
+          }),
         ],
+        exerciseDefinitionsById: {
+          [exerciseDefinition.id]: exerciseDefinition,
+        },
       }),
     );
 
@@ -151,13 +169,26 @@ describe("CurrentWorkoutPage", () => {
   });
 
   it("saves trimmed notes when notes input loses focus", async () => {
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
+      trainingLoad: { sets: 1, reps: 5, weight: 135 },
+    });
     mockGetCurrentWorkout.mockResolvedValue(
       makeWorkout({
         id: "w1",
         notes: "existing",
         days: [
-          makeDay({ exercises: [makeExercise({ sets: 1, workingSets: {} })] }),
+          makeDay({
+            exercises: [
+              makeDayExercise({
+                exerciseDefinitionId: exerciseDefinition.id,
+              }),
+            ],
+          }),
         ],
+        exerciseDefinitionsById: {
+          [exerciseDefinition.id]: exerciseDefinition,
+        },
       }),
     );
 
@@ -175,13 +206,26 @@ describe("CurrentWorkoutPage", () => {
   });
 
   it("saves null notes when notes are only whitespace", async () => {
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
+      trainingLoad: { sets: 1, reps: 5, weight: 135 },
+    });
     mockGetCurrentWorkout.mockResolvedValue(
       makeWorkout({
         id: "w1",
         notes: "existing",
         days: [
-          makeDay({ exercises: [makeExercise({ sets: 1, workingSets: {} })] }),
+          makeDay({
+            exercises: [
+              makeDayExercise({
+                exerciseDefinitionId: exerciseDefinition.id,
+              }),
+            ],
+          }),
         ],
+        exerciseDefinitionsById: {
+          [exerciseDefinition.id]: exerciseDefinition,
+        },
       }),
     );
 
@@ -199,19 +243,27 @@ describe("CurrentWorkoutPage", () => {
   });
 
   it("undoes a completed exercise and unlogs the final working set", async () => {
-    const completedExercise = makeExercise({
-      id: "ex-complete",
+    const completedExerciseDefinition = makeExerciseDefinition({
+      id: "def-complete",
       name: "Bench Press",
-      sets: 2,
+      trainingLoad: { sets: 2, reps: 5, weight: 135 },
+    });
+    const incompleteExerciseDefinition = makeExerciseDefinition({
+      id: "def-incomplete",
+      name: "Squat",
+      trainingLoad: { sets: 2, reps: 5, weight: 135 },
+    });
+    const completedExercise = makeDayExercise({
+      id: "ex-complete",
+      exerciseDefinitionId: completedExerciseDefinition.id,
       workingSets: {
         0: { isLogged: true, reps: 5, weight: 135 },
         1: { isLogged: true, reps: 5, weight: 135 },
       },
     });
-    const incompleteExercise = makeExercise({
+    const incompleteExercise = makeDayExercise({
       id: "ex-incomplete",
-      name: "Squat",
-      sets: 2,
+      exerciseDefinitionId: incompleteExerciseDefinition.id,
       workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const workout = makeWorkout({
@@ -222,6 +274,10 @@ describe("CurrentWorkoutPage", () => {
           exercises: [completedExercise, incompleteExercise],
         }),
       ],
+      exerciseDefinitionsById: {
+        [completedExerciseDefinition.id]: completedExerciseDefinition,
+        [incompleteExerciseDefinition.id]: incompleteExerciseDefinition,
+      },
     });
     mockGetCurrentWorkout.mockResolvedValue(workout);
 
@@ -239,23 +295,26 @@ describe("CurrentWorkoutPage", () => {
     });
   });
 
-  it("completes the workout and creates the next workout from nextSession values", async () => {
+  it("completes the workout and creates the next workout", async () => {
     vi.spyOn(Date, "now").mockReturnValue(1234567890);
-    const completedExercise = makeExercise({
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
+      trainingLoad: { sets: 3, reps: 6, weight: 140 },
+    });
+    const completedExercise = makeDayExercise({
       id: "ex1",
-      sets: 3,
-      reps: 5,
-      weight: 135,
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: {
         0: { isLogged: true, reps: 5, weight: 135 },
         1: { isLogged: true, reps: 5, weight: 135 },
         2: { isLogged: true, reps: 5, weight: 135 },
       },
-      nextSession: { reps: 6, weight: 140 },
+      definitionTrainingLoadBeforeCompletion: { sets: 3, reps: 5, weight: 135 },
     });
     const workout = makeWorkout({
       id: "w1",
       days: [makeDay({ id: "day1", exercises: [completedExercise] })],
+      exerciseDefinitionsById: { [exerciseDefinition.id]: exerciseDefinition },
     });
     mockGetCurrentWorkout.mockResolvedValue(workout);
 
@@ -271,16 +330,18 @@ describe("CurrentWorkoutPage", () => {
     });
     expect(mockCreateWorkout).toHaveBeenCalledWith({
       userId: "u1",
+      exerciseDefinitionsById: {
+        [exerciseDefinition.id]: exerciseDefinition,
+      },
       days: [
         makeDay({
           id: "day1",
           exercises: [
-            makeExercise({
+            makeDayExercise({
               id: "ex1",
-              reps: 6,
-              weight: 140,
+              exerciseDefinitionId: exerciseDefinition.id,
               workingSets: {},
-              nextSession: {},
+              definitionTrainingLoadBeforeCompletion: null,
             }),
           ],
         }),
