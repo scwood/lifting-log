@@ -5,7 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { updateWorkout } from "../api/workoutsApi";
-import { makeDay, makeExercise, makeWorkout } from "../test-utils/factories";
+import {
+  makeDay,
+  makeDayExercise,
+  makeExerciseDefinition,
+  makeWorkout,
+} from "../test-utils/factories";
 import { testTheme } from "../test-utils/testTheme";
 import { CurrentUserProvider } from "./CurrentUserProvider";
 import { CurrentWorkoutDay, CurrentWorkoutDayProps } from "./CurrentWorkoutDay";
@@ -18,18 +23,24 @@ function renderCurrentWorkoutDay(
   propsOverrides: Partial<CurrentWorkoutDayProps> = {},
 ) {
   const user = userEvent.setup();
-  const incompleteExercise = makeExercise({
-    id: "ex1",
+  const incompleteExerciseDefinition = makeExerciseDefinition({
+    id: "def1",
     name: "Squat",
-    sets: 1,
-    reps: 5,
+    trainingLoad: { sets: 1, reps: 5, weight: 135 },
+  });
+  const completeExerciseDefinition = makeExerciseDefinition({
+    id: "def2",
+    name: "Bench Press",
+    trainingLoad: { sets: 1, reps: 8, weight: 135 },
+  });
+  const incompleteExercise = makeDayExercise({
+    id: "ex1",
+    exerciseDefinitionId: incompleteExerciseDefinition.id,
     workingSets: {},
   });
-  const completeExercise = makeExercise({
+  const completeExercise = makeDayExercise({
     id: "ex2",
-    name: "Bench Press",
-    sets: 1,
-    reps: 8,
+    exerciseDefinitionId: completeExerciseDefinition.id,
     workingSets: { 0: { isLogged: true, reps: 8, weight: 135 } },
   });
   const day = makeDay({
@@ -40,6 +51,10 @@ function renderCurrentWorkoutDay(
   const workout = makeWorkout({
     id: "w1",
     days: [day, makeDay({ id: "day2", name: "Day 2" })],
+    exerciseDefinitionsById: {
+      [incompleteExerciseDefinition.id]: incompleteExerciseDefinition,
+      [completeExerciseDefinition.id]: completeExerciseDefinition,
+    },
   });
   const props: CurrentWorkoutDayProps = {
     workout,
@@ -82,15 +97,24 @@ describe("CurrentWorkoutDay", () => {
   });
 
   it("updates the exercise immediately when it is still incomplete", async () => {
-    const exercise = makeExercise({
-      id: "ex1",
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
       name: "Squat",
-      sets: 3,
-      reps: 5,
+      trainingLoad: { sets: 3, reps: 5, weight: 135 },
+    });
+    const exercise = makeDayExercise({
+      id: "ex1",
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
     });
     const day = makeDay({ id: "day1", exercises: [exercise] });
-    const workout = makeWorkout({ id: "w1", days: [day] });
+    const workout = makeWorkout({
+      id: "w1",
+      days: [day],
+      exerciseDefinitionsById: {
+        [exerciseDefinition.id]: exerciseDefinition,
+      },
+    });
 
     const { user } = renderCurrentWorkoutDay({ workout, day });
     const uncheckedSetCheckbox = screen
@@ -114,15 +138,25 @@ describe("CurrentWorkoutDay", () => {
   });
 
   it("opens completion modal on final set and saves next session plan", async () => {
-    const exercise = makeExercise({
-      id: "ex1",
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
       name: "Squat",
-      sets: 1,
-      reps: 5,
+      trainingLoad: { sets: 1, reps: 5, weight: 135 },
+      minimumWeightIncrement: 5,
+    });
+    const exercise = makeDayExercise({
+      id: "ex1",
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: {},
     });
     const day = makeDay({ id: "day1", exercises: [exercise] });
-    const workout = makeWorkout({ id: "w1", days: [day] });
+    const workout = makeWorkout({
+      id: "w1",
+      days: [day],
+      exerciseDefinitionsById: {
+        [exerciseDefinition.id]: exerciseDefinition,
+      },
+    });
 
     const { user } = renderCurrentWorkoutDay({ workout, day });
 
@@ -142,20 +176,37 @@ describe("CurrentWorkoutDay", () => {
     expect(updatedExercise?.workingSets).toEqual({
       0: { isLogged: true, reps: 5, weight: 135 },
     });
-    expect(updatedExercise?.nextSession).toEqual({ reps: 6 });
+    expect(updatedExercise?.definitionTrainingLoadBeforeCompletion).toEqual({
+      sets: 1,
+      reps: 5,
+      weight: 135,
+    });
+    expect(updates.exerciseDefinitionsById?.def1?.trainingLoad).toEqual({
+      sets: 1,
+      reps: 6,
+      weight: 135,
+    });
   });
 
   it("skips an exercise and logs all sets with zero reps", async () => {
-    const exercise = makeExercise({
-      id: "ex1",
+    const exerciseDefinition = makeExerciseDefinition({
+      id: "def1",
       name: "Squat",
-      sets: 2,
-      reps: 5,
-      weight: 135,
+      trainingLoad: { sets: 2, reps: 5, weight: 135 },
+    });
+    const exercise = makeDayExercise({
+      id: "ex1",
+      exerciseDefinitionId: exerciseDefinition.id,
       workingSets: {},
     });
     const day = makeDay({ id: "day1", exercises: [exercise] });
-    const workout = makeWorkout({ id: "w1", days: [day] });
+    const workout = makeWorkout({
+      id: "w1",
+      days: [day],
+      exerciseDefinitionsById: {
+        [exerciseDefinition.id]: exerciseDefinition,
+      },
+    });
 
     const { user } = renderCurrentWorkoutDay({ workout, day });
 
@@ -170,10 +221,10 @@ describe("CurrentWorkoutDay", () => {
       0: { isLogged: true, reps: 0, weight: 135 },
       1: { isLogged: true, reps: 0, weight: 135 },
     });
-    expect(updatedExercise?.nextSession).toEqual({
-      weight: 135,
-      reps: 5,
+    expect(updatedExercise?.definitionTrainingLoadBeforeCompletion).toEqual({
       sets: 2,
+      reps: 5,
+      weight: 135,
     });
   });
 });
