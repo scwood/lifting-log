@@ -19,3 +19,23 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
+
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+// jsdom does not implement ResizeObserver. Mantine's combobox-based inputs use
+// it when positioning and sizing dropdown content.
+Object.defineProperty(window, "ResizeObserver", {
+  writable: true,
+  value: ResizeObserver,
+});
+
+// jsdom elements do not implement scrollIntoView. Mantine's combobox uses it
+// when keyboard navigation highlights dropdown options.
+Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
+  writable: true,
+  value: vi.fn(),
+});

@@ -28,6 +28,7 @@ import {
   selectExerciseDefinition,
   selectWorkoutDays,
 } from "../utils/workoutSelectors";
+import { AddExerciseModalContent } from "./AddExerciseModalContent";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ExerciseForm } from "./ExerciseForm";
 import { PlanExerciseCard } from "./PlanExerciseCard";
@@ -54,7 +55,8 @@ export function PlanDay(props: PlanDayProps) {
     onMoveDown,
     onMoveUp,
   } = props;
-  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+  const [isAddExerciseModalOpen, setIsAddExerciseModalOpen] = useState(false);
+  const [isExerciseFormModalOpen, setIsExerciseFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [exerciseToEdit, setExerciseToEdit] = useState<DayExercise | null>(
     null,
@@ -130,12 +132,24 @@ export function PlanDay(props: PlanDayProps) {
             />
           );
         })}
-        <Button onClick={handleAddExercise}>Add exercise</Button>
+        <Button onClick={handleOpenAddExerciseModal}>Add new exercise</Button>
       </Flex>
       <Modal
         centered
-        opened={isExerciseModalOpen}
-        onClose={() => setIsExerciseModalOpen(false)}
+        opened={isAddExerciseModalOpen}
+        onClose={() => setIsAddExerciseModalOpen(false)}
+        title="Add exercise"
+      >
+        <AddExerciseModalContent
+          workout={workout}
+          onCreateNew={handleCreateNewExercise}
+          onSave={handleSaveExistingExercise}
+        />
+      </Modal>
+      <Modal
+        centered
+        opened={isExerciseFormModalOpen}
+        onClose={() => setIsExerciseFormModalOpen(false)}
         title={`${exerciseToEdit ? "Edit" : "Create"} exercise`}
       >
         <ExerciseForm
@@ -155,16 +169,34 @@ export function PlanDay(props: PlanDayProps) {
 
   function handleEditExercise(exercise: DayExercise) {
     setExerciseToEdit(exercise);
-    setIsExerciseModalOpen(true);
+    setIsExerciseFormModalOpen(true);
   }
 
-  function handleAddExercise() {
+  function handleOpenAddExerciseModal() {
+    setIsAddExerciseModalOpen(true);
+  }
+
+  function handleCreateNewExercise() {
+    setIsAddExerciseModalOpen(false);
     setExerciseToEdit(null);
-    setIsExerciseModalOpen(true);
+    setIsExerciseFormModalOpen(true);
+  }
+
+  async function handleSaveExistingExercise(exerciseDefinitionId: string) {
+    setIsAddExerciseModalOpen(false);
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: upsertWorkoutDayExercise(workout, day.id, {
+        id: uuidV4(),
+        workingSets: {},
+        exerciseDefinitionId,
+        definitionTrainingLoadBeforeCompletion: null,
+      }),
+    });
   }
 
   async function handleSaveExercise(exerciseDefinition: ExerciseDefinition) {
-    setIsExerciseModalOpen(false);
+    setIsExerciseFormModalOpen(false);
     await updateWorkout({
       workoutId: workout.id,
       updates: {

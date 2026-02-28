@@ -118,7 +118,7 @@ describe("PlanDay", () => {
     expect(screen.getByText("Squat")).toBeInTheDocument();
     expect(screen.getByText("Bench Press")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Add exercise" }),
+      screen.getByRole("button", { name: "Add new exercise" }),
     ).toBeInTheDocument();
   });
 
@@ -163,25 +163,77 @@ describe("PlanDay", () => {
     expect(screen.getByText("Move up").closest("button")).toBeDisabled();
   });
 
-  it("adds an exercise and calls updateWorkout with updated days", async () => {
+  it("adds an existing exercise to the day", async () => {
+    const { user, workout } = renderPlanDay();
+    mockUuidV4.mockReturnValue(createdDayExerciseId);
+
+    await user.click(screen.getByRole("button", { name: "Add new exercise" }));
+    const dialog = screen.getByRole("dialog", { name: "Add exercise" });
+    const saveButton = within(dialog).getByRole("button", { name: "Save" });
+    expect(saveButton).toBeDisabled();
+
+    const existingExerciseInput = within(dialog).getByRole("textbox", {
+      name: "Existing exercise",
+    });
+    await user.click(existingExerciseInput);
+    await user.type(existingExerciseInput, "Bench Press{arrowdown}{enter}");
+
+    expect(saveButton).toBeEnabled();
+    await user.click(saveButton);
+
+    await waitFor(() => expect(mockUpdateWorkout).toHaveBeenCalledTimes(1));
+    const [workoutId, updates] = mockUpdateWorkout.mock.calls[0];
+    expect(workoutId).toBe(workout.id);
+    expect(updates.days).toHaveLength(workout.days.length);
+    const updatedDay = updates.days?.find((d) => d.id === "day1");
+    expect(updatedDay?.exercises).toHaveLength(3);
+    expect(updatedDay?.exercises[updatedDay.exercises.length - 1]).toEqual({
+      id: createdDayExerciseId,
+      exerciseDefinitionId: "def2",
+      workingSets: {},
+      definitionTrainingLoadBeforeCompletion: null,
+    });
+    expect(updates.exerciseDefinitionsById).toBeUndefined();
+  });
+
+  it("opens the create exercise modal from the add exercise modal", async () => {
     const { user, workout } = renderPlanDay();
     mockUuidV4
       .mockReturnValueOnce(createdDefinitionId)
       .mockReturnValueOnce(createdDayExerciseId);
 
-    await user.click(screen.getByRole("button", { name: "Add exercise" }));
-    const dialog = screen.getByRole("dialog");
+    await user.click(screen.getByRole("button", { name: "Add new exercise" }));
+    const addExerciseDialog = screen.getByRole("dialog", {
+      name: "Add exercise",
+    });
+    await user.click(
+      within(addExerciseDialog).getByRole("button", {
+        name: "Create new exercise",
+      }),
+    );
+
+    const createDialog = screen.getByRole("dialog", {
+      name: "Create exercise",
+    });
     await user.type(
-      within(dialog).getByRole("textbox", { name: "Name" }),
+      within(createDialog).getByRole("textbox", { name: "Name" }),
       "Row",
     );
     await user.type(
-      within(dialog).getByRole("textbox", { name: "Weight" }),
+      within(createDialog).getByRole("textbox", { name: "Weight" }),
       "95",
     );
-    await user.type(within(dialog).getByRole("textbox", { name: "Sets" }), "3");
-    await user.type(within(dialog).getByRole("textbox", { name: "Reps" }), "8");
-    await user.click(within(dialog).getByRole("button", { name: "Save" }));
+    await user.type(
+      within(createDialog).getByRole("textbox", { name: "Sets" }),
+      "3",
+    );
+    await user.type(
+      within(createDialog).getByRole("textbox", { name: "Reps" }),
+      "8",
+    );
+    await user.click(
+      within(createDialog).getByRole("button", { name: "Save" }),
+    );
 
     await waitFor(() => expect(mockUpdateWorkout).toHaveBeenCalledTimes(1));
     const [workoutId, updates] = mockUpdateWorkout.mock.calls[0];
