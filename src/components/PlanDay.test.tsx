@@ -15,6 +15,8 @@ import {
 import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
 import {
+  deleteWorkoutDayExercise,
+  deleteWorkoutExerciseDefinition,
   reorderWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
 } from "../utils/workoutMutationHelpers";
@@ -297,7 +299,20 @@ describe("PlanDay", () => {
     });
   });
 
-  it("deletes an exercise after confirmation and calls updateWorkout", async () => {
+  it("removes an exercise from the day without confirmation when Remove from day is clicked", async () => {
+    const { user, workout, day } = renderPlanDay();
+
+    await user.click(screen.getByRole("button", { name: "Squat menu" }));
+    await user.click(screen.getByText("Remove from day"));
+
+    await waitFor(() => expect(mockUpdateWorkout).toHaveBeenCalledTimes(1));
+    expect(mockUpdateWorkout).toHaveBeenCalledWith(
+      workout.id,
+      deleteWorkoutDayExercise(workout, day.id, "ex1"),
+    );
+  });
+
+  it("deletes the exercise definition and all references after confirmation", async () => {
     const { user, workout } = renderPlanDay();
 
     await user.click(screen.getByRole("button", { name: "Squat menu" }));
@@ -306,10 +321,10 @@ describe("PlanDay", () => {
     await user.click(within(dialog).getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(mockUpdateWorkout).toHaveBeenCalledTimes(1));
-    const [workoutId, updates] = mockUpdateWorkout.mock.calls[0];
-    expect(workoutId).toBe(workout.id);
-    const updatedDay = updates.days?.find((d) => d.id === "day1");
-    expect(updatedDay?.exercises).toEqual([workout.days[0].exercises[1]]);
+    expect(mockUpdateWorkout).toHaveBeenCalledWith(
+      workout.id,
+      deleteWorkoutExerciseDefinition(workout, "def1"),
+    );
   });
 
   it("moves an exercise and sends moveExercise result to updateWorkout", async () => {

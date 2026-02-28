@@ -104,6 +104,26 @@ export function deleteWorkoutDayExercise(
   };
 }
 
+export function deleteWorkoutExerciseDefinition(
+  workout: Workout,
+  exerciseDefinitionId: string,
+): Pick<Workout, "exerciseDefinitionsById" | "days"> {
+  const remainingDefinitions = Object.fromEntries(
+    Object.entries(workout.exerciseDefinitionsById).filter(
+      ([id]) => id !== exerciseDefinitionId,
+    ),
+  );
+  return {
+    exerciseDefinitionsById: remainingDefinitions,
+    days: workout.days.map((day) => ({
+      ...day,
+      exercises: day.exercises.filter(
+        (exercise) => exercise.exerciseDefinitionId !== exerciseDefinitionId,
+      ),
+    })),
+  };
+}
+
 export function reorderWorkoutDayExercise(
   workout: Workout,
   dayId: string,

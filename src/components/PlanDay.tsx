@@ -19,6 +19,7 @@ import { Workout } from "../types/Workout";
 import { Direction } from "../utils/arrayUtils";
 import {
   deleteWorkoutDayExercise,
+  deleteWorkoutExerciseDefinition,
   reorderWorkoutDayExercise,
   upsertWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
@@ -126,6 +127,7 @@ export function PlanDay(props: PlanDayProps) {
                 dayIndex === workoutDays.length - 1
               }
               onEdit={handleEditExercise}
+              onRemoveFromDay={handleRemoveFromDay}
               onDelete={handleConfirmDeleteExercise}
               onMoveUp={() => handleMoveExercise(exercise, Direction.Up)}
               onMoveDown={() => handleMoveExercise(exercise, Direction.Down)}
@@ -216,6 +218,13 @@ export function PlanDay(props: PlanDayProps) {
     });
   }
 
+  async function handleRemoveFromDay(exercise: DayExercise) {
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: deleteWorkoutDayExercise(workout, day.id, exercise.id),
+    });
+  }
+
   function handleConfirmDeleteExercise(exercise: DayExercise) {
     setExerciseToEdit(exercise);
     setIsDeleteModalOpen(true);
@@ -227,7 +236,10 @@ export function PlanDay(props: PlanDayProps) {
     }
     await updateWorkout({
       workoutId: workout.id,
-      updates: deleteWorkoutDayExercise(workout, day.id, exerciseToEdit.id),
+      updates: deleteWorkoutExerciseDefinition(
+        workout,
+        exerciseToEdit.exerciseDefinitionId,
+      ),
     });
   }
 

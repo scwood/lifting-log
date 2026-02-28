@@ -11,6 +11,7 @@ import {
   completeWorkoutDayExercise,
   deleteWorkoutDay,
   deleteWorkoutDayExercise,
+  deleteWorkoutExerciseDefinition,
   deriveNextWorkoutDays,
   reorderWorkoutDay,
   reorderWorkoutDayExercise,
@@ -146,6 +147,50 @@ describe("deleteWorkoutDayExercise", () => {
     expect(updates.days[0].exercises.map((exercise) => exercise.id)).toEqual([
       "ex2",
     ]);
+  });
+});
+
+describe("deleteWorkoutExerciseDefinition", () => {
+  it("removes the definition and all linked day exercises across all days", () => {
+    const def1 = makeExerciseDefinition({ id: "def1" });
+    const def2 = makeExerciseDefinition({ id: "def2" });
+    const workout = makeWorkout({
+      exerciseDefinitionsById: { def1: def1, def2: def2 },
+      days: [
+        makeDay({
+          id: "day1",
+          exercises: [
+            makeDayExercise({ id: "ex1", exerciseDefinitionId: "def1" }),
+            makeDayExercise({ id: "ex2", exerciseDefinitionId: "def2" }),
+          ],
+        }),
+        makeDay({
+          id: "day2",
+          exercises: [
+            makeDayExercise({ id: "ex3", exerciseDefinitionId: "def1" }),
+          ],
+        }),
+      ],
+    });
+
+    const updates = deleteWorkoutExerciseDefinition(workout, "def1");
+
+    expect(updates.exerciseDefinitionsById).toEqual({ def2: def2 });
+    expect(updates.days[0].exercises.map((e) => e.id)).toEqual(["ex2"]);
+    expect(updates.days[1].exercises).toEqual([]);
+  });
+
+  it("leaves days unchanged when no exercises reference the definition", () => {
+    const def1 = makeExerciseDefinition({ id: "def1" });
+    const workout = makeWorkout({
+      exerciseDefinitionsById: { def1: def1 },
+      days: [makeDay({ id: "day1", exercises: [] })],
+    });
+
+    const updates = deleteWorkoutExerciseDefinition(workout, "def1");
+
+    expect(updates.exerciseDefinitionsById).toEqual({});
+    expect(updates.days[0].exercises).toEqual([]);
   });
 });
 

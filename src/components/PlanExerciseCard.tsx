@@ -12,6 +12,7 @@ export interface PlanExerciseCardProps {
   moveUpDisabled: boolean;
   moveDownDisabled: boolean;
   onEdit: (exercise: DayExercise) => void;
+  onRemoveFromDay: (exercise: DayExercise) => void;
   onDelete: (exercise: DayExercise) => void;
   onMoveUp: (exercise: DayExercise) => void;
   onMoveDown: (exercise: DayExercise) => void;
@@ -24,6 +25,7 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
     moveDownDisabled,
     moveUpDisabled,
     onEdit,
+    onRemoveFromDay,
     onDelete,
     onMoveDown,
     onMoveUp,
@@ -62,6 +64,9 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
               Move down
             </Menu.Item>
             <Menu.Item onClick={() => onEdit(exercise)}>Edit</Menu.Item>
+            <Menu.Item onClick={() => onRemoveFromDay(exercise)}>
+              Remove from day
+            </Menu.Item>
             <Menu.Item color="red" onClick={() => onDelete(exercise)}>
               Delete
             </Menu.Item>
