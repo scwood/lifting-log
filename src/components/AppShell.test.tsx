@@ -6,7 +6,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useAuth } from "../hooks/useAuth";
 import { makeAuthContext } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { AppShell } from "./AppShell";
 
 vi.mock("../hooks/useAuth");
@@ -16,7 +15,7 @@ const mockUseAuth = vi.mocked(useAuth);
 function renderAppShell(initialPath = "/") {
   const user = userEvent.setup();
   render(
-    <MantineProvider theme={testTheme}>
+    <MantineProvider env="test">
       <MemoryRouter initialEntries={[initialPath]}>
         <Routes>
           <Route path="/*" element={<AppShell />} />

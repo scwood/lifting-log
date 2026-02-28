@@ -9,7 +9,6 @@ import {
   makeWarmUpSet,
   makeWorkout,
 } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { PlanExerciseCard, PlanExerciseCardProps } from "./PlanExerciseCard";
 
 function renderPlanExerciseCard(
@@ -39,7 +38,7 @@ function renderPlanExerciseCard(
     ...propsOverrides,
   };
   render(
-    <MantineProvider theme={testTheme}>
+    <MantineProvider env="test">
       <PlanExerciseCard {...props} />
     </MantineProvider>,
   );

@@ -16,7 +16,6 @@ import {
   makeExerciseDefinition,
   makeWorkout,
 } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { deferred } from "../test-utils/utils";
 import { Workout } from "../types/Workout";
 import { CurrentUserProvider } from "./CurrentUserProvider";
@@ -44,7 +43,7 @@ function renderCurrentWorkoutPage() {
   render(
     <QueryClientProvider client={queryClient}>
       <CurrentUserProvider userId="u1">
-        <MantineProvider theme={testTheme}>
+        <MantineProvider env="test">
           <RouterProvider router={router} />
         </MantineProvider>
       </CurrentUserProvider>

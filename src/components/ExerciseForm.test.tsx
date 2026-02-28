@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { makeExerciseDefinition, makeWarmUpSet } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { ExerciseType } from "../types/ExerciseType";
 import { ExerciseForm, ExerciseFormProps } from "./ExerciseForm";
 
@@ -18,7 +17,7 @@ function renderExerciseForm(propsOverrides: Partial<ExerciseFormProps> = {}) {
     ...propsOverrides,
   };
   render(
-    <MantineProvider theme={testTheme}>
+    <MantineProvider env="test">
       <ExerciseForm {...props} />
     </MantineProvider>,
   );

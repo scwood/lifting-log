@@ -89,13 +89,12 @@ Workout
 
 - `factories.ts` — factory functions for all domain types (`makeWorkout`, `makeDay`, `makeDayExercise`, `makeExerciseDefinition`, `makeWarmUpSet`, `makeAuthContext`, `makeCurrentUserContext`). Always add new factories here.
 - `utils.ts` — `deferred<T>()` for controlling promise resolution.
-- `testTheme.ts` — Mantine theme with `transitionProps: { duration: 0 }` for Menu/Popover; pass to `MantineProvider` in any test that opens menus so assertions can be synchronous.
 
 **Key patterns:**
 
 - Import `describe`, `it`, `expect` explicitly from `"vitest"`.
 - Use `@testing-library/user-event` (not `fireEvent`) for interactions.
-- Wrap components needing Mantine in `<MantineProvider>` (use `testTheme` when testing menus/popovers).
+- Wrap components needing Mantine in `<MantineProvider env="test">`
 - Use `getByRole("textbox", { name: "Label" })` with the `name` option for labeled inputs.
 - Use `toBeInTheDocument()` (jest-dom) instead of `toBeDefined()` for DOM assertions.
 - After `await user.click(submitButton)`, callbacks are already called — no `waitFor` needed.

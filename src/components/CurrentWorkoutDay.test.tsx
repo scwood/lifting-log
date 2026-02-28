@@ -11,7 +11,6 @@ import {
   makeExerciseDefinition,
   makeWorkout,
 } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { CurrentUserProvider } from "./CurrentUserProvider";
 import { CurrentWorkoutDay, CurrentWorkoutDayProps } from "./CurrentWorkoutDay";
 
@@ -68,7 +67,7 @@ function renderCurrentWorkoutDay(
   render(
     <QueryClientProvider client={queryClient}>
       <CurrentUserProvider userId="u1">
-        <MantineProvider theme={testTheme}>
+        <MantineProvider env="test">
           <CurrentWorkoutDay {...props} />
         </MantineProvider>
       </CurrentUserProvider>

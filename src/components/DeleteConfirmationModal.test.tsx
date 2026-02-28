@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { testTheme } from "../test-utils/testTheme";
 import {
   DeleteConfirmationModal,
   DeleteConfirmationModalProps,
@@ -21,7 +20,7 @@ function renderModal(
     ...propsOverrides,
   };
   render(
-    <MantineProvider theme={testTheme}>
+    <MantineProvider env="test">
       <DeleteConfirmationModal {...props} />
     </MantineProvider>,
   );

@@ -12,7 +12,6 @@ import {
   makeExerciseDefinition,
   makeWorkout,
 } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { Direction } from "../utils/arrayUtils";
 import {
   deleteWorkoutDayExercise,
@@ -95,7 +94,7 @@ function renderPlanDay(propsOverrides: Partial<PlanDayProps> = {}) {
   render(
     <QueryClientProvider client={queryClient}>
       <CurrentUserProvider userId="u1">
-        <MantineProvider theme={testTheme}>
+        <MantineProvider env="test">
           <PlanDay {...props} />
         </MantineProvider>
       </CurrentUserProvider>

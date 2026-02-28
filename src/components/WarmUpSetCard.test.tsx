@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { makeWarmUpSet } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { WarmUpType } from "../types/WarmUpType";
 import { WarmUpSetCard, WarmUpSetCardProps } from "./WarmUpSetCard";
 
@@ -21,7 +20,7 @@ function renderCard(propsOverrides: Partial<WarmUpSetCardProps> = {}) {
     ...propsOverrides,
   };
   render(
-    <MantineProvider theme={testTheme}>
+    <MantineProvider env="test">
       <WarmUpSetCard {...props} />
     </MantineProvider>,
   );

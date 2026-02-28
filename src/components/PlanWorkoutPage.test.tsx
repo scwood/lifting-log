@@ -10,7 +10,6 @@ import {
   updateWorkout,
 } from "../api/workoutsApi";
 import { makeDay, makeWorkout } from "../test-utils/factories";
-import { testTheme } from "../test-utils/testTheme";
 import { deferred } from "../test-utils/utils";
 import { Workout } from "../types/Workout";
 import { Direction, moveItem } from "../utils/arrayUtils";
@@ -35,7 +34,7 @@ function renderPlanWorkoutPage() {
   render(
     <QueryClientProvider client={queryClient}>
       <CurrentUserProvider userId="u1">
-        <MantineProvider theme={testTheme}>
+        <MantineProvider env="test">
           <PlanWorkoutPage />
         </MantineProvider>
       </CurrentUserProvider>
