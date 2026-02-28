@@ -23,6 +23,21 @@ export function WorkingSetTableRow(props: WorkingSetTableRowProps) {
     workingSet.weight ?? exerciseDefinition.trainingLoad.weight,
   );
 
+  // When the training load changes (e.g. after completing this exercise on
+  // another day), reset local state to reflect the new defaults — but only for
+  // sets the user hasn't touched yet.
+  const [prevExerciseDefinition, setPrevExerciseDefinition] =
+    useState(exerciseDefinition);
+  if (exerciseDefinition !== prevExerciseDefinition) {
+    setPrevExerciseDefinition(exerciseDefinition);
+    if (workingSet.reps === null) {
+      setLocalReps(exerciseDefinition.trainingLoad.reps);
+    }
+    if (workingSet.weight === null) {
+      setLocalWeight(exerciseDefinition.trainingLoad.weight);
+    }
+  }
+
   const weightInputWidth = getDynamicInputWidth(localWeight);
   const repsInputWidth = getDynamicInputWidth(localReps);
 
