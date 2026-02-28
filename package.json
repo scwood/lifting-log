@@ -10,7 +10,7 @@
     "dev:prod": "vite --mode production",
     "emulators": "firebase emulators:start --import=scratch/emulator-data --export-on-exit=scratch/emulator-data",
     "build": "tsc && vite build",
-    "predeploy": "npm run build",
+    "predeploy": "npm run lint && npm run prettier && npm run test && npm run build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
