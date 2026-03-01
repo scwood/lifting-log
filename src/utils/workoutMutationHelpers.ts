@@ -12,15 +12,17 @@ import { selectExerciseDefinition } from "./workoutSelectors";
 export function upsertWorkoutDay(
   workout: Workout,
   day: Day,
-  dayToReplaceId?: string,
 ): Pick<Workout, "days"> {
-  if (!dayToReplaceId) {
+  const isUpdate = workout.days.some(
+    (existingDay) => existingDay.id === day.id,
+  );
+  if (!isUpdate) {
     return { days: [...workout.days, day] };
   }
 
   return {
     days: workout.days.map((existingDay) => {
-      return existingDay.id === dayToReplaceId ? day : existingDay;
+      return existingDay.id === day.id ? day : existingDay;
     }),
   };
 }
@@ -48,7 +50,6 @@ export function upsertWorkoutDayExercise(
   workout: Workout,
   dayId: string,
   exercise: DayExercise,
-  exerciseToReplaceId?: string,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
@@ -56,14 +57,17 @@ export function upsertWorkoutDayExercise(
         return day;
       }
 
-      if (!exerciseToReplaceId) {
+      const isUpdate = day.exercises.some(
+        (existingExercise) => existingExercise.id === exercise.id,
+      );
+      if (!isUpdate) {
         return { ...day, exercises: [...day.exercises, exercise] };
       }
 
       return {
         ...day,
         exercises: day.exercises.map((existingExercise) => {
-          return existingExercise.id === exerciseToReplaceId
+          return existingExercise.id === exercise.id
             ? exercise
             : existingExercise;
         }),

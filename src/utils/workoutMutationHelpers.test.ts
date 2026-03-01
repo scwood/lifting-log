@@ -26,7 +26,7 @@ import {
 } from "./workoutMutationHelpers";
 
 describe("upsertWorkoutDay", () => {
-  it("adds a day when no dayToReplaceId is provided", () => {
+  it("adds a day when the id does not exist", () => {
     const day1 = makeDay({ id: "day1", name: "Day 1" });
     const workout = makeWorkout({ days: [day1] });
 
@@ -38,14 +38,13 @@ describe("upsertWorkoutDay", () => {
     expect(updates.days.map((day) => day.id)).toEqual(["day1", "day2"]);
   });
 
-  it("replaces an existing day when dayToReplaceId is provided", () => {
+  it("replaces an existing day when the id already exists", () => {
     const day1 = makeDay({ id: "day1", name: "Day 1" });
     const workout = makeWorkout({ days: [day1] });
 
     const updates = upsertWorkoutDay(
       workout,
       makeDay({ id: "day1", name: "Updated" }),
-      "day1",
     );
 
     expect(updates.days[0].name).toBe("Updated");
@@ -76,7 +75,7 @@ describe("reorderWorkoutDay", () => {
 });
 
 describe("upsertWorkoutDayExercise", () => {
-  it("adds an exercise when exerciseToReplaceId is not provided", () => {
+  it("adds an exercise when the id does not exist", () => {
     const day = makeDay({
       id: "day1",
       exercises: [makeDayExercise({ id: "ex1", exerciseDefinitionId: "def1" })],
@@ -95,7 +94,7 @@ describe("upsertWorkoutDayExercise", () => {
     ]);
   });
 
-  it("replaces an existing exercise when exerciseToReplaceId is provided", () => {
+  it("replaces an existing exercise when the id already exists", () => {
     const day = makeDay({
       id: "day1",
       exercises: [makeDayExercise({ id: "ex1", exerciseDefinitionId: "def1" })],
@@ -106,7 +105,6 @@ describe("upsertWorkoutDayExercise", () => {
       workout,
       "day1",
       makeDayExercise({ id: "ex1", exerciseDefinitionId: "def2" }),
-      "ex1",
     );
 
     expect(updates.days[0].exercises[0].exerciseDefinitionId).toBe("def2");

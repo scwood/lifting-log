@@ -116,7 +116,7 @@ export function PlanWorkoutPage() {
     setIsDayModalOpen(false);
     await updateWorkout({
       workoutId: workout.id,
-      updates: upsertWorkoutDay(workout, day, dayToEdit?.id),
+      updates: upsertWorkoutDay(workout, day),
     });
   }
 

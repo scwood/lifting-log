@@ -214,7 +214,6 @@ export function PlanDay(props: PlanDayProps) {
             exerciseDefinitionId: exerciseDefinition.id,
             definitionTrainingLoadBeforeCompletion: null,
           },
-          exerciseToEdit?.id,
         ),
         ...upsertWorkoutExerciseDefinition(workout, exerciseDefinition),
       },
