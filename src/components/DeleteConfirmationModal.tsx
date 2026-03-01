@@ -1,23 +1,20 @@
 import { Button, Flex, Modal } from "@mantine/core";
+import { ReactNode } from "react";
 
 export interface DeleteConfirmationModalProps {
   opened: boolean;
-  itemName: string;
+  title: string;
+  children: ReactNode;
   onClose: () => void;
   onDelete: () => void;
 }
 
 export function DeleteConfirmationModal(props: DeleteConfirmationModalProps) {
-  const { opened, itemName, onClose, onDelete } = props;
+  const { opened, title, children, onClose, onDelete } = props;
 
   return (
-    <Modal
-      centered
-      title={`Delete ${itemName}`}
-      opened={opened}
-      onClose={onClose}
-    >
-      Are you sure you want to permanently delete this {itemName}?
+    <Modal centered title={title} opened={opened} onClose={onClose}>
+      {children}
       <Flex justify="flex-end" gap="xs" mt="lg">
         <Button variant="default" onClick={onClose}>
           Cancel

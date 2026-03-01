@@ -161,11 +161,14 @@ export function PlanDay(props: PlanDayProps) {
         />
       </Modal>
       <DeleteConfirmationModal
-        itemName="exercise"
+        title="Delete exercise"
         opened={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDeleteExercise}
-      />
+      >
+        Are you sure you want to permanently delete this exercise? It will be
+        removed from every day in your plan.
+      </DeleteConfirmationModal>
     </div>
   );
 

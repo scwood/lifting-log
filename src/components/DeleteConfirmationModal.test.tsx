@@ -14,7 +14,8 @@ function renderModal(
   const user = userEvent.setup();
   const props: DeleteConfirmationModalProps = {
     opened: true,
-    itemName: "workout",
+    title: "Delete workout",
+    children: "Are you sure?",
     onClose: vi.fn(),
     onDelete: vi.fn(),
     ...propsOverrides,
@@ -28,22 +29,20 @@ function renderModal(
 }
 
 describe("DeleteConfirmationModal", () => {
-  it("renders the modal title with itemName", () => {
-    renderModal({ itemName: "exercise" });
+  it("renders the modal title", () => {
+    renderModal({ title: "Delete exercise" });
     expect(screen.getByText("Delete exercise")).toBeInTheDocument();
   });
 
-  it("renders the confirmation message with itemName", () => {
-    renderModal({ itemName: "exercise" });
+  it("renders children as the body content", () => {
+    renderModal({ children: "This will remove it from every day." });
     expect(
-      screen.getByText(
-        "Are you sure you want to permanently delete this exercise?",
-      ),
+      screen.getByText("This will remove it from every day."),
     ).toBeInTheDocument();
   });
 
   it("does not render modal content when opened is false", () => {
-    renderModal({ opened: false, itemName: "exercise" });
+    renderModal({ opened: false, title: "Delete exercise" });
     expect(screen.queryByText("Delete exercise")).not.toBeInTheDocument();
   });
 
