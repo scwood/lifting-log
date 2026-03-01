@@ -337,7 +337,7 @@ function updateWorkoutDayExercise(
   workout: Workout,
   dayId: string,
   exerciseId: string,
-  mutateExercise: (exercise: DayExercise) => DayExercise,
+  updateExercise: (exercise: DayExercise) => DayExercise,
 ): Pick<Workout, "days"> {
   return {
     days: workout.days.map((day) => {
@@ -349,7 +349,7 @@ function updateWorkoutDayExercise(
         ...day,
         exercises: day.exercises.map((exercise) => {
           return exercise.id === exerciseId
-            ? mutateExercise(exercise)
+            ? updateExercise(exercise)
             : exercise;
         }),
       };
