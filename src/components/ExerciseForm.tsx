@@ -260,11 +260,13 @@ export function ExerciseForm(props: ExerciseFormProps) {
           </Flex>
         </form.AppForm>
         <DeleteConfirmationModal
+          title="Delete warm-up set"
           opened={isDeleteModalOpen}
-          itemName="warm-up set"
           onClose={() => setIsDeleteModalOpen(false)}
           onDelete={handleDeleteWarmUpSet}
-        />
+        >
+          Are you sure you want to permanently delete this warm-up set?
+        </DeleteConfirmationModal>
       </form>
 
       <Modal

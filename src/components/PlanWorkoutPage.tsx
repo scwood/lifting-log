@@ -99,11 +99,13 @@ export function PlanWorkoutPage() {
         />
       </Modal>
       <DeleteConfirmationModal
-        itemName="day"
+        title="Delete day"
         opened={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={() => handleDeleteDay()}
-      />
+      >
+        Are you sure you want to permanently delete this day?
+      </DeleteConfirmationModal>
     </>
   );
 
