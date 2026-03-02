@@ -31,6 +31,7 @@ function renderPlanExerciseCard(
     moveUpDisabled: false,
     moveDownDisabled: false,
     onEdit: vi.fn(),
+    onDuplicate: vi.fn(),
     onRemoveFromDay: vi.fn(),
     onDelete: vi.fn(),
     onMoveUp: vi.fn(),
@@ -117,6 +118,16 @@ describe("PlanExerciseCard", () => {
       );
       await user.click(screen.getByText("Edit"));
       expect(onEdit).toHaveBeenCalledWith(exercise);
+    });
+
+    it("calls onDuplicate with the exercise when Duplicate is clicked", async () => {
+      const { user, exercise, exerciseDefinition, onDuplicate } =
+        renderPlanExerciseCard();
+      await user.click(
+        screen.getByRole("button", { name: `${exerciseDefinition.name} menu` }),
+      );
+      await user.click(screen.getByText("Duplicate"));
+      expect(onDuplicate).toHaveBeenCalledWith(exercise);
     });
 
     it("calls onRemoveFromDay with the exercise when Remove from day is clicked", async () => {

@@ -326,6 +326,37 @@ describe("PlanDay", () => {
     );
   });
 
+  it("duplicates an exercise with a copied definition", async () => {
+    const { user, workout } = renderPlanDay();
+    mockUuidV4
+      .mockReturnValueOnce(createdDefinitionId)
+      .mockReturnValueOnce(createdDayExerciseId);
+
+    await user.click(screen.getByRole("button", { name: "Squat menu" }));
+    await user.click(screen.getByText("Duplicate"));
+
+    await waitFor(() => expect(mockUpdateWorkout).toHaveBeenCalledTimes(1));
+    const [workoutId, updates] = mockUpdateWorkout.mock.calls[0];
+    expect(workoutId).toBe(workout.id);
+    const updatedDay = updates.days?.find(
+      (d: { id: string }) => d.id === "day1",
+    );
+    expect(updatedDay?.exercises).toHaveLength(3);
+    expect(updatedDay?.exercises[2]).toEqual({
+      id: createdDayExerciseId,
+      exerciseDefinitionId: createdDefinitionId,
+      workingSets: {},
+      definitionTrainingLoadBeforeCompletion: null,
+    });
+    const duplicatedDefinition =
+      updates.exerciseDefinitionsById?.[createdDefinitionId];
+    expect(duplicatedDefinition).toEqual({
+      ...workout.exerciseDefinitionsById.def1,
+      id: createdDefinitionId,
+      name: "Squat Copy",
+    });
+  });
+
   it("moves an exercise and sends moveExercise result to updateWorkout", async () => {
     const { user, workout, day } = renderPlanDay();
     const expectedUpdates = reorderWorkoutDayExercise(
