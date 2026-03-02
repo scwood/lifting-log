@@ -127,6 +127,7 @@ export function PlanDay(props: PlanDayProps) {
                 dayIndex === workoutDays.length - 1
               }
               onEdit={handleEditExercise}
+              onDuplicate={handleDuplicateExercise}
               onRemoveFromDay={handleRemoveFromDay}
               onDelete={handleConfirmDeleteExercise}
               onMoveUp={() => handleMoveExercise(exercise, Direction.Up)}
@@ -216,6 +217,31 @@ export function PlanDay(props: PlanDayProps) {
           },
         ),
         ...upsertWorkoutExerciseDefinition(workout, exerciseDefinition),
+      },
+    });
+  }
+
+  async function handleDuplicateExercise(exercise: DayExercise) {
+    const exerciseDefinition = selectExerciseDefinition(workout, exercise);
+    if (!exerciseDefinition) {
+      return;
+    }
+    const newDefinitionId = uuidV4();
+    const newDefinition: ExerciseDefinition = {
+      ...exerciseDefinition,
+      id: newDefinitionId,
+      name: `${exerciseDefinition.name} Copy`,
+    };
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: {
+        ...upsertWorkoutDayExercise(workout, day.id, {
+          id: uuidV4(),
+          workingSets: {},
+          exerciseDefinitionId: newDefinitionId,
+          definitionTrainingLoadBeforeCompletion: null,
+        }),
+        ...upsertWorkoutExerciseDefinition(workout, newDefinition),
       },
     });
   }
