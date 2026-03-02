@@ -20,13 +20,13 @@ npm run test:coverage # coverage report
 To run a single test file:
 
 ```bash
-npx vitest run src/components/ExerciseForm.test.tsx
+npm test -- src/components/ExerciseForm.test.tsx
 ```
 
 To run tests matching a name pattern:
 
 ```bash
-npx vitest run -t "should render"
+npm test -- -t "should render"
 ```
 
 Firebase emulators (auth on 9099, Firestore on 8080):
