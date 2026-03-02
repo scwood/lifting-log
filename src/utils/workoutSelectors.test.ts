@@ -11,7 +11,6 @@ import { ExerciseType } from "../types/ExerciseType";
 import { WarmUpType } from "../types/WarmUpType";
 import {
   selectCompletedDayExercises,
-  selectDayExercises,
   selectDayHasCompletedExercises,
   selectDayIsComplete,
   selectExerciseIsComplete,
@@ -19,30 +18,11 @@ import {
   selectIncompleteDayExercises,
   selectIncompleteWorkoutDays,
   selectWarmUpSetWeight,
-  selectWorkoutDays,
   selectWorkoutDaysWithCompletedExercises,
   selectWorkoutHasNoDays,
   selectWorkoutHasNoExercises,
   selectWorkoutIsComplete,
 } from "./workoutSelectors";
-
-describe("selectWorkoutDays", () => {
-  it("returns workout days", () => {
-    const day = makeDay({ id: "day1" });
-    const workout = makeWorkout({ days: [day] });
-
-    expect(selectWorkoutDays(workout)).toEqual([day]);
-  });
-});
-
-describe("selectDayExercises", () => {
-  it("returns day exercises", () => {
-    const exercise = makeDayExercise({ id: "ex1" });
-    const day = makeDay({ exercises: [exercise] });
-
-    expect(selectDayExercises(day)).toEqual([exercise]);
-  });
-});
 
 describe("selectExerciseIsComplete", () => {
   it("returns true when all working sets are logged", () => {

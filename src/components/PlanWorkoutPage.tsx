@@ -19,7 +19,6 @@ import {
   reorderWorkoutDay,
   upsertWorkoutDay,
 } from "../utils/workoutMutationHelpers";
-import { selectWorkoutDays } from "../utils/workoutSelectors";
 import { CreateWorkoutEmptyState } from "./CreateWorkoutEmptyState";
 import { DayForm } from "./DayForm";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
@@ -56,7 +55,7 @@ export function PlanWorkoutPage() {
     );
   }
 
-  const workoutDays = selectWorkoutDays(workout);
+  const workoutDays = workout.days;
 
   return (
     <>

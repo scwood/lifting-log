@@ -4,7 +4,6 @@ import z from "zod";
 import { useAppForm } from "../hooks/useAppForm";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { TrainingLoad } from "../types/TrainingLoad";
-import { selectExerciseTrainingLoad } from "../utils/workoutSelectors";
 
 export interface ExerciseCompleteFormProps {
   exerciseDefinition: ExerciseDefinition;
@@ -33,7 +32,7 @@ const formSchema = z.object({
 
 export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
   const { exerciseDefinition, onSave } = props;
-  const currentTrainingLoad = selectExerciseTrainingLoad(exerciseDefinition);
+  const currentTrainingLoad = exerciseDefinition.trainingLoad;
 
   const form = useAppForm({
     defaultValues: {
