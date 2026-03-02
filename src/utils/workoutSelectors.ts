@@ -2,31 +2,16 @@ import { Day } from "../types/Day";
 import { DayExercise } from "../types/DayExercise";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { ExerciseType } from "../types/ExerciseType";
-import { TrainingLoad } from "../types/TrainingLoad";
 import { WarmUpSet } from "../types/WarmUpSet";
 import { WarmUpType } from "../types/WarmUpType";
 import { Workout } from "../types/Workout";
 import { weightOfBar } from "./weightUtils";
-
-export function selectWorkoutDays(workout: Workout): Day[] {
-  return workout.days;
-}
-
-export function selectDayExercises(day: Day): DayExercise[] {
-  return day.exercises;
-}
 
 export function selectExerciseDefinition(
   workout: Workout,
   exercise: DayExercise,
 ): ExerciseDefinition | undefined {
   return workout.exerciseDefinitionsById[exercise.exerciseDefinitionId];
-}
-
-export function selectExerciseTrainingLoad(
-  exerciseDefinition: ExerciseDefinition,
-): TrainingLoad {
-  return exerciseDefinition.trainingLoad;
 }
 
 export function selectExerciseIsComplete(
@@ -48,30 +33,30 @@ export function selectDayHasCompletedExercises(
   workout: Workout,
   day: Day,
 ): boolean {
-  return selectDayExercises(day).some((exercise) => {
+  return day.exercises.some((exercise) => {
     return selectExerciseIsComplete(workout, exercise);
   });
 }
 
 export function selectDayIsComplete(workout: Workout, day: Day): boolean {
-  return selectDayExercises(day).every((exercise) => {
+  return day.exercises.every((exercise) => {
     return selectExerciseIsComplete(workout, exercise);
   });
 }
 
 export function selectWorkoutIsComplete(workout: Workout): boolean {
-  return selectWorkoutDays(workout).every((day) => {
+  return workout.days.every((day) => {
     return selectDayIsComplete(workout, day);
   });
 }
 
 export function selectWorkoutHasNoDays(workout: Workout): boolean {
-  return selectWorkoutDays(workout).length === 0;
+  return workout.days.length === 0;
 }
 
 export function selectWorkoutHasNoExercises(workout: Workout): boolean {
-  return selectWorkoutDays(workout).every((day) => {
-    return selectDayExercises(day).length === 0;
+  return workout.days.every((day) => {
+    return day.exercises.length === 0;
   });
 }
 
@@ -79,7 +64,7 @@ export function selectIncompleteDayExercises(
   workout: Workout,
   day: Day,
 ): DayExercise[] {
-  return selectDayExercises(day).filter((exercise) => {
+  return day.exercises.filter((exercise) => {
     return !selectExerciseIsComplete(workout, exercise);
   });
 }
@@ -88,13 +73,13 @@ export function selectCompletedDayExercises(
   workout: Workout,
   day: Day,
 ): DayExercise[] {
-  return selectDayExercises(day).filter((exercise) => {
+  return day.exercises.filter((exercise) => {
     return selectExerciseIsComplete(workout, exercise);
   });
 }
 
 export function selectIncompleteWorkoutDays(workout: Workout): Day[] {
-  return selectWorkoutDays(workout).filter((day) => {
+  return workout.days.filter((day) => {
     return selectIncompleteDayExercises(workout, day).length > 0;
   });
 }
@@ -102,7 +87,7 @@ export function selectIncompleteWorkoutDays(workout: Workout): Day[] {
 export function selectWorkoutDaysWithCompletedExercises(
   workout: Workout,
 ): Day[] {
-  return selectWorkoutDays(workout).filter((day) => {
+  return workout.days.filter((day) => {
     return selectDayHasCompletedExercises(workout, day);
   });
 }

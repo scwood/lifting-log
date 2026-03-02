@@ -24,11 +24,7 @@ import {
   upsertWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
 } from "../utils/workoutMutationHelpers";
-import {
-  selectDayExercises,
-  selectExerciseDefinition,
-  selectWorkoutDays,
-} from "../utils/workoutSelectors";
+import { selectExerciseDefinition } from "../utils/workoutSelectors";
 import { AddExerciseModalContent } from "./AddExerciseModalContent";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ExerciseForm } from "./ExerciseForm";
@@ -63,9 +59,7 @@ export function PlanDay(props: PlanDayProps) {
     null,
   );
   const { mutate: updateWorkout } = useUpdateWorkoutMutation();
-  const workoutDays = selectWorkoutDays(workout);
-  const dayExercises = selectDayExercises(day);
-  const dayIndex = workoutDays.findIndex((d) => d.id === day.id);
+  const dayIndex = workout.days.findIndex((d) => d.id === day.id);
 
   const exerciseDefinitionToEdit = exerciseToEdit
     ? selectExerciseDefinition(workout, exerciseToEdit)
@@ -109,13 +103,13 @@ export function PlanDay(props: PlanDayProps) {
       </Title>
       <Divider mt={4} mb="md" />
       <Flex direction="column" gap="md">
-        {dayExercises.length === 0 && (
+        {day.exercises.length === 0 && (
           <div>
             Your plan has no exercises for this day. Click the button below to
             add an exercise.
           </div>
         )}
-        {dayExercises.map((exercise, index) => {
+        {day.exercises.map((exercise, index) => {
           return (
             <PlanExerciseCard
               key={exercise.id}
@@ -123,8 +117,8 @@ export function PlanDay(props: PlanDayProps) {
               exercise={exercise}
               moveUpDisabled={index === 0 && dayIndex === 0}
               moveDownDisabled={
-                index === dayExercises.length - 1 &&
-                dayIndex === workoutDays.length - 1
+                index === day.exercises.length - 1 &&
+                dayIndex === workout.days.length - 1
               }
               onEdit={handleEditExercise}
               onDuplicate={handleDuplicateExercise}
