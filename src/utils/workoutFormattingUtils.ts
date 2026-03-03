@@ -1,11 +1,23 @@
 import { TrainingLoad } from "../types/TrainingLoad";
 import { WorkingSet } from "../types/WorkingSet";
 
-export function getTrainingLoadString(trainingLoad: TrainingLoad): string {
-  return `${trainingLoad.sets}x${trainingLoad.reps}x${trainingLoad.weight}`;
+export function formatTrainingLoad({
+  sets,
+  reps,
+  weight,
+}: TrainingLoad): string {
+  return `${sets}x${reps}x${weight}`;
 }
 
-export function getLoggedSetBreakdown(
+export function formatTrainingLoadVerbose({
+  sets,
+  reps,
+  weight,
+}: TrainingLoad): string {
+  return `${sets} sets of ${reps} at ${weight} lbs`;
+}
+
+export function formatLoggedSetBreakdown(
   workingSets: Record<number, WorkingSet>,
   fallbackWeight: number,
 ): string {
