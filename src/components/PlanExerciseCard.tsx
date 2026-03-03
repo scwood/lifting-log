@@ -3,7 +3,7 @@ import { IconDots } from "@tabler/icons-react";
 
 import { DayExercise } from "../types/DayExercise";
 import { Workout } from "../types/Workout";
-import { getTrainingLoadString } from "../utils/workoutFormattingUtils";
+import { formatTrainingLoad } from "../utils/workoutFormattingUtils";
 import { selectExerciseDefinition } from "../utils/workoutSelectors";
 
 export interface PlanExerciseCardProps {
@@ -79,7 +79,7 @@ export function PlanExerciseCard(props: PlanExerciseCardProps) {
         </Menu>
       </Flex>
       <Text c="dimmed" size="sm">
-        {getTrainingLoadString(exerciseDefinition.trainingLoad)} with{" "}
+        {formatTrainingLoad(exerciseDefinition.trainingLoad)} with{" "}
         {exerciseDefinition.warmUpSets.length} warm-up sets.
       </Text>
     </Card>

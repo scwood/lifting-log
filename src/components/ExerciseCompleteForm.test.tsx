@@ -87,6 +87,44 @@ describe("ExerciseCompleteForm", () => {
     });
   });
 
+  describe("preview descriptions", () => {
+    it("shows correct previews for default training load", () => {
+      renderExerciseCompleteForm({
+        exerciseDefinition: makeExerciseDefinition({
+          minimumWeightIncrement: 5,
+          trainingLoad: { weight: 135, sets: 3, reps: 5 },
+        }),
+      });
+      expect(
+        screen.getByText("Next session: 3 sets of 5 at 135 lbs"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Next session: 3 sets of 6 at 135 lbs"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Next session: 3 sets of 5 at 140 lbs"),
+      ).toBeInTheDocument();
+    });
+
+    it("computes previews for different training loads and increments", () => {
+      renderExerciseCompleteForm({
+        exerciseDefinition: makeExerciseDefinition({
+          minimumWeightIncrement: 2.5,
+          trainingLoad: { weight: 50, sets: 4, reps: 8 },
+        }),
+      });
+      expect(
+        screen.getByText("Next session: 4 sets of 8 at 50 lbs"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Next session: 4 sets of 9 at 50 lbs"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Next session: 4 sets of 8 at 52.5 lbs"),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe("onSave", () => {
     it("saves an empty plan when Do nothing is selected", async () => {
       const { user, onSave } = renderExerciseCompleteForm();

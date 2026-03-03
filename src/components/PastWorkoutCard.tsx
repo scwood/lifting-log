@@ -1,7 +1,7 @@
 import { Box, Card, Flex, Text } from "@mantine/core";
 
 import { Workout } from "../types/Workout";
-import { getLoggedSetBreakdown } from "../utils/workoutFormattingUtils";
+import { formatLoggedSetBreakdown } from "../utils/workoutFormattingUtils";
 import { selectExerciseDefinition } from "../utils/workoutSelectors";
 
 export interface PastWorkoutCardProps {
@@ -39,7 +39,7 @@ export function PastWorkoutCard(props: PastWorkoutCardProps) {
                   return (
                     <span key={exercise.id}>
                       {exerciseDefinition.name}:{" "}
-                      {getLoggedSetBreakdown(
+                      {formatLoggedSetBreakdown(
                         exercise.workingSets,
                         exerciseDefinition.trainingLoad.weight,
                       )}

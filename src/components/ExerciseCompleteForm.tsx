@@ -4,6 +4,7 @@ import z from "zod";
 import { useAppForm } from "../hooks/useAppForm";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import { TrainingLoad } from "../types/TrainingLoad";
+import { formatTrainingLoadVerbose } from "../utils/workoutFormattingUtils";
 
 export interface ExerciseCompleteFormProps {
   exerciseDefinition: ExerciseDefinition;
@@ -33,6 +34,19 @@ const formSchema = z.object({
 export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
   const { exerciseDefinition, onSave } = props;
   const currentTrainingLoad = exerciseDefinition.trainingLoad;
+  const { weight, reps, sets } = currentTrainingLoad;
+
+  const doNothingPreview = formatTrainingLoadVerbose(currentTrainingLoad);
+  const addRepPreview = formatTrainingLoadVerbose({
+    weight,
+    reps: reps + 1,
+    sets,
+  });
+  const addWeightPreview = formatTrainingLoadVerbose({
+    weight: weight + exerciseDefinition.minimumWeightIncrement,
+    reps,
+    sets,
+  });
 
   const form = useAppForm({
     defaultValues: {
@@ -89,17 +103,17 @@ export function ExerciseCompleteForm(props: ExerciseCompleteFormProps) {
                 <Radio
                   mt="md"
                   label="Do nothing"
-                  description="Keep things the same for next session"
+                  description={`Next session: ${doNothingPreview}`}
                   value={NextSessionAction.DoNothing}
                 />
                 <Radio
                   label="Add a rep"
-                  description="Add a single rep for next session"
+                  description={`Next session: ${addRepPreview}`}
                   value={NextSessionAction.AddRep}
                 />
                 <Radio
                   label="Add weight"
-                  description="Increases weight by the minimum amount for next session"
+                  description={`Next session: ${addWeightPreview}`}
                   value={NextSessionAction.AddWeight}
                 />
                 <Radio

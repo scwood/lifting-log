@@ -3,8 +3,8 @@ import { Button, Card, Text, Title } from "@mantine/core";
 import { DayExercise } from "../types/DayExercise";
 import { ExerciseDefinition } from "../types/ExerciseDefinition";
 import {
-  getLoggedSetBreakdown,
-  getTrainingLoadString,
+  formatLoggedSetBreakdown,
+  formatTrainingLoad,
 } from "../utils/workoutFormattingUtils";
 
 export interface CompletedExerciseProps {
@@ -24,12 +24,12 @@ export function CompletedExercise(props: CompletedExerciseProps) {
         </Title>
         <Text size="sm" c="dimmed">
           This session:{" "}
-          {getLoggedSetBreakdown(
+          {formatLoggedSetBreakdown(
             exercise.workingSets,
             exerciseDefinition.trainingLoad.weight,
           )}
           <br />
-          Next session: {getTrainingLoadString(exerciseDefinition.trainingLoad)}
+          Next session: {formatTrainingLoad(exerciseDefinition.trainingLoad)}
         </Text>
         <Button
           fullWidth
