@@ -37,7 +37,7 @@ export function PlanWorkoutPage() {
   if (isLoading) {
     return (
       <Center>
-        <Loader aria-label="Loading workout" />
+        <Loader aria-label="Loading workout..." />
       </Center>
     );
   }
@@ -55,27 +55,25 @@ export function PlanWorkoutPage() {
     );
   }
 
-  const workoutDays = workout.days;
-
   return (
     <>
       <Title mb="sm" order={3}>
         Workout plan
       </Title>
       <Flex direction="column" gap="lg">
-        {workoutDays.length === 0 && (
+        {workout.days.length === 0 && (
           <div>
             Your plan has no days. Click the button below to add your first day.
           </div>
         )}
-        {workoutDays.map((day, index) => {
+        {workout.days.map((day, index) => {
           return (
             <PlanDay
               key={day.id}
               day={day}
               workout={workout}
               moveUpDisabled={index === 0}
-              moveDownDisabled={index === workoutDays.length - 1}
+              moveDownDisabled={index === workout.days.length - 1}
               onEdit={handleEditDay}
               onDelete={handleConfirmDeleteDay}
               onMoveUp={() => handleMoveDay(index, Direction.Up)}
