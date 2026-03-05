@@ -58,7 +58,7 @@ describe("PlanWorkoutPage", () => {
 
     renderPlanWorkoutPage();
 
-    expect(screen.getByLabelText("Loading workout")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading workout...")).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Workout plan" }),
     ).not.toBeInTheDocument();
