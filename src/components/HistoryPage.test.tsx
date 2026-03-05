@@ -35,6 +35,8 @@ describe("HistoryPage", () => {
       const workoutsDeferred = deferred<Workout[]>();
       mockGetWorkouts.mockReturnValue(workoutsDeferred.promise);
       renderHistoryPage();
+
+      expect(screen.getByLabelText("Loading history...")).toBeInTheDocument();
       expect(
         screen.queryByRole("heading", { name: "History" }),
       ).not.toBeInTheDocument();
