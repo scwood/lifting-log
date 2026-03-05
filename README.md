@@ -1,18 +1,19 @@
-# Lifting log 🏋️‍♂️
+# Lifting Log 🏋️‍♂️
 
-Lifting log is a web app to track resistance training workouts.
+Lifting log is an app for tracking resistance training. It auto-generates
+weekly workouts and handles progressive overload.
 
 https://scwood.github.io/lifting-log
 
 ## Features
 
-- Define your weekly workout plan once, get weekly workouts auto generated as you progress
-- Create per-exercise warm-up schemes
-- If your exercise uses plates (bench press, weighted pull-ups etc.) the app will tell you what plates to put on the bar, even for warmup sets
-- Easy progressive overload: once you've completed an exercise during a session, the app will ask you if you want to add a rep, weight, or keep things the same for next session
-- Add, remove, or change specific exercises in your plan as your workouts evolve
-- Supports symmetrical and asymmetrical weekly plans
-- Google and GitHub login supported currently, would like to add Apple in the future
+- Auto-generated workouts: define your plan once, get updated workouts each week
+- Progressive overload prompts: after completing an exercise, choose to add a rep, add weight, or stay the same
+- Automatic plate math: see exactly which plates to load, including warm-up sets
+- Custom warm-up schemes: configure warm-up sets per exercise
+- Flexible scheduling: any number of days per week, different (or the same) exercises each day
+- Edit on the fly: add, remove, or swap exercises as your training evolves
+- Google & GitHub sign-in
 
 ## Screenshots
 
