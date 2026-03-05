@@ -8,18 +8,20 @@ import {
 } from "../test-utils/factories";
 import { Direction } from "./arrayUtils";
 import {
+  completeWorkout,
   completeWorkoutDayExercise,
   deleteWorkoutDay,
   deleteWorkoutDayExercise,
   deleteWorkoutExerciseDefinition,
+  deriveNextWorkout,
   deriveNextWorkoutDays,
   reorderWorkoutDay,
   reorderWorkoutDayExercise,
-  sanitizeWorkoutNotes,
   setWorkoutDayExerciseWorkingSet,
   skipWorkoutDayExercise,
   undoWorkoutDayExercise,
   undoWorkoutDayExerciseCompletion,
+  updateWorkoutNotes,
   upsertWorkoutDay,
   upsertWorkoutDayExercise,
   upsertWorkoutExerciseDefinition,
@@ -487,12 +489,64 @@ describe("deriveNextWorkoutDays", () => {
   });
 });
 
-describe("sanitizeWorkoutNotes", () => {
+describe("completeWorkout", () => {
+  it("returns a completedTimestamp", () => {
+    const before = Date.now();
+    const result = completeWorkout();
+    const after = Date.now();
+
+    expect(result.completedTimestamp).toBeGreaterThanOrEqual(before);
+    expect(result.completedTimestamp).toBeLessThanOrEqual(after);
+  });
+});
+
+describe("deriveNextWorkout", () => {
+  it("returns exerciseDefinitionsById and reset days", () => {
+    const exercise = makeDayExercise({
+      id: "ex1",
+      exerciseDefinitionId: "def1",
+      workingSets: { 0: { isLogged: true, reps: 5, weight: 135 } },
+      definitionTrainingLoadBeforeCompletion: {
+        sets: 3,
+        reps: 5,
+        weight: 135,
+      },
+    });
+    const exerciseDefinition = makeExerciseDefinition({ id: "def1" });
+    const workout = makeWorkout({
+      exerciseDefinitionsById: { def1: exerciseDefinition },
+      days: [makeDay({ id: "day1", exercises: [exercise] })],
+    });
+
+    const result = deriveNextWorkout(workout);
+
+    expect(result.exerciseDefinitionsById).toEqual({
+      def1: exerciseDefinition,
+    });
+    expect(result.days).toEqual([
+      makeDay({
+        id: "day1",
+        exercises: [
+          makeDayExercise({
+            id: "ex1",
+            exerciseDefinitionId: "def1",
+            workingSets: {},
+            definitionTrainingLoadBeforeCompletion: null,
+          }),
+        ],
+      }),
+    ]);
+  });
+});
+
+describe("updateWorkoutNotes", () => {
   it("returns trimmed notes when non-empty", () => {
-    expect(sanitizeWorkoutNotes("  felt good  ")).toBe("felt good");
+    expect(updateWorkoutNotes("  felt good  ")).toEqual({
+      notes: "felt good",
+    });
   });
 
-  it("returns null when notes are whitespace only", () => {
-    expect(sanitizeWorkoutNotes("   ")).toBeNull();
+  it("returns null notes when whitespace only", () => {
+    expect(updateWorkoutNotes("   ")).toEqual({ notes: null });
   });
 });

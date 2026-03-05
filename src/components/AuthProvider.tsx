@@ -59,10 +59,9 @@ export function AuthProvider(props: AuthProviderProps) {
   return (
     <authContext.Provider
       value={{
-        isLoading,
-        error,
         userId,
         displayName,
+        error,
         signIn,
         signOut,
       }}

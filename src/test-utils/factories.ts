@@ -16,7 +16,6 @@ export function makeAuthContext(
   return {
     userId: null,
     displayName: null,
-    isLoading: false,
     error: null,
     signIn: vi.fn(),
     signOut: vi.fn(),

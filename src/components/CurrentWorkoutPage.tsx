@@ -18,10 +18,11 @@ import { useUpdateWorkoutMutation } from "../hooks/useUpdateWorkoutMutation";
 import { Day } from "../types/Day";
 import { DayExercise } from "../types/DayExercise";
 import {
-  deriveNextWorkoutDays,
-  sanitizeWorkoutNotes,
+  completeWorkout,
+  deriveNextWorkout,
   setExerciseDefinitionTrainingLoad,
   undoWorkoutDayExerciseCompletion,
+  updateWorkoutNotes,
 } from "../utils/workoutMutationHelpers";
 import {
   selectCompletedDayExercises,
@@ -39,11 +40,8 @@ import { CurrentWorkoutDay } from "./CurrentWorkoutDay";
 export function CurrentWorkoutPage() {
   const { isLoading, isError, data: workout } = useCurrentWorkoutQuery();
   const navigate = useNavigate();
-  const {
-    mutateAsync: createWorkout,
-    mutateAsync: createWorkoutAsync,
-    isPending: isPendingCreateWorkout,
-  } = useCreateWorkoutMutation();
+  const { mutateAsync: createWorkout, isPending: isPendingCreateWorkout } =
+    useCreateWorkoutMutation();
   const { mutateAsync: updateWorkout } = useUpdateWorkoutMutation();
   const [notes, setNotes] = useState(workout?.notes ?? "");
 
@@ -203,7 +201,7 @@ export function CurrentWorkoutPage() {
     }
     updateWorkout({
       workoutId: workout.id,
-      updates: { notes: sanitizeWorkoutNotes(notes) },
+      updates: updateWorkoutNotes(notes),
     });
   }
 
@@ -232,22 +230,15 @@ export function CurrentWorkoutPage() {
     if (!workout) {
       return;
     }
-    try {
-      await updateWorkout({
-        workoutId: workout.id,
-        updates: { completedTimestamp: Date.now() },
-      });
-      await createWorkout({
-        exerciseDefinitionsById: workout.exerciseDefinitionsById,
-        days: deriveNextWorkoutDays(workout),
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    await updateWorkout({
+      workoutId: workout.id,
+      updates: completeWorkout(),
+    });
+    await createWorkout(deriveNextWorkout(workout));
   }
 
   async function handleCreateWorkoutFromHome() {
-    await createWorkoutAsync({});
+    await createWorkout({});
     navigate("/plan");
   }
 }

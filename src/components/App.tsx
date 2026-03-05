@@ -37,12 +37,12 @@ const queryClient = new QueryClient();
 
 export function App() {
   return (
-    <AuthProvider>
-      <MantineProvider theme={theme} defaultColorScheme="dark">
-        <QueryClientProvider client={queryClient}>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
           <AppRouter />
-        </QueryClientProvider>
-      </MantineProvider>
-    </AuthProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </MantineProvider>
   );
 }

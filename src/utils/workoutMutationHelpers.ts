@@ -313,6 +313,19 @@ export function undoWorkoutDayExerciseCompletion(
   };
 }
 
+export function completeWorkout(): Pick<Workout, "completedTimestamp"> {
+  return { completedTimestamp: Date.now() };
+}
+
+export function deriveNextWorkout(
+  workout: Workout,
+): Pick<Workout, "exerciseDefinitionsById" | "days"> {
+  return {
+    exerciseDefinitionsById: workout.exerciseDefinitionsById,
+    days: deriveNextWorkoutDays(workout),
+  };
+}
+
 export function deriveNextWorkoutDays(workout: Workout): Day[] {
   return workout.days.map((day) => {
     return {
@@ -328,9 +341,9 @@ export function deriveNextWorkoutDays(workout: Workout): Day[] {
   });
 }
 
-export function sanitizeWorkoutNotes(notes: string): string | null {
+export function updateWorkoutNotes(notes: string): Pick<Workout, "notes"> {
   const trimmedNotes = notes.trim();
-  return trimmedNotes.length > 0 ? trimmedNotes : null;
+  return { notes: trimmedNotes.length > 0 ? trimmedNotes : null };
 }
 
 function updateWorkoutDayExercise(
